@@ -328,7 +328,9 @@ function RUN_dir_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%Prompt the user for the directory where the images are located 
+%Prompt the user for the directory where the images are located - this
+%should maybe just go in its own script in order to make things less
+%complicated
 image_path = uigetdir; 
 
 %Return if the user pressed the cancel button
@@ -337,6 +339,10 @@ if isequal(image_path, 0); return; end
 %Save the results in the same directory where the images were located. The
 %skeletonized image will be named imagefile_skeletonized.tif and the
 %orientation vecotrs will be names _orientation.mat
+
+%It will eventually get more complicated when I start building up the
+%different functionalities because there are a lot of things that were
+%optional that we don't want to be optional. 
 
 %Build up settings from GUI
 %Ask for 
