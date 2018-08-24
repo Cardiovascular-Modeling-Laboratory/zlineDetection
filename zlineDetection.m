@@ -55,6 +55,12 @@ function zlineDetection_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for zlineDetection
 handles.output = hObject;
 
+%(TM) Add directories that contain important code to the path. 
+% addpath('Functions')
+% addpath('Functions/coherencefilter_version5b')
+% addpath('Functions/cell2csv')
+
+
 % Update handles structure
 guidata(hObject, handles);
 
