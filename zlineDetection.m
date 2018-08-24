@@ -328,6 +328,55 @@ function RUN_dir_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%Prompt the user for the directory where the images are located 
+image_path = uigetdir; 
+
+%Return if the user pressed the cancel button
+if isequal(image_path, 0); return; end
+
+%Save the results in the same directory where the images were located. The
+%skeletonized image will be named imagefile_skeletonized.tif and the
+%orientation vecotrs will be names _orientation.mat
+
+%Build up settings from GUI
+%Ask for 
+
+% % Get folder and save file name
+% folderPath = uigetdir;
+% if isequal(folderPath, 0); return; end % Cancel button pressed
+% if ispc
+%     separator = '\';
+% else
+%     separator = '/';
+% end
+% 
+% folderPath = [folderPath, separator];
+% 
+% % Get name for results file
+% prompt = {'Save results with file name (no extension necessary):'};
+% dlg_title = 'Save File Name';
+% num_lines = 1;
+% fileName = inputdlg(prompt,dlg_title,num_lines);
+% saveFilePath = [folderPath, fileName{1}, '.csv'];
+% 
+% % Build up settings from GUI, turn off all figure displays
+% settings = get_settings(handles);
+% settings.CEDFig = 0;
+% settings.topHatFig = 0;
+% settings.threshFig = 0;
+% settings.noiseRemFig = 0;
+% settings.skelFig = 0;
+% settings.skelTrimFig = 0;
+% settings.figSwitch = 0;
+% settings.figSave = get(handles.saveFigs,'Value');
+% settings.fullOP = 1;
+% 
+% csvCell = runDir(folderPath,settings);
+% % FLCell = runDirFLD(folderPath,settings);
+% cell2csv(saveFilePath, csvCell, ',', 1999, '.');
+% % save([folderPath, fileName{1}, '.mat'],'csvCell')
+
+
 
 % --- Executes on button press in tf_OOP.
 function tf_OOP_Callback(hObject, eventdata, handles)
