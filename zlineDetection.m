@@ -203,6 +203,34 @@ function pix2um_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of pix2um as text
 %        str2double(get(hObject,'String')) returns contents of pix2um as a double
 
+%Convert the pix2um conversion from a string to a number 
+pix2um = str2num(get(handles.pix2um,'String'));
+
+%Set all of the parameters based on this conversion.
+% Guassian Smoothing 
+% Orientation Smoothing
+% Diffusion time 
+% Top Hat Filter Size
+% Noise removal area 
+% Skeletonization branch removal size 
+
+
+%The original parameters are given below. The original sarcDetect had
+%guassian and orietnation smoothing paramters which I will use. Also need
+%to write descriptions of what all of these different things do.
+
+
+% if ~isempty(nmWid)
+%     set(handles.gauss,'String',num2str(nmWid*10/5000));
+%     set(handles.rho,'String',num2str(nmWid*30/5000));
+%     set(handles.tophatSize,'String',num2str(nmWid*30/5000));
+%     set(handles.noiseArea,'String',num2str(nmWid^2*1500/5000^2));
+%     set(handles.maxBranchSize,'String',num2str(nmWid*80/5000));
+% end
+
+
+
+
 
 % --- Executes during object creation, after setting all properties.
 function pix2um_CreateFcn(hObject, eventdata, handles)
@@ -391,6 +419,9 @@ function tf_OOP_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of tf_OOP
+if get(handles.tf_OOP_Callback,'Value') == 1
+    disp('Calculation of OOP has not been implemented yet...'); 
+end
 
 
 
@@ -423,3 +454,8 @@ function tf_CZL_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of tf_CZL
+
+if get(handles.tf_CZL_Callback,'Value') == 1
+    disp('Continuous Z-line Method has not been implemented yet...'); 
+end
+
