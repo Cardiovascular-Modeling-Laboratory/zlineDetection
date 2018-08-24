@@ -364,6 +364,8 @@ image_path = uigetdir;
 %Return if the user pressed the cancel button
 if isequal(image_path, 0); return; end
 
+%Build up settings from the GUI 
+% ----------
 %Save the results in the same directory where the images were located. The
 %skeletonized image will be named imagefile_skeletonized.tif and the
 %orientation vecotrs will be names _orientation.mat
@@ -372,8 +374,9 @@ if isequal(image_path, 0); return; end
 %different functionalities because there are a lot of things that were
 %optional that we don't want to be optional. 
 
-%Build up settings from GUI
-%Ask for 
+%Build up settings from GUI - should probably finish naming things before I
+%go any further 
+% settings = get_settings(handles);
 
 % % Get folder and save file name
 % folderPath = uigetdir;
@@ -410,6 +413,7 @@ if isequal(image_path, 0); return; end
 % cell2csv(saveFilePath, csvCell, ',', 1999, '.');
 % % save([folderPath, fileName{1}, '.mat'],'csvCell')
 
+% ----------
 
 
 % --- Executes on button press in tf_OOP.
