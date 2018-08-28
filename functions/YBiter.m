@@ -1,37 +1,46 @@
 % Copyright (C) 2016 Nils Persson 
+% Modified by Tessa Morris 
 
 function Vf = YBiter(V0)
-
 %YBiter Yanowitz/Bruckstein surface interpolation
+%The input to this function is a grayscale image. In this usage, the image
+%has been initialy thresholded 
 
+% Initialize a variable w
 w = 1;
-[m,n] = size(V0);
-InitVal = mean(V0(V0~=0)); % Start non-edges as the mean of the edges because 0's aint' working
-Vupdate = V0==0;           % A logical array of pixels to update on each iteration
+
+% Get the size of the input image  
+[ m, n ] = size( V0 );
+
+% Initialy set the value to the 
+InitVal = mean( V0( V0~=0 ) ); 
+
+% A logical array of pixels to update on each iteration
+Vupdate = V0==0;           
 Vupdate(1,:) = 0;
 Vupdate(:,1) = 0;
 Vupdate(m,:) = 0;
 Vupdate(:,n) = 0;
 
-V0(V0==0)=InitVal;         % Put the average edge values in the non-edge cells
+% Put the average edge values in the non-edge cells
+V0(V0==0)=InitVal;         
 
-Vnew = zeros(m,n);         % Initialize the updated threshold surface
+% Initialize the updated threshold surface
+Vnew = zeros(m,n);         
 Vold = V0;
 
 iter = 0;
 maxiter = 40;
 
-% tic
 while iter<maxiter
     iter = iter+1;
-%     disp(iter)
     
     Lap = del2(Vold);
     Vnew = Vold + Vupdate .* (w .* Lap);
     Vold = Vnew;
     
 end
-% toc
+
 Vf = Vnew;
 
 end
