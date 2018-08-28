@@ -100,14 +100,17 @@ waitbar(0.9,hwait,'Recovering Orientations...');
 % Change the
 Options.T = 1;
 
-%Compute the orientation vectors at each position  
-[~, im_struct.v1xn, im_struct.v1yn] = CoherenceFilter(im_struct.skelTrim,Options);
+% Compute the orientation vectors at each position  
+[~, im_struct.v1xn, im_struct.v1yn] = ...
+    CoherenceFilter(im_struct.skelTrim,Options);
 
 % Generate Angle Map by getting new angles from CED
 im_struct.AngMap = atand(im_struct.v1xn./-im_struct.v1yn);
 
 close(hwait)
 
+% Post process the orientation vectors so that they're in radians and also
+% between 0 and pi 
 
 end
 

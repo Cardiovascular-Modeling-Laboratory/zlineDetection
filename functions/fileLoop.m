@@ -2,6 +2,13 @@ function [  ] = fileLoop(  )
 %This function will take file names as an input and then loop through them,
 %calling the analyze function
 
+
+% Inside the for loop give the option to calculate the continuous z-line
+% length
+
+% If the user wants to calculate OOP for the whole directory, append the
+% orientation vectors
+
 end
 
 % 
