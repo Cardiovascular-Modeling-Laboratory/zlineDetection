@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 24-Aug-2018 14:32:35
+% Last Modified by GUIDE v2.5 28-Aug-2018 14:35:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -472,4 +472,3 @@ function rec_params_Callback(hObject, eventdata, handles)
 
 %If the user would like parameters recommended to them based on the pixel
 %to micron conversion then calculate them. 
-

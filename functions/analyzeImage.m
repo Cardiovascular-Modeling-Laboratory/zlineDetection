@@ -1,6 +1,14 @@
-% Copyright (C) 2016 Nils Persson
+function [ im_struct ] = analyzeImage( filename, settings )
+%This function will be the "main" analyzing script for a series of
+%functions 
 
-function ims = filterImage( ims, settings )
+%%%%%%%%%%%%%%%%%%%%%%%% Initalize Image Info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Store the image information
+[ im_struct ] = storeImageInfo( filename );
+
+% Filter the image 
+im_struct = filterImage( im_struct, settings ); 
 
 % Save the Options struct from settings 
 Options = settings.Options;
@@ -10,15 +18,15 @@ Options = settings.Options;
 hwait = waitbar(0,'Diffusion Filter...');
 
 % Inputs are the grayscale image and the Options struct from settings 
-[ ims.CEDgray, ims.v1x, ims.v1y ] = ...
-    CoherenceFilter( ims.gray, Options );
+[ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
+    CoherenceFilter( im_struct.gray, Options );
 
 % Conver the matrix to be an intensity image 
-ims.CEDgray = mat2gray( ims.CEDgray );
+im_struct.CEDgray = mat2gray( im_struct.CEDgray );
 
 % If the user would like to display the filtered image, display it
 if settings.CEDFig
-    figure; imshow( ims.CEDgray )
+    figure; imshow( im_struct.CEDgray )
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Run Top Hat Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,14 +36,14 @@ waitbar(0.5,hwait,'Top Hat Filter...');
 
 %Compute the top hat filter using the disk structuring element with the
 %threshold defined by the user input tophat filter 
-ims.CEDtophat = ...
-    imadjust( imtophat( ims.CEDgray, strel( 'disk', settings.thpix ) ) );
+im_struct.CEDtophat = ...
+    imadjust( imtophat( im_struct.CEDgray, ...
+    strel( 'disk', settings.thpix ) ) );
 
 % If the user would like to display the filtered image, display it
 if settings.topHatFig
-    figure; imshow( ims.CEDtophat ); 
+    figure; imshow( im_struct.CEDtophat ); 
 end
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
@@ -44,19 +52,19 @@ waitbar(0.7,hwait,'Threshold and Clean...');
 
 % Use adaptive thresholding - deleted this function so need to make sure
 % that the new version - segmentImage does the same thing. 
-ims.CEDbw = YBSimpleSeg( ims.CEDtophat );
+im_struct.CEDbw = segmentImage( im_struct.CEDtophat );
 
 % If the user would like to display the filtered image, display it
 if settings.threshFig
-    figure; imshow( ims.CEDbw )
+    figure; imshow( im_struct.CEDbw )
 end
 
 % Remove small objects from binary image.
-ims.CEDclean = bwareaopen( ims.CEDbw,settings.noisepix );
+im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noisepix );
 
 % If the user would like to display the filtered image, display it
 if settings.noiseRemFig
-    figure; imshow(ims.CEDclean)
+    figure; imshow(im_struct.CEDclean)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Skeletonize %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -65,22 +73,19 @@ end
 waitbar(0.8,hwait,'Skeletonization...');
 
 % Use Matlab skeletonization morphological function 
-ims.skel = bwmorph(ims.CEDclean,'skel',Inf);
+im_struct.skel = bwmorph( im_struct.CEDclean, 'skel', Inf );
 
 if settings.skelFig
-    figure; imshow(ims.skel)
+    figure; imshow( im_struct.skel ); 
 end
 
 %Clean up the skeleton 
-ims.skelTrim = cleanSkel(ims.skel,settings.maxBranchSize);
+im_struct.skelTrim = cleanSkel( im_struct.skel, settings.maxBranchSize );
 
 % If the user would like to display the filtered image, display it
 if settings.skelTrimFig
-
-    figure; imshow(ims.skelTrim)
-
+    figure; imshow(im_struct.skelTrim)
 end
-
 
 %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create a mask to remove false z-lines 
@@ -96,11 +101,13 @@ waitbar(0.9,hwait,'Recovering Orientations...');
 Options.T = 1;
 
 %Compute the orientation vectors at each position  
-[~, ims.v1xn, ims.v1yn] = CoherenceFilter(ims.skelTrim,Options);
+[~, im_struct.v1xn, im_struct.v1yn] = CoherenceFilter(im_struct.skelTrim,Options);
 
 % Generate Angle Map by getting new angles from CED
-ims.AngMap = atand(ims.v1xn./-ims.v1yn);
+im_struct.AngMap = atand(im_struct.v1xn./-im_struct.v1yn);
 
 close(hwait)
 
+
 end
+
