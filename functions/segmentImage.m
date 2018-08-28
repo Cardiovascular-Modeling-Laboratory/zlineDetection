@@ -15,11 +15,11 @@ edges = edge( gray_im,'canny' );
 edgesDouble = double(edges);
 
 % Fill in the grey values of the edge pixels in a new image file                      
-initThresh = ims.grayDouble.*ims.edgeDouble;
+initThresh = grayDouble.*edgesDouble;
 
 % Perform Yanowitz-Bruckstein surface interpolation to create threshold
 % surface from edge gray values
-threshSurf = YBiter(ims.initThresh);
+threshSurf = YBiter( initThresh );
 
 % Segment the image. Pixels above threshold surface are white, black
 % otherwise
