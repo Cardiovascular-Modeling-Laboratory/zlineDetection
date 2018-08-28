@@ -14,7 +14,6 @@ im_struct.im_name = file;
 %(3) path + filename 
 im_struct.imNamePath = strcat(path, file); 
 
-
 %Load the image
 [ img, map ] = imread( filename );
 
