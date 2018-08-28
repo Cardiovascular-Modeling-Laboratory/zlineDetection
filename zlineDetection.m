@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 24-Aug-2018 13:29:55
+% Last Modified by GUIDE v2.5 24-Aug-2018 14:32:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,7 +56,7 @@ function zlineDetection_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 %(TM) Add directories that contain important code to the path. 
-% addpath('Functions')
+addpath('functions');
 % addpath('Functions/coherencefilter_version5b')
 % addpath('Functions/cell2csv')
 
@@ -80,18 +80,18 @@ varargout{1} = handles.output;
 
 
 
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function guass_sigma_Callback(hObject, eventdata, handles)
+% hObject    handle to guass_sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+% Hints: get(hObject,'String') returns contents of guass_sigma as text
+%        str2double(get(hObject,'String')) returns contents of guass_sigma as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function guass_sigma_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to guass_sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -103,18 +103,18 @@ end
 
 
 
-function edit2_Callback(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function orient_sigma_Callback(hObject, eventdata, handles)
+% hObject    handle to orient_sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit2 as text
-%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+% Hints: get(hObject,'String') returns contents of orient_sigma as text
+%        str2double(get(hObject,'String')) returns contents of orient_sigma as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function orient_sigma_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to orient_sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -126,18 +126,18 @@ end
 
 
 
-function edit3_Callback(hObject, eventdata, handles)
-% hObject    handle to edit3 (see GCBO)
+function diffusion_time_Callback(hObject, eventdata, handles)
+% hObject    handle to diffusion_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit3 as text
-%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+% Hints: get(hObject,'String') returns contents of diffusion_time as text
+%        str2double(get(hObject,'String')) returns contents of diffusion_time as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit3_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit3 (see GCBO)
+function diffusion_time_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to diffusion_time (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -149,18 +149,18 @@ end
 
 
 
-function edit4_Callback(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function noise_area_Callback(hObject, eventdata, handles)
+% hObject    handle to noise_area (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit4 as text
-%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+% Hints: get(hObject,'String') returns contents of noise_area as text
+%        str2double(get(hObject,'String')) returns contents of noise_area as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit4_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function noise_area_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to noise_area (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -245,40 +245,40 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in checkbox1.
-function checkbox1_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox1 (see GCBO)
+% --- Executes on button press in coh_fig.
+function coh_fig_Callback(hObject, eventdata, handles)
+% hObject    handle to coh_fig (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkbox1
+% Hint: get(hObject,'Value') returns toggle state of coh_fig
 
 
-% --- Executes on button press in checkbox2.
-function checkbox2_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox2 (see GCBO)
+% --- Executes on button press in tophat_fig.
+function tophat_fig_Callback(hObject, eventdata, handles)
+% hObject    handle to tophat_fig (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkbox2
+% Hint: get(hObject,'Value') returns toggle state of tophat_fig
 
 
-% --- Executes on button press in checkbox3.
-function checkbox3_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox3 (see GCBO)
+% --- Executes on button press in noise_fig.
+function noise_fig_Callback(hObject, eventdata, handles)
+% hObject    handle to noise_fig (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkbox3
+% Hint: get(hObject,'Value') returns toggle state of noise_fig
 
 
-% --- Executes on button press in checkbox4.
-function checkbox4_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox4 (see GCBO)
+% --- Executes on button press in thresh_fig.
+function thresh_fig_Callback(hObject, eventdata, handles)
+% hObject    handle to thresh_fig (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkbox4
+% Hint: get(hObject,'Value') returns toggle state of thresh_fig
 
 
 % --- Executes on selection change in popupmenu1.
@@ -305,18 +305,18 @@ end
 
 
 
-function edit9_Callback(hObject, eventdata, handles)
-% hObject    handle to edit9 (see GCBO)
+function gloabl_thresh_Callback(hObject, eventdata, handles)
+% hObject    handle to gloabl_thresh (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit9 as text
-%        str2double(get(hObject,'String')) returns contents of edit9 as a double
+% Hints: get(hObject,'String') returns contents of gloabl_thresh as text
+%        str2double(get(hObject,'String')) returns contents of gloabl_thresh as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit9_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit9 (see GCBO)
+function gloabl_thresh_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to gloabl_thresh (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -328,18 +328,18 @@ end
 
 
 
-function edit10_Callback(hObject, eventdata, handles)
-% hObject    handle to edit10 (see GCBO)
+function branch_size_Callback(hObject, eventdata, handles)
+% hObject    handle to branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit10 as text
-%        str2double(get(hObject,'String')) returns contents of edit10 as a double
+% Hints: get(hObject,'String') returns contents of branch_size as text
+%        str2double(get(hObject,'String')) returns contents of branch_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit10_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit10 (see GCBO)
+function branch_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -398,7 +398,7 @@ if isequal(image_path, 0); return; end
 % 
 % % Build up settings from GUI, turn off all figure displays
 % settings = get_settings(handles);
-% settings.CEDFig = 0;
+% settings.coh_fig = 0;
 % settings.topHatFig = 0;
 % settings.threshFig = 0;
 % settings.noiseRemFig = 0;
@@ -462,4 +462,14 @@ function tf_CZL_Callback(hObject, eventdata, handles)
 if get(handles.tf_CZL_Callback,'Value') == 1
     disp('Continuous Z-line Method has not been implemented yet...'); 
 end
+
+
+% --- Executes on button press in rec_params.
+function rec_params_Callback(hObject, eventdata, handles)
+% hObject    handle to rec_params (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%If the user would like parameters recommended to them based on the pixel
+%to micron conversion then calculate them. 
 
