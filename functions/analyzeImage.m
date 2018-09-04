@@ -57,12 +57,12 @@ Options = settings.Options;
 hwait = waitbar(0,'Diffusion Filter...');
 
 % Inputs are the grayscale image and the Options struct from settings. 
-% The output is the diffusion filtered image and the gradient in each 
-% direction (?)  
+% The output is the diffusion filtered image and eigenvectors - Not sure
+% why this is important, but... 
 [ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
     CoherenceFilter( im_struct.gray, Options );
 
-% Conver the matrix to be an intensity image 
+% Convert the matrix to be an intensity image 
 im_struct.CEDgray = mat2gray( im_struct.CEDgray );
 
 % If the user would like to display the filtered image, display it
@@ -76,7 +76,9 @@ end
 waitbar(0.5,hwait,'Top Hat Filter...');
 
 %Compute the top hat filter using the disk structuring element with the
-%threshold defined by the user input tophat filter 
+%threshold defined by the user input tophat filter. It then adjusts the
+%image so that 1% of data is saturated at low and high intensities of the
+%image 
 im_struct.CEDtophat = ...
     imadjust( imtophat( im_struct.CEDgray, ...
     strel( 'disk', settings.thpix ) ) );
