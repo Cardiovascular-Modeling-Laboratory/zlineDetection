@@ -21,7 +21,7 @@
 %
 % Copyright (C) 2016 Nils Persson 
 %
-% Modified by Tessa Morris 
+% Annotated / Modified by Tessa Morris 
 
 function Vf = YBiter(V0)
 %YBiter Yanowitz/Bruckstein surface interpolation

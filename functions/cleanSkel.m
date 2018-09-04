@@ -1,5 +1,24 @@
-% Copyright (C) 2016 Nils Persson
-% Modified by Tessa Morris 
+% CLEANSKEL - Skeleton pruning 
+%
+% The prupose of this function is to prune a skeleton according to the
+% minimum branch length 
+%
+% Usage:
+%  Vf = YBiter(V0); 
+%
+% Arguments:
+%       skel        - 
+%       maxBranchLen- 
+% Returns:
+%       skel2       - 
+% 
+% Suggested parameters: maxBranchLen
+% 
+% See also: YBiter
+%
+% Annotated / Modified by Tessa Morris 
+% Copyright (C) 2016 Nils Persson 
+%
 
 function skel2 = cleanSkel( skel, maxBranchLen )
 % This function will prune the skeleton
