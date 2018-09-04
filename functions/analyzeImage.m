@@ -10,6 +10,10 @@ function [ im_struct ] = analyzeImage( filename, settings )
 % % Filter the image 
 % im_struct = filterImage( im_struct, settings ); 
 
+%Create a grayscale version of the image (if it was not already in
+%grayscale) 
+[ im_struct.gray ] = makeGray( im_struct.img ); 
+
 % Save the Options struct from settings 
 Options = settings.Options;
 
@@ -23,7 +27,8 @@ Options = settings.Options;
 hwait = waitbar(0,'Diffusion Filter...');
 
 % Inputs are the grayscale image and the Options struct from settings. 
-% The output is the 
+% The output is the diffusion filtered image and the gradient in each 
+% direction (?)  
 [ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
     CoherenceFilter( im_struct.gray, Options );
 
