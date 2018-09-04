@@ -7,17 +7,23 @@ function [ im_struct ] = analyzeImage( filename, settings )
 % Store the image information
 [ im_struct ] = storeImageInfo( filename );
 
-% Filter the image 
-im_struct = filterImage( im_struct, settings ); 
+% % Filter the image 
+% im_struct = filterImage( im_struct, settings ); 
 
 % Save the Options struct from settings 
 Options = settings.Options;
 
 %%%%%%%%%%%%%%%%%%%%%%%% Run Coherence Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
+% contrast and calculates the orientation vectors for later usage. 
+% The parameters (supplied by the GUI) are (1) Orientation Smoothing and
+% (2) Diffusion Time 
+
 % Start a wait bar 
 hwait = waitbar(0,'Diffusion Filter...');
 
-% Inputs are the grayscale image and the Options struct from settings 
+% Inputs are the grayscale image and the Options struct from settings. 
+% The output is the 
 [ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
     CoherenceFilter( im_struct.gray, Options );
 

@@ -1,3 +1,28 @@
+% STOREIMAGEINFO - Saves image and identifying information into a structure 
+% array. 
+%
+% Function to load and save an image when supplied a filename
+%
+% Usage:
+%  [ im_struct ] = storeImageInfo( filename );
+%
+% Arguments:
+%       filename    - A string containing the path, filename, and extension
+%                       of the image 
+% 
+% Returns:
+%       im_struct   - A structure array that contains the following
+%                       information: 
+%                       im_location - path to image file
+%                       im_name     - name of the image file
+%                       imNamePath  - path of the image file and the name
+%                                       of the image file 
+%                       img         - indexed image 
+%                       c_map       - indexed image's associated colormap
+% 
+% Suggested parameters: None
+% 
+% See also: ANALYZEIMAGE
 function [ im_struct ] = storeImageInfo( filename )
 
 %Get the file parts (path, name of the file, and the extension)
