@@ -1,4 +1,26 @@
+% YBITER - Yanowitz/Bruckstein surface interpolation
+%
+% This function will segment the image using the Yanowitz-Bruckstein 
+% image segmentation with fiber unentanglement.
+% The gray values of these edge pixels are fixed in the initial threshold 
+% surface and the remaining surface is obtained by solving the Laplace 
+% equation through successive over-relaxation
+%
+%
+% Usage:
+%  Vf = YBiter(V0); 
+%
+% Arguments:
+%       V0          - 
+% Returns:
+%       Vf          - 
+% 
+% Suggested parameters: None
+% 
+% See also: YBiter
+%
 % Copyright (C) 2016 Nils Persson 
+%
 % Modified by Tessa Morris 
 
 function Vf = YBiter(V0)

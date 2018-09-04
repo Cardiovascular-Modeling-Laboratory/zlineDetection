@@ -12,20 +12,15 @@
 % Arguments:
 %       filename    - A string containing the path, filename, and extension
 %                       of the image 
+%       settings    - A structure array that contains the following
+%                       information (from the GUI) 
 % 
 % Returns:
-%       im_struct   - A structure array that contains the following
-%                       information: 
-%                       im_location - path to image file
-%                       im_name     - name of the image file
-%                       imNamePath  - path of the image file and the name
-%                                       of the image file 
-%                       img         - indexed image 
-%                       c_map       - indexed image's associated colormap
+%       im_struct   - 
 % 
 % Suggested parameters: None
 % 
-% See also: ANALYZEIMAGE
+% See also: 
 
 function [ im_struct ] = analyzeImage( filename, settings )
 %This function will be the "main" analyzing script for a series of
@@ -93,9 +88,9 @@ end
 % Update waitbar 
 waitbar(0.7,hwait,'Threshold and Clean...');
 
-% Use adaptive thresholding - deleted this function so need to make sure
-% that the new version - segmentImage does the same thing. 
-im_struct.CEDbw = segmentImage( im_struct.CEDtophat );
+% Use adaptive thresholding to convert to black and white.  
+[ im_struct.CEDbw, im_struct.surface_thresh ] = ...
+    segmentImage( im_struct.CEDtophat ); 
 
 % If the user would like to display the filtered image, display it
 if settings.threshFig

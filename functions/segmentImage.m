@@ -1,37 +1,47 @@
-function [ yb_bw ] = segmentImage( im )
-%This function will segment the image using the Yanowitz-Bruckstein 
-%image segmentation with fiber unentanglement
+% SEGMENTIMAGE - adaptive thresholding to remove background from image 
+%
+% This function will segment the image using the Yanowitz-Bruckstein 
+% image segmentation with fiber unentanglement.
+% The gray values of these edge pixels are fixed in the initial threshold 
+% surface and the remaining surface is obtained by solving the Laplace 
+% equation through successive over-relaxation
+%
+%
+% Usage:
+%  [ yb_bw, std_bw, yb_gray ] = segmentImage( im ); 
+%
+% Arguments:
+%       im          - Image to be segmented. For best results, this image
+%                       should have been filtered using diffusion & top hat
+%                       filtering
+% Returns:
+%       seg_im      - Segmented image where pixels above the threshold
+%                       surface are white, back otherwise
+%       surface_thresh - Threshold surface 
+% 
+% Suggested parameters: None
+% 
+% See also: YBiter
 
-% Convert the image to be grayscale. 
-[ gray_im ] = makeGray( im );
+function [ seg_im, surface_thresh ] = segmentImage( im )
 
-% Convert to double precision 
-grayDouble = double( gray_im );
+% Convert the image to be grayscale and conver to double precision 
+[ gray_im ] = double( makeGray( im ) );
 
-% Apply a Canny edge finder - 1's at the edges, 0's elsewhere
-edges = edge( gray_im,'canny' );
-
-% Convert to double precision 
-edgesDouble = double( edges );
+% Apply a Canny edge finder - 1's at the edges, 0's elsewhere and convert
+% to double precision 
+edges = double ( edge( gray_im,'canny' ) );
 
 % Fill in the grey values of the edge pixels in a new image file                      
-initThresh = grayDouble.*edgesDouble;
+initial_thresh = gray_im.*edges;
 
 % Perform Yanowitz-Bruckstein surface interpolation to create threshold
 % surface from edge gray values
-threshSurf = YBiter( initThresh );
-
+surface_thresh = YBiter( initial_thresh );
 
 % Segment the image. Pixels above threshold surface are white, black
 % otherwise
-yb_bw = gray_im > threshSurf;
-
-% % Convert image to binary image by thresholding
-% std_bw = im2bw( im );
-% 
-% % Subtract the surface from the gray image and convert the matrix to an
-% % intensity image 
-% yb_gray = mat2gray( grayDouble - threshSurf );
+seg_im = gray_im > surface_thresh;
 
 end
 
