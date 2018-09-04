@@ -1,8 +1,40 @@
+% ANALYZEIMAGE - Main function to create binary skeleton and compute
+% orientation vectors of an image 
+%
+% This function will do the following processes: 
+%   - Load an image and convert it to grayscale
+%   - Perform coherence-enhancing anisotropic diffusion filtering
+%
+%
+% Usage:
+%  [ im_struct ] = storeImageInfo( filename );
+%
+% Arguments:
+%       filename    - A string containing the path, filename, and extension
+%                       of the image 
+% 
+% Returns:
+%       im_struct   - A structure array that contains the following
+%                       information: 
+%                       im_location - path to image file
+%                       im_name     - name of the image file
+%                       imNamePath  - path of the image file and the name
+%                                       of the image file 
+%                       img         - indexed image 
+%                       c_map       - indexed image's associated colormap
+% 
+% Suggested parameters: None
+% 
+% See also: ANALYZEIMAGE
+
 function [ im_struct ] = analyzeImage( filename, settings )
 %This function will be the "main" analyzing script for a series of
 %functions 
 
 %%%%%%%%%%%%%%%%%%%%%%%% Initalize Image Info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Save the Options struct from settings 
+Options = settings.Options;
 
 % Store the image information
 [ im_struct ] = storeImageInfo( filename );
@@ -14,8 +46,6 @@ function [ im_struct ] = analyzeImage( filename, settings )
 %grayscale) 
 [ im_struct.gray ] = makeGray( im_struct.img ); 
 
-% Save the Options struct from settings 
-Options = settings.Options;
 
 %%%%%%%%%%%%%%%%%%%%%%%% Run Coherence Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
