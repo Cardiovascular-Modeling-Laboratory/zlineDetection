@@ -118,7 +118,7 @@ if settings.skelFig
 end
 
 %Clean up the skeleton 
-im_struct.skelTrim = cleanSkel( im_struct.skel, settings.maxBranchSize );
+im_struct.skelTrim = cleanSkel( im_struct.skel, settings.branch_size );
 
 % If the user would like to display the filtered image, display it
 if settings.skelTrimFig

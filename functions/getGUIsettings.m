@@ -76,16 +76,20 @@ bio_tophat_size = str2double(get(handles.tophat_size,'String'));
 % Convert user input into pixels and then save in the structure array
 settings.tophat_size = bio_tophat_size.*pix2um; 
 
-%%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
 % Store biological user input 
 bio_noise_area = str2double(get(handles.noise_area, 'String')); 
 % Convert user input into pixels and then save in the structure array
-settings.noise_area= bio_noise_area.*pix2um; 
+settings.noise_area= bio_noise_area.*(pix2um.^2); 
 
-% im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noisepix );
+%%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Save the minimum branch size to be included in analysis 
+bio_branch_size = str2double(get(handles.branch_size, 'String'));
+% Convert user input into pixels and then save in the structure array 
+settings.branch_size = bio_branch_size.*pix2um; 
 
 %%%%%%%%%%%%%%%%%%%%%% Haven't been modified %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
