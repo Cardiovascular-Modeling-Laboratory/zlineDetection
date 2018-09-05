@@ -91,42 +91,32 @@ bio_branch_size = str2double(get(handles.branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
 settings.branch_size = bio_branch_size.*pix2um; 
 
-%%%%%%%%%%%%%%%%%%%%%% Haven't been modified %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Display diffusion filter 
+settings.disp_df = get(handles.disp_df,'Value');
 
+% Display top hat filter
+settings.disp_tophat = get(handles.disp_tophat, 'Value'); 
 
-% 
-% 
-% settings.thnm = str2num(get(handles.tophatSize,'String'));
-% settings.noisenm = str2num(get(handles.noiseArea,'String'));
-% settings.maxBranchSizenm = str2num(get(handles.maxBranchSize,'String'));
-% 
-% % settings.maxStubLennm = str2num(get(handles.maxStubLen,'String'));
-% settings.globalThresh = str2num(get(handles.globalThresh,'String'));
-% 
-% % Get figure display settings
-% settings.CEDFig = get(handles.CEDFig,'Value');
-% settings.topHatFig = get(handles.topHatFig,'Value');
-% settings.threshFig = get(handles.threshFig,'Value');
-% settings.noiseRemFig = get(handles.noiseRemFig,'Value');
-% settings.skelFig = get(handles.skelFig,'Value');
-% settings.skelTrimFig = get(handles.skelTrimFig,'Value');
-% settings.threshMethod = get(handles.threshMethod,'Value');
-% 
-% settings.figSave = get(handles.saveFigs,'Value');
+% Display thresholding 
+settings.disp_bw = get(handles.disp_bw, 'Value'); 
 
-% % Build the Coherence Filter options structure - need to annotate 
-% Options = struct();
-% Options.Scheme = 'I';
-% settings.gaussnm = str2num(get(handles.gauss,'String'));
-% settings.rhonm = str2num(get(handles.rho,'String'));
-% % Options.sigma = gausspix;
-% % Options.rho = rhopix;
-% Options.T = str2num(get(handles.difftime,'String'));
-% Options.dt = 0.15;
-% % Options.eigenmode = 5;
-% Options.eigenmode = 0;
-% Options.C = 1E-10;
-% 
-% settings.Options = Options;
+% Display Noise Removal 
+settings.disp_nonoise = get(handles.disp_nonoise, 'Value'); 
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Get option to calculate continuous z-line length 
+settings.tf_CZL = get(handles.tf_CZL, 'Value'); 
+
+% Save continuous z-line length dot product threshold 
+settings.dp_threshold = str2double(get(handles.dp_threshold, 'String')); 
+
+% Get option to calculate OOP 
+settings.tf_OOP = get(handles.tf_OOP, 'Value');
+
+% Save type of image (single cell vs. tissue)
+settings.cardio_type = get(handles.cardio_type, 'Value'); 
+
 end

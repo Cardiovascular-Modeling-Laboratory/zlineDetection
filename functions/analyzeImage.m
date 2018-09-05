@@ -61,7 +61,7 @@ hwait = waitbar(0,'Diffusion Filter...');
 im_struct.CEDgray = mat2gray( im_struct.CEDgray );
 
 % If the user would like to display the filtered image, display it
-if settings.CEDFig
+if settings.disp_df
     figure; imshow( im_struct.CEDgray )
 end
 
@@ -79,7 +79,7 @@ im_struct.CEDtophat = ...
     strel( 'disk', settings.tophat_size ) ) );
 
 % If the user would like to display the filtered image, display it
-if settings.topHatFig
+if settings.disp_tophat
     figure; imshow( im_struct.CEDtophat ); 
 end
 
@@ -93,7 +93,7 @@ waitbar(0.7,hwait,'Threshold and Clean...');
     segmentImage( im_struct.CEDtophat ); 
 
 % If the user would like to display the filtered image, display it
-if settings.threshFig
+if settings.disp_bw
     figure; imshow( im_struct.CEDbw )
 end
 
@@ -101,7 +101,7 @@ end
 im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noise_area );
 
 % If the user would like to display the filtered image, display it
-if settings.noiseRemFig
+if settings.disp_nonoise
     figure; imshow(im_struct.CEDclean)
 end
 

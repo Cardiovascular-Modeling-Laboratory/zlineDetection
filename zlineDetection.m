@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 05-Sep-2018 12:31:52
+% Last Modified by GUIDE v2.5 05-Sep-2018 12:50:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -246,40 +246,40 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in coh_fig.
-function coh_fig_Callback(hObject, eventdata, handles)
-% hObject    handle to coh_fig (see GCBO)
+% --- Executes on button press in disp_df.
+function disp_df_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_df (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of coh_fig
+% Hint: get(hObject,'Value') returns toggle state of disp_df
 
 
-% --- Executes on button press in tophat_fig.
-function tophat_fig_Callback(hObject, eventdata, handles)
-% hObject    handle to tophat_fig (see GCBO)
+% --- Executes on button press in disp_tophat.
+function disp_tophat_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_tophat (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of tophat_fig
+% Hint: get(hObject,'Value') returns toggle state of disp_tophat
 
 
-% --- Executes on button press in noise_fig.
-function noise_fig_Callback(hObject, eventdata, handles)
-% hObject    handle to noise_fig (see GCBO)
+% --- Executes on button press in disp_nonoise.
+function disp_nonoise_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_nonoise (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of noise_fig
+% Hint: get(hObject,'Value') returns toggle state of disp_nonoise
 
 
-% --- Executes on button press in thresh_fig.
-function thresh_fig_Callback(hObject, eventdata, handles)
-% hObject    handle to thresh_fig (see GCBO)
+% --- Executes on button press in disp_bw.
+function disp_bw_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_bw (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of thresh_fig
+% Hint: get(hObject,'Value') returns toggle state of disp_bw
 
 
 % --- Executes on selection change in popupmenu1.
@@ -399,7 +399,7 @@ if isequal(image_path, 0); return; end
 % 
 % % Build up settings from GUI, turn off all figure displays
 % settings = get_settings(handles);
-% settings.coh_fig = 0;
+% settings.disp_df = 0;
 % settings.topHatFig = 0;
 % settings.threshFig = 0;
 % settings.noiseRemFig = 0;
@@ -475,19 +475,19 @@ function rec_params_Callback(hObject, eventdata, handles)
 %to micron conversion then calculate them. 
 
 
-% --- Executes on selection change in listbox2.
-function listbox2_Callback(hObject, eventdata, handles)
-% hObject    handle to listbox2 (see GCBO)
+% --- Executes on selection change in cardio_type.
+function cardio_type_Callback(hObject, eventdata, handles)
+% hObject    handle to cardio_type (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns listbox2 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listbox2
+% Hints: contents = cellstr(get(hObject,'String')) returns cardio_type contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from cardio_type
 
 
 % --- Executes during object creation, after setting all properties.
-function listbox2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listbox2 (see GCBO)
+function cardio_type_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to cardio_type (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
