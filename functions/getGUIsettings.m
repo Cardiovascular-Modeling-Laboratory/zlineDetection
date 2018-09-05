@@ -1,15 +1,18 @@
 % GETGUISETTINGS - store all of the settings in a structural array. 
 %
-% This function
+% This function will collect all of the options selected by the user and
+% output them in a structural array
 %
 %
 % Usage:
-%  Vf = YBiter(V0); 
+%  settings = getGUIsettings(handles); 
 %
 % Arguments:
-%       V0          - 
+%       handles     - 
 % Returns:
-%       Vf          - 
+%       settings    - structural array that contains the following
+%                       parameters from the GUI:
+%           
 % 
 % Suggested parameters: 
 % 
@@ -33,50 +36,32 @@ Options = struct();
 % Set the sigma of gaussian smoothing before calculation of the image 
 % Hessian. The user input a value in microns, which should be converted
 % into pixels before using
+% Store biological user input 
 bio_sigma = str2double(get(handles.gauss,'String'));
-
-Options.sigma = bio_sigma / pix2um; 
+% Convert user input into pixels and then save in the structure array
+Options.sigma = bio_sigma.*pix2um; 
 
 % Rho gives the sigma of the Gaussian smoothing of the Hessian.
-settings.rhonm = str2double(get(handles.rho,'String'));
-Options.rho = 1; 
+% Store biological user input 
+bio_rho = str2double(get(handles.rho,'String'));
+% Convert user input into pixels and then save in the structure array
+Options.rho = bio_rho*pix2um;
 
 % Get the total diffusion time from the GUI
 Options.T = str2double(get(handles.difftime,'String'));
 
-% Set the diffusion time stepsize
+% Set the diffusion time stepsize (preset value) 
 Options.dt = 0.15;
-
-%   Options.verbose : Show information about the filtering, values :
-%                     'none', 'iter' (default) , 'full'
-
-%   Options.eigenmode : There are many different equations to make an diffusion tensor,
-%						this value (only 3D) selects one.
-%					    0 (default) : Weickerts equation, line like kernel
-%						1 : Weickerts equation, plane like kernel
-%						2 : Edge enhancing diffusion (EED)
-%						3 : Coherence-enhancing diffusion (CED)
-%						4 : Hybrid Diffusion With Continuous Switch (HDCS)
 
 % Set the numerical diffusion scheme that the program should use. This will
 % be set to 'I', Implicit Discretization (only works in 2D)
 Options.Scheme = 'I';
 
-
-%   Options.eigenmode : There are many different equations to make an diffusion tensor,
-%						this value (only 3D) selects one.
-%					    0 (default) : Weickerts equation, line like kernel
-%						1 : Weickerts equation, plane like kernel
-%						2 : Edge enhancing diffusion (EED)
-%						3 : Coherence-enhancing diffusion (CED)
-%						4 : Hybrid Diffusion With Continuous Switch (HDCS)
-
-% Options.eigenmode = 5;
+% Use Weickerts equation (plane like kernel) to make the diffusion tensor. 
 Options.eigenmode = 0;
-% Constants which determine the amplitude of the diffusion smoothing in 
-% Weickert equation
-%   Options.C :     Default 1e-10
 
+% Constant that determines the amplitude of the diffusion smoothing in 
+% Weickert equation
 Options.C = 1E-10;
 
 % Save the Options in the settings struct. 
