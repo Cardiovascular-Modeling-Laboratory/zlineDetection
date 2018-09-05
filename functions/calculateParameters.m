@@ -1,6 +1,5 @@
-function [ settings ] = calculateParameters( pix2um )
-%Calculate the parameters for the image based on the pixel to micron
-%conversion.
+function [ settings ] = calculateParameters( )
+%Recommend parameters for the image based on fiber width.
 
 % Coherence Filter Parameters
 %Gaussian Smoothing
