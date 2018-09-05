@@ -212,8 +212,8 @@ disp('Saving Data...');
 % Convert the orientation vectors from degrees to radians. 
 
 % Save the data 
-save(fullfile(save_path, strcat(im_struct.im_name, '_analysis.mat')), ...
-    'im_struct', 'settings');
+save(fullfile(save_path, strcat(im_struct.im_name,...
+    '_OrientationAnalysis.mat')), 'im_struct', 'settings');
 
 
 end
