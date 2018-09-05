@@ -22,6 +22,9 @@ function [  ] = runDirectory( settings )
 [ image_files, image_path, n ] = ...
     load_files( {'*.TIF';'*.tif';'*.*'} ); 
 
+% Stop if the user hit the cancel button
+if isequal(image_path, 0); return; end
+
 % Loop through all of the image files 
 for k = 1:n 
     % Store the current filename 
