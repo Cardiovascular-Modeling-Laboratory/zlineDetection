@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 03-Sep-2018 17:24:36
+% Last Modified by GUIDE v2.5 05-Sep-2018 12:31:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -173,18 +173,18 @@ end
 
 
 
-function edit5_Callback(hObject, eventdata, handles)
-% hObject    handle to edit5 (see GCBO)
+function tophat_size_Callback(hObject, eventdata, handles)
+% hObject    handle to tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit5 as text
-%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+% Hints: get(hObject,'String') returns contents of tophat_size as text
+%        str2double(get(hObject,'String')) returns contents of tophat_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit5_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit5 (see GCBO)
+function tophat_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
