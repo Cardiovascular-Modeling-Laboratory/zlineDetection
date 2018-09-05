@@ -1,4 +1,4 @@
-function [ settings ] = calculateParameters( )
+function [ settings ] = recommendParameters( )
 %Recommend parameters for the image based on fiber width.
 
 % Coherence Filter Parameters
