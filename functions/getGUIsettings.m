@@ -108,9 +108,6 @@ settings.disp_nonoise = get(handles.disp_nonoise, 'Value');
 % Display Skeletonization 
 settings.disp_skel = get(handles.disp_skel, 'Value'); 
 
-% Display Skelton trimming 
-settings.disp_skeltrim = get(handles.disp_skeltrim, 'Value'); 
-
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get option to calculate continuous z-line length 

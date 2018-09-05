@@ -144,6 +144,10 @@ waitbar(0.8,hwait,'Skeletonization...');
 % Use Matlab skeletonization morphological function 
 im_struct.skel = bwmorph( im_struct.CEDclean, 'skel', Inf );
 
+% Clean up the skeleton 
+im_struct.skelTrim = cleanSkel( im_struct.skel, settings.branch_size );
+
+
 if settings.disp_skel
     % Open a figure and display the image 
     figure; imshow( im_struct.skel ); 
@@ -152,16 +156,10 @@ if settings.disp_skel
     imwrite( im_struct.skel, fullfile(save_path, ...
         strcat( im_struct.im_name, '_Skeleton.tif' ) ),...
         'Compression','none');
-end
-
-%Clean up the skeleton 
-im_struct.skelTrim = cleanSkel( im_struct.skel, settings.branch_size );
-
-% If the user would like to display the filtered image, display it
-if settings.disp_skeltrim
-    % Open a figure and display the image 
-    figure; imshow(im_struct.skelTrim)
     
+    % Open a figure and display the trimmed image 
+    figure; imshow(im_struct.skelTrim)
+
     % Save the figure. 
     imwrite( im_struct.skelTrim, fullfile(save_path, ...
         strcat( im_struct.im_name, '_SkeletonTrimmed.tif' ) ),...
