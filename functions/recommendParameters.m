@@ -1,28 +1,37 @@
-function [ settings ] = recommendParameters( )
-%Recommend parameters for the image based on fiber width.
+% RECOMMENDPARAMETERS - Recommend parameters for images of cardiomyocytes
 
-% Coherence Filter Parameters
-%Gaussian Smoothing
+function [ settings ] = recommendParameters( )
+
+
+%%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set the sigma of gaussian smoothing before calculation of the image 
+% Hessian.
 settings.gauss_sigma = 10;
-%Orientation Smoothing
+
+% Set the sigma of the Gaussian smoothing of the Hessian.
 settings.orient_sigma = 30; 
 
-% Top Hat Filter Parameters
-settings.tp_size = 30; 
+% Total Diffusion Time 
+settings.diffusion_time = 5; 
 
-% Thresholding Parameters
-settings.global_thresh = 0.3; 
+%%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Radius of the flat disk-shaped structuring element used for the top hat
+% filter
+settings.tophat_size = 1; 
 
 
-% These parameters can have some biological basis
-% Noise Removal Parameters
+%%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
+
+% Size of small objects to be removed using bwareopen
 settings.noise_area = 1500; 
 
-% Skeletonization Parameters
+%%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Save the minimum branch size to be included in analysis 
 settings.branch_size = 80; 
 
-%Diffusion Time 
-settings.diffusion_time = 5; 
+
 
 end
 
