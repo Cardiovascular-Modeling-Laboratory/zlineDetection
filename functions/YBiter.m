@@ -57,7 +57,9 @@ maxiter = 40;
 while iter<maxiter
     iter = iter+1;
     
+    %Discrete LaPlacian 
     Lap = del2(Vold);
+    
     Vnew = Vold + Vupdate .* (w .* Lap);
     Vold = Vnew;
     

@@ -55,7 +55,7 @@ hwait = waitbar(0,'Diffusion Filter...');
 % The output is the diffusion filtered image and eigenvectors - Not sure
 % why this is important, but... 
 [ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
-    CoherenceFilter( im_struct.gray, Options );
+    CoherenceFilter( im_struct.gray, settings.Options );
 
 % Convert the matrix to be an intensity image 
 im_struct.CEDgray = mat2gray( im_struct.CEDgray );
@@ -127,8 +127,14 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create a mask to remove false z-lines 
+% This function will be used to seelct regions of the image that should be
+% included in analysis 
+% If include is true then the mask will only include the selected regions 
+% If include is false, the mask will exclude the selected regions 
+im_struct.mask = select_ROI( im_struct.skelTrim, 0 ); 
 
-% Save the mask under the image struct 
+% Create final skeleton 
+im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
 
 %%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -139,8 +145,10 @@ waitbar(0.9,hwait,'Recovering Orientations...');
 Options.T = 1;
 
 % Compute the orientation vectors at each position  
+% [~, im_struct.v1xn, im_struct.v1yn] = ...
+%     CoherenceFilter(im_struct.skelTrim,Options);
 [~, im_struct.v1xn, im_struct.v1yn] = ...
-    CoherenceFilter(im_struct.skelTrim,Options);
+    CoherenceFilter(im_struct.skel_final,Options);
 
 % Generate Angle Map by getting new angles from CED
 im_struct.AngMap = atand(im_struct.v1xn./-im_struct.v1yn);
