@@ -76,7 +76,7 @@ waitbar(0.5,hwait,'Top Hat Filter...');
 %image 
 im_struct.CEDtophat = ...
     imadjust( imtophat( im_struct.CEDgray, ...
-    strel( 'disk', settings.thpix ) ) );
+    strel( 'disk', settings.tophat_size ) ) );
 
 % If the user would like to display the filtered image, display it
 if settings.topHatFig
@@ -98,7 +98,7 @@ if settings.threshFig
 end
 
 % Remove small objects from binary image.
-im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noisepix );
+im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noise_area );
 
 % If the user would like to display the filtered image, display it
 if settings.noiseRemFig

@@ -68,13 +68,28 @@ Options.C = 1E-10;
 settings.Options = Options;
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
+% Radius of the flat disk-shaped structuring element used for the top hat
+% filter
 
 % Store biological user input 
-bio_th = str2double(get(handles.tophat_size,'String'));
+bio_tophat_size = str2double(get(handles.tophat_size,'String'));
 % Convert user input into pixels and then save in the structure array
-settings.thpix = bio_th.*pix2um; 
+settings.tophat_size = bio_tophat_size.*pix2um; 
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Size of small objects to be removed using bwareopen
+% Store biological user input 
+bio_noise_area = str2double(get(handles.noise_area, 'String')); 
+% Convert user input into pixels and then save in the structure array
+settings.noise_area= bio_noise_area.*pix2um; 
+
+% im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noisepix );
+
 
 %%%%%%%%%%%%%%%%%%%%%% Haven't been modified %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 % 
 % 
