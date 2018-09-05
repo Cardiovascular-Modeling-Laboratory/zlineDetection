@@ -31,13 +31,13 @@ for k = 1:n
     [~] = analyzeImage( filename, settings ); 
     
     % If the user wants to calculate continuous z-line length 
-    if settings.tf_CLZ
+    if settings.tf_CLZ && k == 1
         disp('NOT YET IMPLEMENTED: Continuous Z-line Length'); 
         %settings.dp_threshold
     end 
 
     % If the user wants to calculate OOP
-    if settings.tf_OOP
+    if settings.tf_OOP && k == 1
         disp('NOT YET IMPLEMENTED: OOP'); 
         %settings.cardio_type
     end 
