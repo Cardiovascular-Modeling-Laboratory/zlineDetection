@@ -55,12 +55,9 @@ function zlineDetection_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for zlineDetection
 handles.output = hObject;
 
-%(TM) Add directories that contain important code to the path. 
+% Add directories that contain code 
 addpath('functions');
 addpath('functions/coherencefilter_version5b');
-
-% addpath('Functions/coherencefilter_version5b')
-% addpath('Functions/cell2csv')
 
 % Update handles structure
 guidata(hObject, handles);
@@ -204,33 +201,6 @@ function pix2um_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of pix2um as text
 %        str2double(get(hObject,'String')) returns contents of pix2um as a double
 
-%Convert the pix2um conversion from a string to a number 
-pix2um = str2num(get(handles.pix2um,'String'));
-
-%Set all of the parameters based on this conversion.
-% Guassian Smoothing 
-% Orientation Smoothing
-% Diffusion time 
-% Top Hat Filter Size
-% Noise removal area 
-% Skeletonization branch removal size 
-
-
-%The original parameters are given below. The original sarcDetect had
-%guassian and orietnation smoothing paramters which I will use. Also need
-%to write descriptions of what all of these different things do.
-
-
-% if ~isempty(nmWid)
-%     set(handles.gauss,'String',num2str(nmWid*10/5000));
-%     set(handles.rho,'String',num2str(nmWid*30/5000));
-%     set(handles.tophatSize,'String',num2str(nmWid*30/5000));
-%     set(handles.noiseArea,'String',num2str(nmWid^2*1500/5000^2));
-%     set(handles.maxBranchSize,'String',num2str(nmWid*80/5000));
-% end
-
-
-
 
 
 % --- Executes during object creation, after setting all properties.
@@ -357,10 +327,9 @@ function RUN_dir_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%Prompt the user for the directory where the images are located - this
-%should maybe just go in its own script in order to make things less
-%complicated
-image_path = uigetdir; 
+% Store all of the inputs from the GUI in the structural array called
+% settings 
+settings = getGUIsettings(handles); 
 
 %Return if the user pressed the cancel button
 if isequal(image_path, 0); return; end

@@ -36,8 +36,8 @@ im_struct = struct();
 im_struct.im_location = filename; 
 %(2) filename 
 im_struct.im_name = file; 
-%(3) path + filename 
-im_struct.imNamePath = strcat(path, file); 
+%(3) path
+im_struct.im_path = path; 
 
 %Load the image
 [ img, map ] = imread( filename );

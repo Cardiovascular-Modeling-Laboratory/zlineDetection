@@ -34,13 +34,16 @@ Options = settings.Options;
 % Store the image information
 [ im_struct ] = storeImageInfo( filename );
 
-% % Filter the image 
-% im_struct = filterImage( im_struct, settings ); 
-
 %Create a grayscale version of the image (if it was not already in
 %grayscale) 
 [ im_struct.gray ] = makeGray( im_struct.img ); 
 
+% Create a new folder in the image directory with the same name as the 
+% image file 
+mkdir(im_struct.im_path,im_struct.im_name); 
+
+% Save the name of the new path 
+save_path = strcat(im_struct.im_path, '/', im_struct.im_name); 
 
 %%%%%%%%%%%%%%%%%%%%%%%% Run Coherence Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
@@ -62,7 +65,14 @@ im_struct.CEDgray = mat2gray( im_struct.CEDgray );
 
 % If the user would like to display the filtered image, display it
 if settings.disp_df
-    figure; imshow( im_struct.CEDgray )
+    % Open a figure and display the image
+    figure; imshow( im_struct.CEDgray );
+    
+    % Save the figure. 
+    imwrite( im_struct.CEDgray, fullfile(save_path, ...
+        strcat( im_struct.im_name, '_DiffusionFiltered.tif' ) ),...
+        'Compression','none');
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Run Top Hat Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -80,7 +90,14 @@ im_struct.CEDtophat = ...
 
 % If the user would like to display the filtered image, display it
 if settings.disp_tophat
+    % Open a figure and display the image
     figure; imshow( im_struct.CEDtophat ); 
+    
+    % Save the figure. 
+    imwrite( im_struct.CEDtophat, fullfile(save_path, ...
+        strcat( im_struct.im_name, '_TopHatFiltered.tif' ) ),...
+        'Compression','none');
+    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,7 +111,14 @@ waitbar(0.7,hwait,'Threshold and Clean...');
 
 % If the user would like to display the filtered image, display it
 if settings.disp_bw
+    % Open a figure and display the image 
     figure; imshow( im_struct.CEDbw )
+    
+    % Save the figure. 
+    imwrite( im_struct.CEDbw, fullfile(save_path, ...
+        strcat( im_struct.im_name, '_Binariazed.tif' ) ),...
+        'Compression','none');
+    
 end
 
 % Remove small objects from binary image.
@@ -102,7 +126,14 @@ im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noise_area );
 
 % If the user would like to display the filtered image, display it
 if settings.disp_nonoise
+    % Open a figure and display the image 
     figure; imshow(im_struct.CEDclean)
+    
+    % Save the figure. 
+    imwrite( im_struct.CEDclean, fullfile(save_path, ...
+        strcat( im_struct.im_name, '_BinariazedClean.tif' ) ),...
+        'Compression','none');
+    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Skeletonize %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -113,16 +144,29 @@ waitbar(0.8,hwait,'Skeletonization...');
 % Use Matlab skeletonization morphological function 
 im_struct.skel = bwmorph( im_struct.CEDclean, 'skel', Inf );
 
-if settings.skelFig
+if settings.disp_skel
+    % Open a figure and display the image 
     figure; imshow( im_struct.skel ); 
+    
+    % Save the figure. 
+    imwrite( im_struct.skel, fullfile(save_path, ...
+        strcat( im_struct.im_name, '_Skeleton.tif' ) ),...
+        'Compression','none');
 end
 
 %Clean up the skeleton 
 im_struct.skelTrim = cleanSkel( im_struct.skel, settings.branch_size );
 
 % If the user would like to display the filtered image, display it
-if settings.skelTrimFig
+if settings.disp_skeltrim
+    % Open a figure and display the image 
     figure; imshow(im_struct.skelTrim)
+    
+    % Save the figure. 
+    imwrite( im_struct.skelTrim, fullfile(save_path, ...
+        strcat( im_struct.im_name, '_SkeletonTrimmed.tif' ) ),...
+        'Compression','none');
+    
 end
 
 %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,8 +177,18 @@ end
 % If include is false, the mask will exclude the selected regions 
 im_struct.mask = select_ROI( im_struct.skelTrim, 0 ); 
 
+% Save the mask. 
+imwrite( im_struct.mask, fullfile(save_path, ...
+    strcat( im_struct.im_name, '_Mask.tif' ) ),...
+    'Compression','none');
+    
 % Create final skeleton 
 im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
+
+% Save the final skeleton. 
+imwrite( im_struct.skel_final, fullfile(save_path, ...
+    strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
+    'Compression','none');
 
 %%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -145,18 +199,24 @@ waitbar(0.9,hwait,'Recovering Orientations...');
 Options.T = 1;
 
 % Compute the orientation vectors at each position  
-% [~, im_struct.v1xn, im_struct.v1yn] = ...
-%     CoherenceFilter(im_struct.skelTrim,Options);
 [~, im_struct.v1xn, im_struct.v1yn] = ...
     CoherenceFilter(im_struct.skel_final,Options);
 
 % Generate Angle Map by getting new angles from CED
 im_struct.AngMap = atand(im_struct.v1xn./-im_struct.v1yn);
 
+% Close the wait bar
 close(hwait)
 
-% Post process the orientation vectors so that they're in radians and also
-% between 0 and pi 
+% Display that you're saving the data
+disp('Saving Data...'); 
+
+% Convert the orientation vectors from degrees to radians. 
+
+% Save the data 
+save(fullfile(save_path, strcat(im_struct.im_name, '_analysis.mat')), ...
+    'im_struct', 'settings');
+
 
 end
 
