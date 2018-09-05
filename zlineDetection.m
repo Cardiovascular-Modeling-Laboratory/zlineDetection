@@ -376,9 +376,21 @@ function rec_params_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%If the user would like parameters recommended to them based on the pixel
-%to micron conversion then calculate them. 
+% If the user would like parameters, this function stores the
+% recommendations 
+settings = recommendParameters(); 
 
+% Set all of the parameters 
+%>> Coherence Filter Parameteres
+handles.gauss_simga = set(num2str( settings.gauss_sigma )); 
+handles.orient_sigma = set(num2str( settings.orient_sigma )); 
+handles.diffusion_time = set(num2str( settings.diffusion_time )); 
+%>> Top Hat Filter Parameters
+handles.tophat_size = set(num2str( settings.tophat_size )); 
+%>> Threshold and Clean Parameters
+handles.noise_area = set(num2str( settings.noise_area )); 
+%>> Skeletonization Parameters
+handles.branch_size = set(num2str( settings.branch_size )); 
 
 % --- Executes on selection change in cardio_type.
 function cardio_type_Callback(hObject, eventdata, handles)
