@@ -124,7 +124,8 @@ if settings.disp_bw
 end
 
 % Remove small objects from binary image.
-im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noise_area );
+im_struct.CEDclean = bwareaopen( im_struct.CEDbw, ...
+    round( settings.noise_area ) );
 
 % If the user would like to display the filtered image, display it
 if settings.disp_nonoise
