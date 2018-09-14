@@ -10,7 +10,10 @@
 % Returns:
 %       settings    - structural array that contains the following
 %                       parameters from the GUI:
-% 
+% Tessa Morris
+% Advisor: Anna Grosberg
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
 function settings = getGUIsettings(handles)
 
