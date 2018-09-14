@@ -12,7 +12,7 @@ settings.gauss_sigma = 10;
 settings.orient_sigma = 30; 
 
 % Total Diffusion Time 
-settings.diffusion_time = 5; 
+settings.diffusion_time = 1; 
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 

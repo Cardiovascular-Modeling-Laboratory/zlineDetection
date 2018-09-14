@@ -88,7 +88,7 @@ waitbar(0.5,hwait,'Top Hat Filter...');
 %image 
 im_struct.CEDtophat = ...
     imadjust( imtophat( im_struct.CEDgray, ...
-    strel( 'disk', settings.tophat_size ) ) );
+    strel( 'disk', round( settings.tophat_size ) ) ) );
 
 % If the user would like to display the filtered image, display it
 if settings.disp_tophat
