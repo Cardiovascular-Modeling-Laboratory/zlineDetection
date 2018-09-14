@@ -34,7 +34,7 @@ for k = 1:n
     [~] = analyzeImage( filename, settings ); 
     
     % If the user wants to calculate continuous z-line length 
-    if settings.tf_CLZ && k == 1
+    if settings.tf_CZL && k == 1
         disp('NOT YET IMPLEMENTED: Continuous Z-line Length'); 
         %settings.dp_threshold
     end 
