@@ -381,16 +381,19 @@ function rec_params_Callback(hObject, eventdata, handles)
 settings = recommendParameters(); 
 
 % Set all of the parameters 
-%>> Coherence Filter Parameteres
-handles.gauss_simga = set(num2str( settings.gauss_sigma )); 
-handles.orient_sigma = set(num2str( settings.orient_sigma )); 
-handles.diffusion_time = set(num2str( settings.diffusion_time )); 
+%>> Coherence Filter Parameters
+set( handles.guass_sigma, 'String', num2str( settings.gauss_sigma ) );
+set( handles.orient_sigma, 'String', num2str( settings.orient_sigma ) ); 
+set( handles.diffusion_time, 'String', ...
+    num2str( settings.diffusion_time ) ); 
 %>> Top Hat Filter Parameters
-handles.tophat_size = set(num2str( settings.tophat_size )); 
+set( handles.tophat_size, 'String', num2str( settings.tophat_size ) );  
 %>> Threshold and Clean Parameters
-handles.noise_area = set(num2str( settings.noise_area )); 
+set( handles.noise_area, 'String', num2str( settings.noise_area ) ); 
 %>> Skeletonization Parameters
-handles.branch_size = set(num2str( settings.branch_size )); 
+set( handles.branch_size, 'String', num2str( settings.branch_size ) ); 
+
+guidata(hObject, handles);
 
 % --- Executes on selection change in cardio_type.
 function cardio_type_Callback(hObject, eventdata, handles)
