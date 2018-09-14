@@ -1,22 +1,16 @@
-% GETGUISETTINGS - store all of the settings in a structural array. 
-%
-% This function will collect all of the options selected by the user and
-% output them in a structural array
+% GETGUISETTINGS - This function will collect all of the options selected 
+% by the user and output them in a structural array
 %
 %
 % Usage:
 %  settings = getGUIsettings(handles); 
 %
 % Arguments:
-%       handles     - 
+%       handles     - an object that indirectly references its data
 % Returns:
 %       settings    - structural array that contains the following
 %                       parameters from the GUI:
-%           
 % 
-% Suggested parameters: 
-% 
-% See also: 
 
 function settings = getGUIsettings(handles)
 
@@ -24,7 +18,6 @@ function settings = getGUIsettings(handles)
 
 % Save the pixel to micron conversion 
 settings.pix2um = str2double(get(handles.pix2um,'String'));
-
 
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Build the Coherence Filter structure array called Options. This will be
@@ -50,18 +43,19 @@ Options.rho = bio_rho.*pix2um;
 % Get the total diffusion time from the GUI
 Options.T = str2double(get(handles.diffusion_time,'String'));
 
-% Set the diffusion time stepsize (preset value) 
+% PRESET VALUE. Set the diffusion time stepsize 
 Options.dt = 0.15;
 
-% Set the numerical diffusion scheme that the program should use. This will
-% be set to 'I', Implicit Discretization (only works in 2D)
+% PRESET VALUE. Set the numerical diffusion scheme that the program should 
+% use. This will be set to 'I', Implicit Discretization (only works in 2D)
 Options.Scheme = 'I';
 
-% Use Weickerts equation (plane like kernel) to make the diffusion tensor. 
+% PRESET VALUE. Use Weickerts equation (plane like kernel) to make the 
+% diffusion tensor. 
 Options.eigenmode = 0;
 
-% Constant that determines the amplitude of the diffusion smoothing in 
-% Weickert equation
+% PRESET VALUE. Constant that determines the amplitude of the diffusion  in 
+% smoothing Weickert equation
 Options.C = 1E-10;
 
 % Save the Options in the settings struct. 
