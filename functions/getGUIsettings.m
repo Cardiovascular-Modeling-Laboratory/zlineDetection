@@ -73,7 +73,7 @@ settings.Options = Options;
 % Store biological user input 
 bio_tophat_size = str2double(get(handles.tophat_size,'String'));
 % Convert user input into pixels and then save in the structure array
-settings.tophat_size = bio_tophat_size.*pix2um; 
+settings.tophat_size = round( bio_tophat_size.*pix2um ); 
 
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -81,14 +81,14 @@ settings.tophat_size = bio_tophat_size.*pix2um;
 % Store biological user input 
 bio_noise_area = str2double(get(handles.noise_area, 'String')); 
 % Convert user input into pixels and then save in the structure array
-settings.noise_area= bio_noise_area.*(pix2um.^2); 
+settings.noise_area= round( bio_noise_area.*(pix2um.^2) ); 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
 bio_branch_size = str2double(get(handles.branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
-settings.branch_size = bio_branch_size.*pix2um; 
+settings.branch_size = round( bio_branch_size.*pix2um ); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
