@@ -12,7 +12,7 @@ settings.gauss_sigma = 10;
 settings.orient_sigma = 30; 
 
 % Total Diffusion Time 
-settings.diffusion_time = 1; 
+settings.diffusion_time = 2; 
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -24,12 +24,12 @@ settings.tophat_size = 1;
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
-settings.noise_area = 50; 
+settings.noise_area = 0.5; 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
-settings.branch_size = 2; 
+settings.branch_size = 0.5; 
 
 end
 
