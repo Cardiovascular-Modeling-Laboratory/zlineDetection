@@ -1,10 +1,9 @@
 % ANALYZEIMAGE - Main function to create binary skeleton and compute
-% orientation vectors of an image 
-%
-% This function will do the following processes: 
-%   - Load an image and convert it to grayscale
-%   - Perform coherence-enhancing anisotropic diffusion filtering
-%
+% orientation vectors of an image. It will load an image and convert it 
+% to grayscale and then perform (1) coherence-enhancing anisotropic  
+% diffusion filtering (2) top hat filetering (3) convert to binary using
+% adaptive thresholding (3) skeletonize (4) prune automatically (5) prune
+% manually. 
 %
 % Usage:
 %  [ im_struct ] = storeImageInfo( filename );
@@ -16,11 +15,14 @@
 %                       information (from the GUI) 
 % 
 % Returns:
-%       im_struct   - 
+%       im_struct   - A structura array containing the following
+%                       information
 % 
-% Suggested parameters: None
-% 
-% See also: 
+% Tessa Morris
+% Advisor: Anna Grosberg
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 
 function [ im_struct ] = analyzeImage( filename, settings )
 %This function will be the "main" analyzing script for a series of
@@ -214,7 +216,6 @@ disp('Saving Data...');
 % Save the data 
 save(fullfile(save_path, strcat(im_struct.im_name,...
     '_OrientationAnalysis.mat')), 'im_struct', 'settings');
-
 
 end
 
