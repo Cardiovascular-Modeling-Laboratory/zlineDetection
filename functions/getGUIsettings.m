@@ -10,11 +10,11 @@
 % Returns:
 %       settings    - structural array that contains the following
 %                       parameters from the GUI:
+% 
 % Tessa Morris
 % Advisor: Anna Grosberg
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine 
-
 function settings = getGUIsettings(handles)
 
 %%%%%%%%%%%%%%%%%%%%%%% Physical Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,6 +22,8 @@ function settings = getGUIsettings(handles)
 % Save the pixel to micron conversion 
 settings.pix2um = str2double(get(handles.pix2um,'String'));
 
+%Save pix2um as a local variable for simplicity 
+pix2um = settings.pix2um; 
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Build the Coherence Filter structure array called Options. This will be
 % used by "coherencefilter_version5b" Copyright (c) 2009, Dirk-Jan Kroon
