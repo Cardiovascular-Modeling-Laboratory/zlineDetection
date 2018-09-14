@@ -24,14 +24,12 @@ settings.tophat_size = 1;
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
-settings.noise_area = 1500; 
+settings.noise_area = 50; 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
-settings.branch_size = 80; 
-
-
+settings.branch_size = 2; 
 
 end
 
