@@ -6,30 +6,30 @@ function [ settings ] = recommendParameters( )
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set the sigma of gaussian smoothing before calculation of the image 
 % Hessian.
-settings.gauss_sigma = 10;
+settings.gauss_sigma = 3.37124;
 
 % Set the sigma of the Gaussian smoothing of the Hessian.
-settings.orient_sigma = 30; 
+settings.orient_sigma = 10.11372; 
 
 % Total Diffusion Time 
-settings.diffusion_time = 2; 
+settings.diffusion_time = 5; 
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Radius of the flat disk-shaped structuring element used for the top hat
 % filter
-settings.tophat_size = 1; 
+settings.tophat_size = 10.11372; 
 
 
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
-settings.noise_area = 0.5; 
+settings.noise_area = 170.478887064; 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
-settings.branch_size = 0.5; 
+settings.branch_size = 26.96992; 
 
 end
 

@@ -37,13 +37,13 @@ Options = struct();
 % Store biological user input 
 bio_sigma = str2double(get(handles.guass_sigma,'String'));
 % Convert user input into pixels and then save in the structure array
-Options.sigma = bio_sigma.*pix2um; 
+Options.sigma = bio_sigma./pix2um; 
 
 % Rho gives the sigma of the Gaussian smoothing of the Hessian.
 % Store biological user input 
 bio_rho = str2double(get(handles.orient_sigma,'String'));
 % Convert user input into pixels and then save in the structure array
-Options.rho = bio_rho.*pix2um;
+Options.rho = bio_rho./pix2um;
 
 % Get the total diffusion time from the GUI
 Options.T = str2double(get(handles.diffusion_time,'String'));
@@ -73,7 +73,7 @@ settings.Options = Options;
 % Store biological user input 
 bio_tophat_size = str2double(get(handles.tophat_size,'String'));
 % Convert user input into pixels and then save in the structure array
-settings.tophat_size = round( bio_tophat_size.*pix2um ); 
+settings.tophat_size = round( bio_tophat_size./pix2um ); 
 
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -81,14 +81,14 @@ settings.tophat_size = round( bio_tophat_size.*pix2um );
 % Store biological user input 
 bio_noise_area = str2double(get(handles.noise_area, 'String')); 
 % Convert user input into pixels and then save in the structure array
-settings.noise_area= round( bio_noise_area.*(pix2um.^2) ); 
+settings.noise_area= round( bio_noise_area./(pix2um.^2) ); 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
 bio_branch_size = str2double(get(handles.branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
-settings.branch_size = round( bio_branch_size.*pix2um ); 
+settings.branch_size = round( bio_branch_size./pix2um ); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
