@@ -169,26 +169,30 @@ if settings.disp_skel
     
 end
 
-%%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Create a mask to remove false z-lines 
-% This function will be used to seelct regions of the image that should be
-% included in analysis 
-% If include is true then the mask will only include the selected regions 
-% If include is false, the mask will exclude the selected regions 
-im_struct.mask = select_ROI( im_struct.skelTrim, 0 ); 
+% Comment out mask creation phase for now - just want to test parameter
+% choices
+im_struct.skel_final = im_struct.skelTrim; 
 
-% Save the mask. 
-imwrite( im_struct.mask, fullfile(save_path, ...
-    strcat( im_struct.im_name, '_Mask.tif' ) ),...
-    'Compression','none');
-    
-% Create final skeleton 
-im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
-
-% Save the final skeleton. 
-imwrite( im_struct.skel_final, fullfile(save_path, ...
-    strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
-    'Compression','none');
+% %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Create a mask to remove false z-lines 
+% % This function will be used to seelct regions of the image that should be
+% % included in analysis 
+% % If include is true then the mask will only include the selected regions 
+% % If include is false, the mask will exclude the selected regions 
+% im_struct.mask = select_ROI( im_struct.skelTrim, 0 ); 
+% 
+% % Save the mask. 
+% imwrite( im_struct.mask, fullfile(save_path, ...
+%     strcat( im_struct.im_name, '_Mask.tif' ) ),...
+%     'Compression','none');
+%     
+% % Create final skeleton 
+% im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
+% 
+% % Save the final skeleton. 
+% imwrite( im_struct.skel_final, fullfile(save_path, ...
+%     strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
+%     'Compression','none');
 
 %%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
