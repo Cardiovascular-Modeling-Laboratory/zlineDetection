@@ -23,7 +23,7 @@
 % 
 % See also: YBiter
 
-function [ seg_im, surface_thresh ] = segmentImage( im )
+function [ seg_im, surface_thresh ] = segmentImage( im , settings )
 
 % Convert the image to be grayscale and conver to double precision 
 [ gray_im ] = double( makeGray( im ) );
@@ -33,11 +33,20 @@ function [ seg_im, surface_thresh ] = segmentImage( im )
 edges = double ( edge( gray_im,'canny' ) );
 
 % Fill in the grey values of the edge pixels in a new image file                      
-initial_thresh = gray_im.*edges;
+edge_intensities = gray_im.*edges;
+
+% Dilate the edges using a structuring element
+disk_element = strel( 'disk', 3*settings.tophat_size );
+dilated_edges = imdilate( edges, disk_element );
+
+% Set the value of the dilated edges equal to the average 
 
 % Perform Yanowitz-Bruckstein surface interpolation to create threshold
 % surface from edge gray values
-surface_thresh = YBiter( initial_thresh );
+% surface_thresh = YBiter( initial_thresh );
+% Set the number of iterations 
+maxiter = 40; 
+surface_thresh = YBiter(initial_thresh, maxiter ); 
 
 % Segment the image. Pixels above threshold surface are white, black
 % otherwise
