@@ -23,7 +23,7 @@
 %
 % Annotated / Modified by Tessa Morris 
 
-function final_seg = YBiter(initial_seg, maxiter )
+function final_seg = YBiter( edge_intensities, initial_seg, maxiter )
 %YBiter Yanowitz/Bruckstein surface interpolation
 %The input to this function is a grayscale image. In this usage, the image
 %has been initialy thresholded 
@@ -35,7 +35,7 @@ w = 1;
 [ m, n ] = size( initial_seg );
 
 % A logical array of pixels to update on each iteration
-Vupdate = initial_seg ==0;           
+Vupdate = edge_intensities ==0;           
 Vupdate(1,:) = 0;
 Vupdate(:,1) = 0;
 Vupdate(m,:) = 0;
