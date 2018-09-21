@@ -1,4 +1,4 @@
-function [ mask ] = select_ROI( binim_skel, include )
+function [ mask ] = select_ROI( im, binim_skel, include )
 %This function will be used to seelct regions of the image that should be
 %included in analysis 
 %If include is true then the mask will only include the selected regions 
@@ -15,6 +15,7 @@ end
 index = 0;
 hold on
 while index < 1;
+    
     if include 
         disp(['Select ROI to include in further analysis'...
             '(double-click to close the ROI)']);
@@ -22,8 +23,12 @@ while index < 1;
         disp(['Select ROI to exclude from further analysis'...
             '(double-click to close the ROI)']);
     end 
+    
+    %Plot the skeleton on top of the image
+    labeled_im  = labelSkeleton( im, binim_skel ); 
+    
     %Select ROI and overlay the mask 
-    BW = roipoly(binim_skel);
+    BW = roipoly(labeled_im);
 
     if include 
         %Add the selected ROI to the mask 
@@ -36,14 +41,10 @@ while index < 1;
         %Multiply the reversed ROI mask times the mask to set regions equal
         %to zero 
         mask = bsxfun(@times, BW2, mask); 
+        %Multiply the reverse ROI mask times the binary skeleton so that it
+        %will be removed for the next iteration
+        binim_skel = bsxfun(@times, binim_skel, mask);
     end 
-    
-    %Multiply mask by the image 
-    temp_im = binim_skel; 
-    temp_im( mask == 0) = 0;  
-    
-    %Show what has been included so far 
-    figure; imshow(temp_im); 
     
     %Ask the user if they would like to exclude another ROI.
     b = input('Select another ROI to include? (yes = 0, no = 1): ');
@@ -53,9 +54,7 @@ while index < 1;
        disp('Select another ROI...')
        index = 1;
     end
-
-    %Close the figure. 
-    close;
+    
 end
 
 
