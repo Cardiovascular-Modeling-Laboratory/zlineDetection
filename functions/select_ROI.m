@@ -1,8 +1,24 @@
+% select_ROI - This function will be used to selct regions of the image 
+% that should either be included or not inlcuded in analysis 
+% 
+% Arguments:
+%   im          - grayscale image 
+%   binim_skel  - binary skeleton 
+%   include     - boolean statement: If include is true then the mask 
+%                   will only include the selected regions. If include is 
+%                   false, the mask will exclude the selected regions. 
+% 
+% Returns:    
+%   mask        - matrix that is 0 where the user doesn't want to include
+%                   data and 1 where the user des want to include data. 
+% 
+% Tessa Morris 
+% The Edwards Lifesciences Center for Advanced Cardiovascular Technology
+% 2418 Engineering Hall
+% University of California, Irvine
+% Irvine, CA  92697-2700
+
 function [ mask ] = select_ROI( im, binim_skel, include )
-%This function will be used to seelct regions of the image that should be
-%included in analysis 
-%If include is true then the mask will only include the selected regions 
-%If include is false, the mask will exclude the selected regions 
 
 %Create a mask of all zeros. Any position that is zero at the end of 
 %the analysis will be removed from analysis 

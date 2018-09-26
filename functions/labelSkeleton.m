@@ -1,5 +1,24 @@
+% labelSkeleton - function to add color onto grayscale image at places that
+% are positive (1) on a binary image (skeleton)
+%
+% Arguments:
+%   im          - grayscale image 
+%   skel        - binary skeleton 
+% 
+% Returns:    
+%   labeled_im  - image labeled in yellow with binary skelton
+% 
+% Tessa Morris 
+% The Edwards Lifesciences Center for Advanced Cardiovascular Technology
+% 2418 Engineering Hall
+% University of California, Irvine
+% Irvine, CA  92697-2700
+
 function [ labeled_im ] = labelSkeleton( im, skel )
-%Function to add color onto grayscale image were skeleton is
+
+
+%Make sure image is mat2gray 
+im = mat2gray(im); 
 
 %Save the image as individual RGB channels
 RChannel = im;
