@@ -210,6 +210,12 @@ Options.T = 1;
 % Generate Angle Map by getting new angles from CED
 im_struct.AngMap = atand(im_struct.v1xn./-im_struct.v1yn);
 
+% Remove angles that are 0 in the binary skeleton
+im_struct.AngMap(~im_struct.skel_final) = NaN;
+im_struct.AngMap(im_struct.AngMap<0) = ... 
+    im_struct.AngMap(im_struct.AngMap<0)+180;
+
+
 % Close the wait bar
 close(hwait)
 
