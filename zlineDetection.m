@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 01-Oct-2018 09:18:12
+% Last Modified by GUIDE v2.5 01-Oct-2018 09:36:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,18 +78,18 @@ varargout{1} = handles.output;
 
 
 
-function guass_sigma_Callback(hObject, eventdata, handles)
-% hObject    handle to guass_sigma (see GCBO)
+function bio_sigma_Callback(hObject, eventdata, handles)
+% hObject    handle to bio_sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of guass_sigma as text
-%        str2double(get(hObject,'String')) returns contents of guass_sigma as a double
+% Hints: get(hObject,'String') returns contents of bio_sigma as text
+%        str2double(get(hObject,'String')) returns contents of bio_sigma as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function guass_sigma_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to guass_sigma (see GCBO)
+function bio_sigma_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bio_sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -101,18 +101,18 @@ end
 
 
 
-function orient_sigma_Callback(hObject, eventdata, handles)
-% hObject    handle to orient_sigma (see GCBO)
+function bio_rho_Callback(hObject, eventdata, handles)
+% hObject    handle to bio_rho (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of orient_sigma as text
-%        str2double(get(hObject,'String')) returns contents of orient_sigma as a double
+% Hints: get(hObject,'String') returns contents of bio_rho as text
+%        str2double(get(hObject,'String')) returns contents of bio_rho as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function orient_sigma_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to orient_sigma (see GCBO)
+function bio_rho_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bio_rho (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -147,18 +147,18 @@ end
 
 
 
-function noise_area_Callback(hObject, eventdata, handles)
-% hObject    handle to noise_area (see GCBO)
+function bio_noise_area_Callback(hObject, eventdata, handles)
+% hObject    handle to bio_noise_area (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of noise_area as text
-%        str2double(get(hObject,'String')) returns contents of noise_area as a double
+% Hints: get(hObject,'String') returns contents of bio_noise_area as text
+%        str2double(get(hObject,'String')) returns contents of bio_noise_area as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function noise_area_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to noise_area (see GCBO)
+function bio_noise_area_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bio_noise_area (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -170,18 +170,18 @@ end
 
 
 
-function tophat_size_Callback(hObject, eventdata, handles)
-% hObject    handle to tophat_size (see GCBO)
+function bio_tophat_size_Callback(hObject, eventdata, handles)
+% hObject    handle to bio_tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of tophat_size as text
-%        str2double(get(hObject,'String')) returns contents of tophat_size as a double
+% Hints: get(hObject,'String') returns contents of bio_tophat_size as text
+%        str2double(get(hObject,'String')) returns contents of bio_tophat_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function tophat_size_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to tophat_size (see GCBO)
+function bio_tophat_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bio_tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -298,18 +298,18 @@ end
 
 
 
-function branch_size_Callback(hObject, eventdata, handles)
-% hObject    handle to branch_size (see GCBO)
+function bio_branch_size_Callback(hObject, eventdata, handles)
+% hObject    handle to bio_branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of branch_size as text
-%        str2double(get(hObject,'String')) returns contents of branch_size as a double
+% Hints: get(hObject,'String') returns contents of bio_branch_size as text
+%        str2double(get(hObject,'String')) returns contents of bio_branch_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function branch_size_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to branch_size (see GCBO)
+function bio_branch_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bio_branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -378,20 +378,33 @@ function rec_params_Callback(hObject, eventdata, handles)
 
 % If the user would like parameters, this function stores the
 % recommendations 
-settings = recommendParameters(); 
+settings = recommendParameters(handles); 
 
 % Set all of the parameters 
-%>> Coherence Filter Parameters
-set( handles.guass_sigma, 'String', num2str( settings.gauss_sigma ) );
-set( handles.orient_sigma, 'String', num2str( settings.orient_sigma ) ); 
+%>> Coherence Filter Parameters (pixels)
+set( handles.sigma, 'String', num2str( settings.sigma ) );
+set( handles.rho, 'String', num2str( settings.rho ) ); 
+%>> Coherence Filter Parameters (biological)
+set( handles.bio_sigma, 'String', num2str( settings.bio_sigma ) );
+set( handles.bio_rho, 'String', num2str( settings.bio_rho ) ); 
+%>> Coherence Filter Parameters (non length units)
 set( handles.diffusion_time, 'String', ...
     num2str( settings.diffusion_time ) ); 
-%>> Top Hat Filter Parameters
+%>> Top Hat Filter Parameters (pixels)
 set( handles.tophat_size, 'String', num2str( settings.tophat_size ) );  
-%>> Threshold and Clean Parameters
+%>> Top Hat Filter Parameters (biological)
+set( handles.bio_tophat_size, 'String', ...
+    num2str( settings.bio_tophat_size ) );  
+%>> Threshold and Clean Parameters (pixels)
 set( handles.noise_area, 'String', num2str( settings.noise_area ) ); 
-%>> Skeletonization Parameters
+%>> Threshold and Clean Parameters (biological)
+set( handles.bio_noise_area, 'String', ...
+    num2str( settings.bio_noise_area ) ); 
+%>> Skeletonization Parameters (pixels)
 set( handles.branch_size, 'String', num2str( settings.branch_size ) ); 
+%>> Skeletonization Parameters (biological)
+set( handles.bio_branch_size, 'String', ...
+    num2str( settings.bio_branch_size ) ); 
 
 guidata(hObject, handles);
 
@@ -428,18 +441,18 @@ function disp_skel_Callback(hObject, eventdata, handles)
 
 
 
-function edit13_Callback(hObject, eventdata, handles)
-% hObject    handle to edit13 (see GCBO)
+function sigma_Callback(hObject, eventdata, handles)
+% hObject    handle to sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit13 as text
-%        str2double(get(hObject,'String')) returns contents of edit13 as a double
+% Hints: get(hObject,'String') returns contents of sigma as text
+%        str2double(get(hObject,'String')) returns contents of sigma as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit13_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit13 (see GCBO)
+function sigma_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -451,18 +464,18 @@ end
 
 
 
-function edit14_Callback(hObject, eventdata, handles)
-% hObject    handle to edit14 (see GCBO)
+function rho_Callback(hObject, eventdata, handles)
+% hObject    handle to rho (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit14 as text
-%        str2double(get(hObject,'String')) returns contents of edit14 as a double
+% Hints: get(hObject,'String') returns contents of rho as text
+%        str2double(get(hObject,'String')) returns contents of rho as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit14_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit14 (see GCBO)
+function rho_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to rho (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -474,18 +487,18 @@ end
 
 
 
-function edit15_Callback(hObject, eventdata, handles)
-% hObject    handle to edit15 (see GCBO)
+function tophat_size_Callback(hObject, eventdata, handles)
+% hObject    handle to tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit15 as text
-%        str2double(get(hObject,'String')) returns contents of edit15 as a double
+% Hints: get(hObject,'String') returns contents of tophat_size as text
+%        str2double(get(hObject,'String')) returns contents of tophat_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit15_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit15 (see GCBO)
+function tophat_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -497,18 +510,18 @@ end
 
 
 
-function edit16_Callback(hObject, eventdata, handles)
-% hObject    handle to edit16 (see GCBO)
+function noise_area_Callback(hObject, eventdata, handles)
+% hObject    handle to noise_area (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit16 as text
-%        str2double(get(hObject,'String')) returns contents of edit16 as a double
+% Hints: get(hObject,'String') returns contents of noise_area as text
+%        str2double(get(hObject,'String')) returns contents of noise_area as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit16_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit16 (see GCBO)
+function noise_area_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to noise_area (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -520,18 +533,18 @@ end
 
 
 
-function edit17_Callback(hObject, eventdata, handles)
-% hObject    handle to edit17 (see GCBO)
+function branch_size_Callback(hObject, eventdata, handles)
+% hObject    handle to branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit17 as text
-%        str2double(get(hObject,'String')) returns contents of edit17 as a double
+% Hints: get(hObject,'String') returns contents of branch_size as text
+%        str2double(get(hObject,'String')) returns contents of branch_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit17_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit17 (see GCBO)
+function branch_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
