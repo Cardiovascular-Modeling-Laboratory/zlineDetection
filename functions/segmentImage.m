@@ -70,4 +70,3 @@ seg_im = gray_im > surface_thresh;
 % seg_im = seg_im.*dilated_edges; 
 
 end
-
