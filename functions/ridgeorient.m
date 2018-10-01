@@ -29,6 +29,7 @@
 %
 % See also: RIDGESEGMENT, RIDGEFREQ, RIDGEFILTER
 
+% Last Modified by Tessa Morris September 2018
 % Original version by Raymond Thai,  May 2003
 % Reworked by Peter Kovesi           January 2005
 % School of Computer Science & Software Engineering
