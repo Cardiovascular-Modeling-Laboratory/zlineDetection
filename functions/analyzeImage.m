@@ -198,31 +198,26 @@ imwrite( im_struct.skel_final, fullfile(save_path, ...
 %%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Update waitbar 
-waitbar(0.9,hwait,'Recovering Orientations...');
+waitbar(0.9,hwait,'Calculating Orientations...');
 
-% Change the
-Options.T = 1;
+% Eventually add into GUI, but for now just set values. 
+settings.gradientsigma = 1;
+settings.blocksigma = 3; 
+settings.orientsmoothsigma = 3; 
 
-% Compute the orientation vectors at each position  
-[~, im_struct.v1xn, im_struct.v1yn] = ...
-    CoherenceFilter(im_struct.skel_final,Options);
+% Calculate orientation vectors
+[im_struct.orientim, ~] = ridgeorient(im_struct.skel_final, ...
+    settings.gradientsigma, settings.blocksigma,...
+    settings.orientsmoothsigma);
 
-% Generate Angle Map by getting new angles from CED
-im_struct.AngMap = atand(im_struct.v1xn./-im_struct.v1yn);
-
-% Remove angles that are 0 in the binary skeleton
-im_struct.AngMap(~im_struct.skel_final) = NaN;
-im_struct.AngMap(im_struct.AngMap<0) = ... 
-    im_struct.AngMap(im_struct.AngMap<0)+180;
-
+% Remove regions that were not part of the binary skeleton
+im_struct.orientim(~im_struct.skel_final) = NaN; 
 
 % Close the wait bar
 close(hwait)
 
 % Display that you're saving the data
 disp('Saving Data...'); 
-
-% Convert the orientation vectors from degrees to radians. 
 
 % Save the data 
 save(fullfile(save_path, strcat(im_struct.im_name,...
