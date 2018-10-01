@@ -1,8 +1,7 @@
 % RIDGEORIENT - Estimates the local orientation of ridges in a fingerprint
 %
 % Usage:  [orientim, reliability] = ridgeorientation(im, gradientsigma,...
-%                                             blocksigma, ...
-%                                             orientsmoothsigma)
+%                                       blocksigma, orientsmoothsigma)
 %
 % Arguments:  im                - A normalised input image.
 %             gradientsigma     - Sigma of the derivative of Gaussian
@@ -29,7 +28,7 @@
 %
 % See also: RIDGESEGMENT, RIDGEFREQ, RIDGEFILTER
 
-% Last Modified by Tessa Morris September 2018
+% Last Modified by Tessa Morris, September 2018
 % Original version by Raymond Thai,  May 2003
 % Reworked by Peter Kovesi           January 2005
 % School of Computer Science & Software Engineering
@@ -95,3 +94,4 @@ function [orientim, reliability] = ...
     % in the orientation calculation above was small.  Here I have set
     % the value to 0.001, adjust this if you feel the need
     reliability = reliability.*(denom>.001);
+end 
