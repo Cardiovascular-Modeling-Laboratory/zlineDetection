@@ -19,7 +19,7 @@ settings.diffusion_time = 5;
 % filter
 settings.bio_tophat_size = 1; 
 
-%%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Threshold and Clean Pagrameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
 settings.bio_noise_area = 0.2; 
