@@ -35,15 +35,15 @@ Options = struct();
 % Hessian. The user input a value in microns, which should be converted
 % into pixels before using
 % Store biological user input 
-bio_sigma = str2double(get(handles.bio_sigma,'String'));
+settings.bio_sigma = str2double(get(handles.bio_sigma,'String'));
 % Convert user input into pixels and then save in the structure array
-Options.sigma = bio_sigma./pix2um; 
+Options.sigma = settings.bio_sigma./pix2um; 
 
 % Rho gives the sigma of the Gaussian smoothing of the Hessian.
 % Store biological user input 
-bio_rho = str2double(get(handles.bio_rho,'String'));
+settings.bio_rho = str2double(get(handles.bio_rho,'String'));
 % Convert user input into pixels and then save in the structure array
-Options.rho = bio_rho./pix2um;
+Options.rho = settings.bio_rho./pix2um;
 
 % Get the total diffusion time from the GUI
 Options.T = str2double(get(handles.diffusion_time,'String'));
@@ -71,24 +71,24 @@ settings.Options = Options;
 % filter
 
 % Store biological user input 
-bio_tophat_size = str2double(get(handles.bio_tophat_size,'String'));
+settings.bio_tophat_size = str2double(get(handles.bio_tophat_size,'String'));
 % Convert user input into pixels and then save in the structure array
-settings.tophat_size = round( bio_tophat_size./pix2um ); 
+settings.tophat_size = round( settings.bio_tophat_size./pix2um ); 
 
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
 % Store biological user input 
-bio_noise_area = str2double(get(handles.bio_noise_area, 'String')); 
+settings.bio_noise_area = str2double(get(handles.bio_noise_area, 'String')); 
 % Convert user input into pixels and then save in the structure array
-settings.noise_area= round( bio_noise_area./(pix2um.^2) ); 
+settings.noise_area= round( settings.bio_noise_area./(pix2um.^2) ); 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
-bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
+settings.bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
-settings.branch_size = round( bio_branch_size./pix2um ); 
+settings.branch_size = round( settings.bio_branch_size./pix2um ); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

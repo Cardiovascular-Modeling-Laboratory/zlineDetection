@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 01-Oct-2018 09:36:43
+% Last Modified by GUIDE v2.5 01-Oct-2018 09:56:49
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -378,30 +378,21 @@ function rec_params_Callback(hObject, eventdata, handles)
 
 % If the user would like parameters, this function stores the
 % recommendations 
-settings = recommendParameters(handles); 
+settings = recommendParameters(); 
 
 % Set all of the parameters 
-%>> Coherence Filter Parameters (pixels)
-set( handles.sigma, 'String', num2str( settings.sigma ) );
-set( handles.rho, 'String', num2str( settings.rho ) ); 
-%>> Coherence Filter Parameters (biological)
+%>> Coherence Filter Parameters
 set( handles.bio_sigma, 'String', num2str( settings.bio_sigma ) );
 set( handles.bio_rho, 'String', num2str( settings.bio_rho ) ); 
-%>> Coherence Filter Parameters (non length units)
+%>> Coherence Filter Parameters
 set( handles.diffusion_time, 'String', ...
     num2str( settings.diffusion_time ) ); 
-%>> Top Hat Filter Parameters (pixels)
-set( handles.tophat_size, 'String', num2str( settings.tophat_size ) );  
-%>> Top Hat Filter Parameters (biological)
+%>> Top Hat Filter Parameters
 set( handles.bio_tophat_size, 'String', ...
     num2str( settings.bio_tophat_size ) );  
-%>> Threshold and Clean Parameters (pixels)
-set( handles.noise_area, 'String', num2str( settings.noise_area ) ); 
-%>> Threshold and Clean Parameters (biological)
+%>> Threshold and Clean Parameters
 set( handles.bio_noise_area, 'String', ...
     num2str( settings.bio_noise_area ) ); 
-%>> Skeletonization Parameters (pixels)
-set( handles.branch_size, 'String', num2str( settings.branch_size ) ); 
 %>> Skeletonization Parameters (biological)
 set( handles.bio_branch_size, 'String', ...
     num2str( settings.bio_branch_size ) ); 
@@ -449,7 +440,6 @@ function sigma_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of sigma as text
 %        str2double(get(hObject,'String')) returns contents of sigma as a double
 
-
 % --- Executes during object creation, after setting all properties.
 function sigma_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to sigma (see GCBO)
@@ -460,6 +450,7 @@ function sigma_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+
 end
 
 
@@ -553,3 +544,24 @@ function branch_size_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in convert_params.
+function convert_params_Callback(hObject, eventdata, handles)
+% hObject    handle to convert_params (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Convert parameters from microns to pixels
+[ settings ] = convertParameters( handles );
+
+% Set all of the parameters 
+%>> Coherence Filter Parameters
+set( handles.sigma, 'String', num2str( settings.sigma ) );
+set( handles.rho, 'String', num2str( settings.rho ) ); 
+%>> Top Hat Filter Parameters
+set( handles.tophat_size, 'String', num2str( settings.tophat_size ) );   
+%>> Threshold and Clean Parameters
+set( handles.noise_area, 'String', num2str( settings.noise_area ) ); 
+%>> Skeletonization Parameters
+set( handles.branch_size, 'String', num2str( settings.branch_size ) ); 
