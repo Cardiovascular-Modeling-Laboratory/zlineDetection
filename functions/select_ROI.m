@@ -20,6 +20,13 @@
 
 function [ mask ] = select_ROI( im, binim_skel, include )
 
+%Display the image
+figure; 
+imagesc(im); 
+axis image; 
+axis off; 
+colormap gray; 
+
 %Create a mask of all zeros. Any position that is zero at the end of 
 %the analysis will be removed from analysis 
 if include 
@@ -28,6 +35,7 @@ else
     mask = ones(size(binim_skel)); 
 end 
 
+figure; 
 index = 0;
 hold on
 while index < 1;

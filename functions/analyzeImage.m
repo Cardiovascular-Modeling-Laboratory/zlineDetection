@@ -175,11 +175,16 @@ im_struct.skel_final = im_struct.skelTrim;
 
 % %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create a mask to remove false z-lines 
+
+% Close all figures
+close all; 
+
 % This function will be used to seelct regions of the image that should be
 % included in analysis 
 % If include is true then the mask will only include the selected regions 
 % If include is false, the mask will exclude the selected regions 
-im_struct.mask  = select_ROI( mat2gray(im_struct.img) , im_struct.skelTrim, 0 );
+im_struct.mask  = select_ROI( mat2gray(im_struct.img) , ...
+    im_struct.skelTrim, 0 );
 % im_struct.mask = select_ROI( im_struct.skelTrim, 0 ); 
 
 % Save the mask. 
