@@ -8,16 +8,16 @@ function [ settings ] = recommendParameters()
 settings.bio_sigma = 0.08;
 
 % Set the sigma of the Gaussian smoothing of the Hessian.
-settings.bio_rho = 0.26; 
+settings.bio_rho = 0.1; 
 
 % Total Diffusion Time 
-settings.diffusion_time = 5; 
+settings.diffusion_time = 1; 
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Radius of the flat disk-shaped structuring element used for the top hat
 % filter
-settings.bio_tophat_size = 1; 
+settings.bio_tophat_size = 0.5; 
 
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Pagrameters %%%%%%%%%%%%%%%%%%%%%%%%
 

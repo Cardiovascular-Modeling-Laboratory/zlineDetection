@@ -143,8 +143,11 @@ end
 % Update waitbar 
 waitbar(0.8,hwait,'Skeletonization...');
 
-% Use Matlab skeletonization morphological function 
+% Use Matlab skeletonization morphological function, convert to a skeleton,
+% fill inside spaces and then conver to a skeleton again.
 im_struct.skel = bwmorph( im_struct.CEDclean, 'skel', Inf );
+im_struct.skel = bwmorph( im_struct.skel, 'fill' );
+im_struct.skel = bwmorph( im_struct.skel, 'skel', Inf );
 
 % Clean up the skeleton 
 im_struct.skelTrim = cleanSkel( im_struct.skel, settings.branch_size );
@@ -174,10 +177,7 @@ end
 im_struct.skel_final = im_struct.skelTrim; 
 
 % %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Create a mask to remove false z-lines 
-
-% Close all figures
-close all; 
+% Create a mask to remove false z-lines  
 
 % This function will be used to seelct regions of the image that should be
 % included in analysis 
@@ -211,7 +211,7 @@ settings.blocksigma = 3;
 settings.orientsmoothsigma = 3; 
 
 % Calculate orientation vectors
-[im_struct.orientim, ~] = ridgeorient(im_struct.skel_final, ...
+[im_struct.orientim, ~] = ridgeorient(im_struct.CEDtophat, ...
     settings.gradientsigma, settings.blocksigma,...
     settings.orientsmoothsigma);
 
