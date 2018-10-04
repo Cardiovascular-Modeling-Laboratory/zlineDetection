@@ -59,10 +59,23 @@ for k = 1:n
         end 
         
         %Calculate the continuous z-line length 
-        all_lengths{1,n} = continuous_zline_detection(im_struct, settings); 
+        all_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
         
         %Compute the median
-        all_medians{1,n} = median( all_lengths{1,n} ); 
+        all_medians{1,k} = median( all_lengths{1,n} ); 
+        
+        %Create a histogram of the distances
+        figure; histogram(all_lengths{1,k});
+        set(gca,'fontsize',16)
+        hist_name = strcat('Median: ', all_medians{1,k},' \mu m');
+        title(hist_name,'FontSize',18,'FontWeight','bold');
+        xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
+            'FontWeight','bold');
+        ylabel('Frequency','FontSize',18,'FontWeight','bold');
+        
+        %Save histogram as a tiff 
+        fig_name = strcat( im_struct.im_name, '_CZLhistogram');
+        saveas(gcf, fullfile(im_struct.save_path, fig_name, 'tiffn');
         
         %If there is more than one FOV, save a summary file
         if n > 1 
