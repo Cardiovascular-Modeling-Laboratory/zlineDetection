@@ -43,7 +43,7 @@ for k = 1:n
             
             %If there is more than one image being analyzed, create a summary
             %file 
-            if n > 1 && k == 1
+            if n > 1
                 %Get today's date in string form.
                 date_format = 'yyyy_mm_dd';
                 today_date = datestr(now,date_format);
@@ -67,7 +67,7 @@ for k = 1:n
         %Create a histogram of the distances
         figure; histogram(all_lengths{1,k});
         set(gca,'fontsize',16)
-        hist_name = strcat('Median: ', all_medians{1,k},' \mu m');
+        hist_name = strcat('Median: ', num2str(all_medians{1,k}),' \mu m');
         title(hist_name,'FontSize',18,'FontWeight','bold');
         xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
             'FontWeight','bold');
