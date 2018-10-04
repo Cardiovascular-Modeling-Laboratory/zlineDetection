@@ -58,6 +58,8 @@ handles.output = hObject;
 % Add directories that contain code 
 addpath('functions');
 addpath('functions/coherencefilter_version5b');
+addpath('functions/continuous_zline_detection');
+
 
 % Update handles structure
 guidata(hObject, handles);
