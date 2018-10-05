@@ -75,7 +75,7 @@ for k = 1:n
         
         %Save histogram as a tiff 
         fig_name = strcat( im_struct.im_name, '_CZLhistogram');
-        saveas(gcf, fullfile(im_struct.save_path, fig_name, 'tiffn');
+        saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
         
         %If there is more than one FOV, save a summary file
         if n > 1 
