@@ -54,7 +54,7 @@ for k = 1:n
 
                 %Save and create a summary file
                 save(fullfile(image_path{1}, summary_file_name), ...
-                    'cell_image_files', 'cell_analysis_files');
+                    'all_lengths', 'all_medians');
             end 
         end 
         
