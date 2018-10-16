@@ -46,6 +46,8 @@ mkdir(im_struct.im_path,im_struct.im_name);
 
 % Save the name of the new path 
 save_path = strcat(im_struct.im_path, '/', im_struct.im_name); 
+im_struct.save_path = save_path; 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%% Run Coherence Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances

@@ -1,0 +1,81 @@
+function [ distances_um ] = continuous_zline_detection(im_struct, settings)
+% This method aims to detect the continuous lines in an image of alpha 
+% actinin stained sarcomeres. 
+
+%%%%%%%%%%%%%%%%%%%%%%%% LOAD FROM IM_STRUCT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Load orientation angles from the image structure
+angles = im_struct.orientim; 
+%If there are any NaN values in the angles matrix, set them to 0.
+angles(isnan(angles)) = 0; 
+
+%Save the pixel to micron conversion
+pix2um = settings.pix2um; 
+
+%Save the dot prodcut error 
+dot_product_error = settings.dp_threshold; 
+
+%Save the image and convert to a matrix 
+BW = im_struct.img; 
+BW = mat2gray(BW);
+
+%Create a .mat filename 
+output_filename = strcat( im_struct.im_name, '_zlines.mat'); 
+
+%Find the nonzero positions of this matrix and get their values. 
+[ nonzero_rows, nonzero_cols] = find(angles);
+    
+[ all_angles ] = get_values(nonzero_rows, nonzero_cols, ...
+    angles);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% BEGIN CZL METHOD %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Find the boundaries of the edges
+[m,n] = size(angles);
+
+%Get the neighbors on either side of the nearest neighbor orientation
+%vector by adding and sutracting 30 degrees (pi/6)
+[ candidate_rows, candidate_cols ] = ...
+    neighbor_positions( all_angles , nonzero_rows, nonzero_cols);
+
+%Correct for boundaries. If any of the neighbors are outside of the
+%dimensions, their positions will be set to NaN 
+[ corrected_rows, corrected_cols ] = ...
+    boundary_correction( candidate_rows, candidate_cols, m, n ); 
+
+%Find the dot product and remove points that are less than the acceptable
+%error. First set any neighbors that are nonzero in the orientation
+%matrix equal to NaN
+[ dp_rows, dp_cols] = compare_angles( dot_product_error,...
+    angles, nonzero_rows, nonzero_cols, corrected_rows, corrected_cols);
+
+%Cluster the values in order.  
+[ zline_clusters, cluster_tracker ] = cluster_neighbors( dp_rows, ...
+    dp_cols, m, n);
+
+%Calculate legnths and plot
+disp('Plotting and calculating the lengths of continuous z-lines...'); 
+[ distance_storage, rmCount, zline_clusters ] = ...
+    calculate_lengths( BW, zline_clusters);
+
+%Save as a .fig file (Matlab Figure)
+fig_name = strcat('z_lines_', im_struct.im_name, '.fig');
+savefig(fullfile(im_struct.save_path, fig_name));
+%Save as a .tif file
+saveas(gcf, fullfile(im_struct.save_path, fig_name(1:end-4)), 'tiffn');
+
+%Remove any nan from distances 
+distances_no_nan = distance_storage; 
+distances_no_nan(isnan(distances_no_nan)) = []; 
+
+%Convert the distances from pixels to microns 
+distances_um = distances_no_nan/pix2um;
+
+%Save information
+disp('Saving data...'); 
+
+%Save the (1) z-line clusters (2) cluster trackers (3) distances in microns
+%(4) distances in microns (5) number removed 
+save(fullfile(im_struct.save_path, output_filename), 'zline_clusters', ...
+    'cluster_tracker','distances_no_nan', ...
+    'distances_um', 'rmCount');
+end 
