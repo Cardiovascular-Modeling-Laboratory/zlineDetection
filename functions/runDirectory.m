@@ -62,7 +62,7 @@ for k = 1:n
         all_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
         
         %Compute the median
-        all_medians{1,k} = median( all_lengths{1,n} ); 
+        all_medians{1,k} = median( all_lengths{1,k} ); 
         
         %Create a histogram of the distances
         figure; histogram(all_lengths{1,k});
