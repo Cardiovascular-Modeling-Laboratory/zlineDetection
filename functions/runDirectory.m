@@ -53,7 +53,7 @@ for k = 1:n
                     '_zline_summary.mat');
 
                 %Save and create a summary file
-                save(fullfile(image_path, summary_file_name), ...
+                save(fullfile(image_path{1}, summary_file_name), ...
                     'cell_image_files', 'cell_analysis_files');
             end 
         end 
@@ -80,7 +80,7 @@ for k = 1:n
         %If there is more than one FOV, save a summary file
         if n > 1 
             %Append the summary file 
-            save(fullfile(image_path, summary_file_name), 'all_lengths', ...
+            save(fullfile(image_path{1}, summary_file_name), 'all_lengths', ...
                 'all_medians','-append');
         end 
         
