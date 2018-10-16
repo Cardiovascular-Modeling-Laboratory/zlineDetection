@@ -185,9 +185,11 @@ im_struct.skel_final = im_struct.skelTrim;
 % included in analysis 
 % If include is true then the mask will only include the selected regions 
 % If include is false, the mask will exclude the selected regions 
-im_struct.mask  = select_ROI( mat2gray(im_struct.img) , ...
-    im_struct.skelTrim, 0 );
-% im_struct.mask = select_ROI( im_struct.skelTrim, 0 ); 
+% im_struct.mask  = select_ROI( mat2gray(im_struct.img) , ...
+%     im_struct.skelTrim, 0 );
+
+% >>>>>TEMPORARY make a mask of all ones for now.
+im_struct.mask = ones(size(im_struct.skelTrim)); 
 
 % Save the mask. 
 imwrite( im_struct.mask, fullfile(save_path, ...
