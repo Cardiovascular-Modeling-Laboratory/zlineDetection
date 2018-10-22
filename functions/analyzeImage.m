@@ -210,9 +210,9 @@ imwrite( im_struct.skel_final, fullfile(save_path, ...
 waitbar(0.9,hwait,'Calculating Orientations...');
 
 % Eventually add into GUI, but for now just set values. 
-settings.gradientsigma = 1;
-settings.blocksigma = 3; 
-settings.orientsmoothsigma = 3; 
+settings.gradientsigma = Options.sigma;
+settings.blocksigma = Options.rho; 
+settings.orientsmoothsigma = Options.rho; 
 
 % Calculate orientation vectors
 [im_struct.orientim, ~] = ridgeorient(im_struct.CEDtophat, ...
