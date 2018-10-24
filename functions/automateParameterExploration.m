@@ -25,7 +25,7 @@ settings = struct();
 Options = struct();
 
 % Pixel to micron conversion
-settings.pix2um = 6.22; 
+settings.pix2um = 6.22; pix2um = 6.22; 
 % Radius of the flat disk-shaped structuring element used for the top hat
 % filter
 settings.bio_tophat_size = 0.5; 
