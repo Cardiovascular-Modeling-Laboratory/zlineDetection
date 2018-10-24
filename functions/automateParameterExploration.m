@@ -1,8 +1,15 @@
 
 % Add subdirectories to path 
-addpath('functions/coherencefilter_version5b');
-addpath('functions/continuous_zline_detection');
+addpath('coherencefilter_version5b');
+addpath('continuous_zline_detection');
 
+% Prompt the user to select the images they would like to analyze. 
+[ image_files, image_path, n ] = ...
+    load_files( {'*.TIF';'*.tif';'*.*'} ); 
+
+% Save filename 
+filename = strcat(image_path{1}, image_files{1,1});
+    
 % Variable parameters 
 %settings.orientsmoothsigma - gaussian smoothing before calculation of the 
 %image Hessian
@@ -58,28 +65,204 @@ Options.eigenmode = 0;
 
 % PRESET VALUE. Constant that determines the amplitude of the diffusion  in 
 % smoothing Weickert equation
-Options.C = 1E-10;
+Options.C = 1E-10; 
 
-% Save the Options in the settings struct. 
-settings.Options = Options;
- 
-%%%%%%%%%%%%%%%%%%%%% Set nonvariable parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% Loop through parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Get the number of variable parameters 
+sn = length(var_sigma); 
+pn = length(var_rho); 
+dtn = length(var_diffusiontime); 
+
+%Total number of iterations 
+tot = sn*pn*dtn; 
+
+%Store iteration number 
+it = 1; 
+
+%Create a cell to store all distances, medians, and parameters 
+all_lengths = cell(1,tot); 
+all_medians = cell(1,tot); 
+all_diffusiontimes = cell(1,tot); 
+all_sigma = cell(1,tot); 
+all_rho =  cell(1,tot);
+
+%Save a summary file for the continuous z-line lengths 
+%Get today's date in string form.
+date_format = 'yyyy_mm_dd';
+today_date = datestr(now,date_format);
+
+%Create a summary file name 
+summary_file_name = strcat(today_date, '_zline_summary.mat');
+
+%Save and create a summary file
+save(fullfile(image_path{1}, summary_file_name), ...
+    'all_lengths', 'all_medians', 'all_diffusiontimes',...
+    'all_sigma', 'all_rho');
+            
+         
+%Loop trhough sigma values
+for s = 1:sn
+    
+    %Set the sigma 
+    Options.sigma = var_sigma(s); 
+    %Set biological sigma value 
+    settings.bio_sigma = var_sigma(s)./pix2um; 
+    
+%Loop through rho values
+    for p = 1:pn
+        
+        %Set the rho
+        Options.rho = var_rho(p); 
+        %Set biological rho 
+        settings.bio_rho = var_rho(p)./pix2um; 
+        
+%Loop through diffusion time 
+        for t = 1:dtn
+            
+            %Set the diffusion time 
+            Options.T = var_diffusiontime(t); 
+            
+            % Save the Options in the settings struct. 
+            settings.Options = Options;
+
+            % Increase iteration number 
+            it = it +1;
+            
+            % Save variables as strings 
+            s_string = num2str(var_sigma(s)); 
+            p_string = num2str(var_rho(p)); 
+            dt_string = num2str(var_diffusiontime(t)); 
+
+            % Replace '.' with 'p' for decimals
+            s_string = strrep(s_string, '.', 'p'); 
+            p_string = strrep(p_string, '.', 'p'); 
+            
+            %Save current parameters 
+            all_diffusiontimes{1,it} = var_diffusiontime(t); 
+            all_sigma{1,it} = var_sigma(s); 
+            all_rho{1,it} =  var_rho(p);
+
+            % Save the name of the file & folder
+            save_name = strcat('D', dt_string, '_sigma', s_string, ...
+                '_rho', p_string); 
+
+            % Perform the analysis including saving the image 
+            im_struct = ...
+                parameterExploreAnalyzeImage( filename, settings, ...
+                save_name ); 
+            
+            %Calculate the continuous z-line length
+            all_lengths{1,it} = continuous_zline_detection(im_struct, ...
+                settings); 
+        
+            %Compute the median
+            all_medians{1,it} = median( all_lengths{1,it} ); 
+        
+            %Create a histogram of the distances
+            figure; histogram(all_lengths{1,it});
+            set(gca,'fontsize',16)
+            hist_name = strcat('Median: ', num2str(all_medians{1,it}),...
+                ' \mu m');
+            title(hist_name,'FontSize',18,'FontWeight','bold');
+            xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
+                'FontWeight','bold');
+            ylabel('Frequency','FontSize',18,'FontWeight','bold');
+        
+            %Save histogram as a tiff 
+            fig_name = strcat( save_name, '_CZLhistogram');
+            saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
+
+            %Append the summary file 
+            save(fullfile(image_path{1}, summary_file_name), ... 
+                'all_lengths', 'all_medians', '-append');
+
+            %Close all of the images 
+            close all; 
+
+        end 
+    end 
+end 
 
 
-% Options for diffusion filtering 
-%settings.Options.sigma, settings.Options.rho, settings.Options.T, 
-% % Convert the sigma of gaussian smoothing before calculation of the image 
-% % Hessian.
-% settings.sigma = settings.bio_sigma.*pix2um; 
-% 
-% % Convert the sigma of the Gaussian smoothing of the Hessian.
-% settings.rho = settings.bio_rho.*pix2um;
-% 
- %settings.bio_sigma, settings.bio_rho, 
 
-%%%%%%%%%%%%%%%%%%%%% Set nonvariable parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
+% Loop through all of the image files 
+for k = 1:n 
+    % Store the current filename 
+    filename = strcat(image_path{1}, image_files{1,k});
+    
+    % Perform the analysis including saving the image 
+    im_struct = analyzeImage( filename, settings ); 
+    
+    % If the user wants to calculate continuous z-line length 
+    if settings.tf_CZL 
 
-s_string = num2str(Options.sigma); 
-s_string = strrep(s_string, '.', 'p'); 
-D8_sigma0p5_rho1
+        if k == 1
+            %Create a cell to store all distances 
+            all_lengths = cell(1,n); 
+            all_medians = cell(1,n); 
+            
+            %If there is more than one image being analyzed, create a summary
+            %file 
+            if n > 1
+                %Get today's date in string form.
+                date_format = 'yyyy_mm_dd';
+                today_date = datestr(now,date_format);
+
+                %Create a summary file name 
+                summary_file_name = strcat(today_date, ...
+                    '_zline_summary.mat');
+
+                %Save and create a summary file
+                save(fullfile(image_path{1}, summary_file_name), ...
+                    'all_lengths', 'all_medians', 'image_files');
+            end 
+        end 
+        
+        %Calculate the continuous z-line length 
+        all_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
+        
+        %Compute the median
+        all_medians{1,k} = median( all_lengths{1,k} ); 
+        
+        %Create a histogram of the distances
+        figure; histogram(all_lengths{1,k});
+        set(gca,'fontsize',16)
+        hist_name = strcat('Median: ', num2str(all_medians{1,k}),' \mu m');
+        title(hist_name,'FontSize',18,'FontWeight','bold');
+        xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
+            'FontWeight','bold');
+        ylabel('Frequency','FontSize',18,'FontWeight','bold');
+        
+        %Save histogram as a tiff 
+        fig_name = strcat( im_struct.im_name, '_CZLhistogram');
+        saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
+        
+        %If there is more than one FOV, save a summary file
+        if n > 1 
+            %Append the summary file 
+            save(fullfile(image_path{1}, summary_file_name), ... 
+                'all_lengths','all_medians','all_diffusiontimes',... 
+                'all_sigma', 'all_rho''-append');
+        end 
+        
+        %Close all of the images 
+        close all; 
+        
+    end 
+
+    % If the user wants to calculate OOP
+    if settings.tf_OOP && k == 1
+        disp('NOT YET IMPLEMENTED: OOP'); 
+        %settings.cardio_type
+    end 
+    
+    % Close all figures
+    close all; 
+    
+    % Clear the file name 
+    clear filename
+   
+end 
+
 
