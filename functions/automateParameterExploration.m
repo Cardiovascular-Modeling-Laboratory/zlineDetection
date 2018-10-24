@@ -78,7 +78,7 @@ dtn = length(var_diffusiontime);
 tot = sn*pn*dtn; 
 
 %Store iteration number 
-it = 1; 
+it = 0; 
 
 %Create a cell to store all distances, medians, and parameters 
 all_lengths = cell(1,tot); 

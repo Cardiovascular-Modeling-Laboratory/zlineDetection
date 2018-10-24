@@ -43,7 +43,17 @@ function [orientim, reliability] = ...
     [rows,cols] = size(im);
     
     % Calculate image gradients.
-    sze = fix(6*gradientsigma);   if ~mod(sze,2); sze = sze+1; end
+    sze = fix(6*gradientsigma);   
+    
+    % Insure that the size is greater than 1 
+    if sze <= 1 
+        sze = sze + 1; 
+    end 
+    
+    % Insure that the size is an odd number
+    if ~mod(sze,2); sze = sze+1; end
+ 
+    
     f = fspecial('gaussian', sze, gradientsigma); % Generate Gaussian filter.
     [fx,fy] = gradient(f);                        % Gradient of Gausian.
     
@@ -59,7 +69,13 @@ function [orientim, reliability] = ...
     
     % Now smooth the covariance data to perform a weighted summation of the
     % data.
-    sze = fix(6*blocksigma);   if ~mod(sze,2); sze = sze+1; end    
+    sze = fix(6*blocksigma);   
+    % Insure that the size is greater than 1 
+    if sze <= 1 
+        sze = sze + 1; 
+    end 
+    % Insure that the size is an odd number
+    if ~mod(sze,2); sze = sze+1; end
     f = fspecial('gaussian', sze, blocksigma);
     Gxx = filter2(f, Gxx); 
     Gxy = 2*filter2(f, Gxy);
@@ -70,7 +86,13 @@ function [orientim, reliability] = ...
     sin2theta = Gxy./denom;            % Sine and cosine of doubled angles
     cos2theta = (Gxx-Gyy)./denom;
        
-    sze = fix(6*orientsmoothsigma);   if ~mod(sze,2); sze = sze+1; end    
+    sze = fix(6*orientsmoothsigma);
+    % Insure that the size is greater than 1 
+    if sze <= 1 
+        sze = sze + 1; 
+    end 
+    % Insure that the size is an odd number
+    if ~mod(sze,2); sze = sze+1; end
     f = fspecial('gaussian', sze, orientsmoothsigma);    
     cos2theta = filter2(f, cos2theta); % Smoothed sine and cosine of
     sin2theta = filter2(f, sin2theta); % doubled angles
