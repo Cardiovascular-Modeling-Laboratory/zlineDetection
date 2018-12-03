@@ -89,10 +89,21 @@ for k = 1:n
         
     end 
 
-    % If the user wants to calculate OOP
-    if settings.tf_OOP && k == 1
-        disp('NOT YET IMPLEMENTED: OOP'); 
-        %settings.cardio_type
+    % If the user wants to calculate OOP - Will need to change when I'm
+    % analyzing tissues. 
+    if settings.tf_OOP
+        %Save the orientation vectors as a new vairable
+        angles = im_struct.orientim; 
+        %If there are any NaN values in the angles matrix, set them to 0.
+        angles(isnan(angles)) = 0;
+        %Create a structural array to store the OOP information 
+        oop_struct = struct();
+        %Calculate the OOP 
+        [ oop_struct.OOP, oop_struct.directorAngle, ~ ] = ...
+            calculate_OOP( angles ); 
+        %Append summary file with OOP 
+        save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
+           '_OrientationAnalysis.mat')), 'oop_struct', '-append');
     end 
     
     % Close all figures
