@@ -5,13 +5,13 @@ function [ settings ] = recommendParameters()
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set the sigma of gaussian smoothing before calculation of the image 
 % Hessian.
-settings.bio_sigma = 0.08;
+settings.bio_sigma = 0.1608;
 
 % Set the sigma of the Gaussian smoothing of the Hessian.
-settings.bio_rho = 0.1; 
+settings.bio_rho = 0.4823; 
 
 % Total Diffusion Time 
-settings.diffusion_time = 1; 
+settings.diffusion_time = 8; 
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
