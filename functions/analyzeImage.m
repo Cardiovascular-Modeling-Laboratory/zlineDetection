@@ -178,15 +178,17 @@ end
 % choices
 im_struct.skel_final = im_struct.skelTrim; 
 
-% %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Create a mask to remove false z-lines  
 
-% This function will be used to seelct regions of the image that should be
-% included in analysis 
-% If include is true then the mask will only include the selected regions 
-% If include is false, the mask will exclude the selected regions 
-% im_struct.mask  = select_ROI( mat2gray(im_struct.img) , ...
-%     im_struct.skelTrim, 0 );
+%%%%%%%%%%%%%% Actin Filtering to Remove false z-lines %%%%%%%%%%%%%%%%%%%%
+
+%Save the actin analysis image name 
+actinAnalysis_imagename = ...
+    strcat(im_struct.im_name, '_zlineActinDirector.mat'); 
+
+%Load the actin analysis
+actinAnalysis = load(fullfile(im_struct.im_path,actinAnalysis_imagename));
+
+
 
 % >>>>>TEMPORARY make a mask of all ones for now.
 im_struct.mask = ones(size(im_struct.skelTrim)); 
