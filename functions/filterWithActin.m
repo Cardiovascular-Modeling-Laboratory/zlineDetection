@@ -1,8 +1,8 @@
 function [ mask, final_skel, actin_filtering ] = ...
-    filterWithActin( directors, dims, orientim, thresh)
+    filterWithActin( director, dims, orientim, thresh)
 
 %Total number of grids
-n = size(directors,1); 
+n = size(director,1); 
 
 %Create mask 
 mask = ones(size(orientim)); 
@@ -15,7 +15,7 @@ dir_mat(dir_mat == 1) = NaN;
 %the grid
 for k = 1:n
     %Set the value each grid equal to its director
-    dir_mat(dims(k,1):dims(k,2),dims(k,3):dims(k,4)) = directors(n,1);     
+    dir_mat(dims(k,1):dims(k,2),dims(k,3):dims(k,4)) = director(n,1);     
 end 
 
 
@@ -45,7 +45,7 @@ final_skel = final_skel.*mask;
 
 % Save all of the actin filtering data in a structural array 
 actin_filtering = struct(); 
-actin_filtering.directors = directors; 
+actin_filtering.directors = director; 
 actin_filtering.dims = dims; 
 actin_filtering.threshold = thresh; 
 
