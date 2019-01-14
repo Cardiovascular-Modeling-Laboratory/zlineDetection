@@ -178,33 +178,31 @@ end
 % choices
 im_struct.skel_final = im_struct.skelTrim; 
 
-
-%%%%%%%%%%%%%% Actin Filtering to Remove false z-lines %%%%%%%%%%%%%%%%%%%%
-
-%Save the actin analysis image name 
-actinAnalysis_imagename = ...
-    strcat(im_struct.im_name, '_zlineActinDirector.mat'); 
-
-%Load the actin analysis
-actinAnalysis = load(fullfile(im_struct.im_path,actinAnalysis_imagename));
-
-
-
-% >>>>>TEMPORARY make a mask of all ones for now.
-im_struct.mask = ones(size(im_struct.skelTrim)); 
-
-% Save the mask. 
-imwrite( im_struct.mask, fullfile(save_path, ...
-    strcat( im_struct.im_name, '_Mask.tif' ) ),...
-    'Compression','none');
-    
-% Create final skeleton 
-im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
-
-% Save the final skeleton. 
-imwrite( im_struct.skel_final, fullfile(save_path, ...
-    strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
-    'Compression','none');
+% % %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Create a mask to remove false z-lines  
+% 
+% % This function will be used to seelct regions of the image that should be
+% % included in analysis 
+% % If include is true then the mask will only include the selected regions 
+% % If include is false, the mask will exclude the selected regions 
+% % im_struct.mask  = select_ROI( mat2gray(im_struct.img) , ...
+% %     im_struct.skelTrim, 0 );
+% 
+% % >>>>>TEMPORARY make a mask of all ones for now.
+% im_struct.mask = ones(size(im_struct.skelTrim)); 
+% 
+% % Save the mask. 
+% imwrite( im_struct.mask, fullfile(save_path, ...
+%     strcat( im_struct.im_name, '_Mask.tif' ) ),...
+%     'Compression','none');
+%     
+% % Create final skeleton 
+% im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
+% 
+% % Save the final skeleton. 
+% imwrite( im_struct.skel_final, fullfile(save_path, ...
+%     strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
+%     'Compression','none');
 
 %%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -223,6 +221,38 @@ settings.orientsmoothsigma = Options.rho;
 
 % Remove regions that were not part of the binary skeleton
 im_struct.orientim(~im_struct.skel_final) = NaN; 
+
+% Save the actin analysis image name 
+actinAnalysis_imagename = ...
+    strcat(im_struct.im_name, '_zlineActinDirector.mat'); 
+
+% Load the actin analysis file 
+actin_analysis = ...
+    load(fullfile(im_struct.im_path,actinAnalysis_imagename)); 
+
+% Create a threshold 
+thresh = 0.8; 
+
+% Filter with actin and save final skeleton 
+[ im_struct.mask, im_struct.skel_final, actin_filtering] = ...
+    filterWithActin( actin_analysis.directors, ...
+    actin_analysis.dims, im_struct.orientim, thresh); 
+
+% Remove regions that were not part of the binary skeleton
+im_struct.orientim(~im_struct.skel_final) = NaN; 
+
+% Save the actin analysis struct 
+im_struct.actin_filtering = actin_filtering; 
+
+% Save the mask. 
+imwrite( im_struct.mask, fullfile(save_path, ...
+    strcat( im_struct.im_name, '_Mask.tif' ) ),...
+    'Compression','none');
+
+% Save the final skeleton. 
+imwrite( im_struct.skel_final, fullfile(save_path, ...
+    strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
+    'Compression','none');
 
 % Close the wait bar
 close(hwait)
