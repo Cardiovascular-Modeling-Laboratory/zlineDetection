@@ -9,18 +9,21 @@ mask = ones(size(orientim));
 
 %Create a direcor matrix
 dir_mat = ones(size(orientim)); 
-dir_mat(dir_mat == 1) = NaN;  
+
+%Check to make sure the direcor isn't in radians
+if max(director) > 10
+    director = deg2rad(director); 
+end 
 
 %Loop through each grid and place the director of each grid as the value in
 %the grid
 for k = 1:n
     %Set the value each grid equal to its director
-    dir_mat(dims(k,1):dims(k,2),dims(k,3):dims(k,4)) = director(n,1);     
+    dir_mat(dims(k,1):dims(k,2),dims(k,3):dims(k,4)) = director(k,1);     
 end 
 
-
 %Take the dot product sqrt(cos(th1 - th2)^2);
-dp = sqrt(cos(orientim - dir_mat)^2); 
+dp = sqrt(cos(orientim - dir_mat).^2); 
 
 %If dot product is closer to 1, the angles are more parallel and should be
 %removed
