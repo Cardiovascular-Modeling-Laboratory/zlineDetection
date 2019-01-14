@@ -224,14 +224,14 @@ im_struct.orientim(~im_struct.skel_final) = NaN;
 
 % Save the actin analysis image name 
 actinAnalysis_imagename = ...
-    strcat(im_struct.im_name, '_zlineActinDirector.mat'); 
+    strrep(im_struct.im_name, '_w1mCherry', '_zlineActinDirector.mat'); 
 
 % Load the actin analysis file 
 actin_analysis = ...
     load(fullfile(im_struct.im_path,actinAnalysis_imagename)); 
 
 % Create a threshold 
-thresh = 0.8; 
+thresh = 0.5; 
 
 % Filter with actin and save final skeleton 
 [ im_struct.mask, im_struct.skel_final, actin_filtering] = ...
