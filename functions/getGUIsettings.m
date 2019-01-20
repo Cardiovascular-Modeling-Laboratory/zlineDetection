@@ -83,6 +83,10 @@ settings.bio_noise_area = str2double(get(handles.bio_noise_area, 'String'));
 % Convert user input into pixels and then save in the structure array
 settings.noise_area= round( settings.bio_noise_area.*(pix2um.^2) ); 
 
+%Reliability threshold 
+settings.reliability_thresh = ...
+    str2double(get(handles.reliability_thresh, 'String')); 
+
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 

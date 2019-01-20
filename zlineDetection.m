@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 20-Jan-2019 12:20:05
+% Last Modified by GUIDE v2.5 20-Jan-2019 13:54:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -654,3 +654,26 @@ function actin_filt_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of actin_filt
+
+
+
+function reliability_thresh_Callback(hObject, eventdata, handles)
+% hObject    handle to reliability_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of reliability_thresh as text
+%        str2double(get(hObject,'String')) returns contents of reliability_thresh as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function reliability_thresh_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to reliability_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
