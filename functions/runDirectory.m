@@ -33,7 +33,7 @@ end
 
 % If the user would like to filter with actin, have them select the actin
 % images 
-if settings.actin_filt == true
+if settings.actin_filt
     [ actin_images, actin_path, an ] = ...
         load_files( {'*GFP*.TIF';'*GFP*.tif';'*.*'}, ...
         'Select images stained for actin...');
@@ -54,20 +54,34 @@ if settings.actin_filt == true
         return; 
     end
     
+    % Sort the z-line and actin files. Ideally this means that they'll be
+    % called in the correct order. 
+    zline_images = sort(zline_images); 
+    actin_images = sort(actin_images); 
 else
     actin_images = NaN; 
     actin_path = NaN; 
-    an = zn; 
+    an = NaN; 
 end 
 
 
 % Loop through all of the image files 
 for k = 1:zn 
-    % Store the current filename 
-    filename = strcat(zline_path{1}, zline_images{1,k});
+    % Create a struct of file names 
+    filenames = struct; 
+    
+    % Store the current z-line filename 
+    filenames.zline = strcat(zline_path{1}, zline_images{1,k});
+    
+    % Store the current actin filename if applicable 
+    if settings.actin_filt
+        filenames.actin = strcat(actin_path{1}, actin_images{1,k});
+    else
+        filenames.actin = NaN; 
+    end 
     
     % Perform the analysis including saving the image 
-    im_struct = analyzeImage( filename, settings ); 
+    im_struct = analyzeImage( filenames, settings ); 
     
     % If the user wants to calculate continuous z-line length 
     if settings.tf_CZL 
