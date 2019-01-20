@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 20-Jan-2019 12:00:33
+% Last Modified by GUIDE v2.5 20-Jan-2019 12:12:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -645,3 +645,12 @@ function disp_actin_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of disp_actin
+
+
+% --- Executes on button press in actin_filt.
+function actin_filt_Callback(hObject, eventdata, handles)
+% hObject    handle to actin_filt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of actin_filt
