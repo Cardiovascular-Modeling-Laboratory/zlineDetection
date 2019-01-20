@@ -47,33 +47,14 @@ new_subfolder = ...
 im_struct.save_path = fullfile(im_struct.im_path, new_subfolder); 
 
 %%%%%%%%%%%%%%%%% Compute Orientation Information %%%%%%%%%%%%%%%%%%%%%%%%%
-% Fitler the image using Coherence-Enhancing Anisotropic Diffusion 
-% Filtering and Top hat filtering, then compute the orientation vectors 
-% % contrast and calculates the orientation vectors for later usage. 
-% % The parameters (supplied by the GUI) are (1) Orientation Smoothing and
-% % (2) Diffusion Time 
-% 
-% % Start a wait bar 
-% disp('Diffusion Filter...');
-% 
-% % Inputs are the grayscale image and the Options struct from settings. 
-% % The output is the diffusion filtered image and eigenvectors - Not sure
-% % why this is important, but... 
-% [ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
-%     CoherenceFilter( im_struct.gray, settings.Options );
-% 
-% % Clear the command line 
-% clc; 
-% 
-% % Convert the matrix to be an intensity image 
-% im_struct.CEDgray = mat2gray( im_struct.CEDgray );
+% Fitler the image using coherence-enhancing anisotropic diffusion 
+% filtering and top hat filtering, then compute the orientation vectors 
+[ im_struct.gray, im_struct.CEDgray, im_struct.CEDtophat, ...
+    im_struct.orientim, im_struct.reliability ] = ...
+    orientInfo( im_struct.img, settings.Options, settings.tophat_size); 
 
-
-
-[ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
-    orientInfo( im, Options, tophat_size); 
-
-% If the user would like to display the filtered image, display it
+% If the user would like to display the diffusion filtered image, display 
+% it
 if settings.disp_df
     % Open a figure and display the image
     figure; imshow( im_struct.CEDgray );
@@ -85,20 +66,7 @@ if settings.disp_df
 
 end
 
-% %%%%%%%%%%%%%%%%%%%%%%%%% Run Top Hat Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% % Update waitbar 
-% disp('Top Hat Filter...');
-% 
-% %Compute the top hat filter using the disk structuring element with the
-% %threshold defined by the user input tophat filter. It then adjusts the
-% %image so that 1% of data is saturated at low and high intensities of the
-% %image 
-% im_struct.CEDtophat = ...
-%     imadjust( imtophat( im_struct.CEDgray, ...
-%     strel( 'disk', settings.tophat_size ) ) );
-
-% If the user would like to display the filtered image, display it
+% If the user would like to display the top hat filtered image, display it
 if settings.disp_tophat
     % Open a figure and display the image
     figure; imshow( im_struct.CEDtophat ); 
