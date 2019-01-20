@@ -41,12 +41,14 @@ Options = settings.Options;
 [ im_struct.gray ] = makeGray( im_struct.img ); 
 
 % Create a new folder in the image directory with the same name as the 
-% image file if it does not exist 
-mkdir(im_struct.im_path,im_struct.im_name); 
+% image file if it does not exist. If it does exist, add numbers until it
+% no longer exists and then create it 
+create = true; 
+new_subfolder = ...
+    addDirectory( im_struct.im_path, im_struct.im_name, create ); 
 
 % Save the name of the new path 
-save_path = strcat(im_struct.im_path, '/', im_struct.im_name); 
-im_struct.save_path = save_path; 
+im_struct.save_path = fullfile(im_struct.im_path, new_subfolder); 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%% Run Coherence Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
