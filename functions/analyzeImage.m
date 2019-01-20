@@ -24,7 +24,7 @@
 % University of California, Irvine 
 
 
-function [ im_struct ] = analyzeImage( filename, settings )
+function [ im_struct ] = analyzeImage( filenames, settings )
 %This function will be the "main" analyzing script for a series of
 %functions 
 
@@ -34,14 +34,14 @@ function [ im_struct ] = analyzeImage( filename, settings )
 Options = settings.Options;
 
 % Store the image information
-[ im_struct ] = storeImageInfo( filename );
+[ im_struct ] = storeImageInfo( filenames.zline );
 
 %Create a grayscale version of the image (if it was not already in
 %grayscale) 
 [ im_struct.gray ] = makeGray( im_struct.img ); 
 
 % Create a new folder in the image directory with the same name as the 
-% image file 
+% image file if it does not exist 
 mkdir(im_struct.im_path,im_struct.im_name); 
 
 % Save the name of the new path 
