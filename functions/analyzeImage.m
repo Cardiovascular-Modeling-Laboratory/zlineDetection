@@ -47,6 +47,9 @@ new_subfolder = ...
 im_struct.save_path = fullfile(im_struct.im_path, new_subfolder); 
 
 %%%%%%%%%%%%%%%%% Compute Orientation Information %%%%%%%%%%%%%%%%%%%%%%%%%
+% Update waitbar 
+disp('Filtering and computing orientation information...');
+
 % Fitler the image using coherence-enhancing anisotropic diffusion 
 % filtering and top hat filtering, then compute the orientation vectors 
 [ im_struct.gray, im_struct.CEDgray, im_struct.CEDtophat, ...
@@ -77,13 +80,6 @@ if settings.disp_tophat
         'Compression','none');
     
 end
-
-%%%%%%%%%%%%%%%%%% Calculate Orientation Vectors %%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Calculate orientation vectors
-[im_struct.orientim, im_struct.reliability] = ...
-    ridgeorient(im_struct.CEDtophat, ...
-    Options.sigma, Options.rho, Options.rho);
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
@@ -171,6 +167,13 @@ if ~settings.actin_filt
     
 else
     disp('Actin Filtering...'); 
+    
+    % Compute the orientation vectors for actin
+    [ im_struct.actin_orientim, im_struct.actin_reliability, ...
+        im_struct.actin_im ] = ...
+        actinDetection( filenames.actin, settings, save_path ); 
+    
+    
     % % Save the actin analysis image name 
     % actinAnalysis_imagename = ...
     %     strrep(im_struct.im_name, '_w1mCherry', '_zlineActinDirector.mat'); 
