@@ -50,7 +50,6 @@ new_subfolder = ...
 % Save the name of the new path 
 im_struct.save_path = fullfile(im_struct.im_path, new_subfolder); 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%% Run Coherence Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
 % contrast and calculates the orientation vectors for later usage. 
@@ -65,6 +64,9 @@ hwait = waitbar(0,'Diffusion Filter...');
 % why this is important, but... 
 [ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
     CoherenceFilter( im_struct.gray, settings.Options );
+
+% Clear the command line 
+clc; 
 
 % Convert the matrix to be an intensity image 
 im_struct.CEDgray = mat2gray( im_struct.CEDgray );
@@ -106,6 +108,16 @@ if settings.disp_tophat
     
 end
 
+%%%%%%%%%%%%%%%%%% Calculate Orientation Vectors %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Update waitbar 
+waitbar(0.7,hwait,'Calculating Orientations...');
+
+% Calculate orientation vectors
+[im_struct.orientim, im_struct.reliability] = ...
+    ridgeorient(im_struct.CEDtophat, ...
+    Options.sigma, Options.rho, Options.rho);
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Update waitbar 
@@ -114,6 +126,9 @@ waitbar(0.7,hwait,'Threshold and Clean...');
 % Use adaptive thresholding to convert to black and white.  
 [ im_struct.CEDbw, im_struct.surface_thresh ] = ...
     segmentImage( im_struct.CEDtophat ); 
+
+% Remove regions that are not reliable (less than 0.5)
+im_struct.CEDbw( im_struct.reliability < settings.reliability_thresh) = 0; 
 
 % If the user would like to display the filtered image, display it
 if settings.disp_bw
@@ -176,6 +191,12 @@ if settings.disp_skel
     
 end
 
+%%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% If the image should not be filtered with actin, set the final mask equal
+% to the trimmed skeleton. 
+
+
+
 % Comment out mask creation phase for now - just want to test parameter
 % choices
 im_struct.skel_final = im_struct.skelTrim; 
@@ -205,46 +226,46 @@ im_struct.skel_final = im_struct.skelTrim;
 % imwrite( im_struct.skel_final, fullfile(save_path, ...
 %     strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
 %     'Compression','none');
-
-%%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Update waitbar 
-waitbar(0.9,hwait,'Calculating Orientations...');
-
-% Eventually add into GUI, but for now just set values. 
-settings.gradientsigma = Options.sigma;
-settings.blocksigma = Options.rho; 
-settings.orientsmoothsigma = Options.rho; 
-
-% Calculate orientation vectors
-[im_struct.orientim, ~] = ridgeorient(im_struct.CEDtophat, ...
-    settings.gradientsigma, settings.blocksigma,...
-    settings.orientsmoothsigma);
-
-% Remove regions that were not part of the binary skeleton
-im_struct.orientim(~im_struct.skel_final) = NaN; 
-
-% Save the actin analysis image name 
-actinAnalysis_imagename = ...
-    strrep(im_struct.im_name, '_w1mCherry', '_zlineActinDirector.mat'); 
-
-% Load the actin analysis file 
-actin_analysis = ...
-    load(fullfile(im_struct.im_path,actinAnalysis_imagename)); 
-
-% Create a threshold 
-thresh = 0.5; 
-
-% Filter with actin and save final skeleton 
-[ im_struct.mask, im_struct.skel_final, actin_filtering] = ...
-    filterWithActin( actin_analysis.director, ...
-    actin_analysis.dims, im_struct.orientim, thresh); 
-
-% Remove regions that were not part of the binary skeleton
-im_struct.orientim(~im_struct.skel_final) = NaN; 
-
-% Save the actin analysis struct 
-im_struct.actin_filtering = actin_filtering; 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% % Update waitbar 
+% waitbar(0.9,hwait,'Calculating Orientations...');
+% 
+% % Eventually add into GUI, but for now just set values. 
+% settings.gradientsigma = Options.sigma;
+% settings.blocksigma = Options.rho; 
+% settings.orientsmoothsigma = Options.rho; 
+% 
+% % Calculate orientation vectors
+% [im_struct.orientim, ~] = ridgeorient(im_struct.CEDtophat, ...
+%     settings.gradientsigma, settings.blocksigma,...
+%     settings.orientsmoothsigma);
+% 
+% % Remove regions that were not part of the binary skeleton
+% im_struct.orientim(~im_struct.skel_final) = NaN; 
+% 
+% % Save the actin analysis image name 
+% actinAnalysis_imagename = ...
+%     strrep(im_struct.im_name, '_w1mCherry', '_zlineActinDirector.mat'); 
+% 
+% % Load the actin analysis file 
+% actin_analysis = ...
+%     load(fullfile(im_struct.im_path,actinAnalysis_imagename)); 
+% 
+% % Create a threshold 
+% thresh = 0.5; 
+% 
+% % Filter with actin and save final skeleton 
+% [ im_struct.mask, im_struct.skel_final, actin_filtering] = ...
+%     filterWithActin( actin_analysis.director, ...
+%     actin_analysis.dims, im_struct.orientim, thresh); 
+% 
+% % Remove regions that were not part of the binary skeleton
+% im_struct.orientim(~im_struct.skel_final) = NaN; 
+% 
+% % Save the actin analysis struct 
+% im_struct.actin_filtering = actin_filtering; 
 
 % Save the mask. 
 imwrite( im_struct.mask, fullfile(save_path, ...
