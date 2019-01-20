@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 20-Jan-2019 12:12:06
+% Last Modified by GUIDE v2.5 20-Jan-2019 12:20:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -593,18 +593,18 @@ end
 
 
 
-function edit19_Callback(hObject, eventdata, handles)
-% hObject    handle to edit19 (see GCBO)
+function grid2_Callback(hObject, eventdata, handles)
+% hObject    handle to grid2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit19 as text
-%        str2double(get(hObject,'String')) returns contents of edit19 as a double
+% Hints: get(hObject,'String') returns contents of grid2 as text
+%        str2double(get(hObject,'String')) returns contents of grid2 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit19_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit19 (see GCBO)
+function grid2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to grid2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
