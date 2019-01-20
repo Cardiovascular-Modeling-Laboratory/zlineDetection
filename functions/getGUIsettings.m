@@ -107,6 +107,24 @@ settings.disp_nonoise = get(handles.disp_nonoise, 'Value');
 % Display Skeletonization 
 settings.disp_skel = get(handles.disp_skel, 'Value'); 
 
+%%%%%%%%%%%%%%%%%%%%%%% Actin Filtering Options %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Option to filter with actin
+settings.actin_filt = get(handles.actin_filt, 'Value');
+
+% Display actin filtering
+settings.disp_actin = get(handles.disp_actin, 'Value');
+
+% Save the grid sizes for the rows and columns in an array 
+grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
+grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
+
+% Store the grid sizes
+settings.grid_size = grid_size; 
+
+% Store the threshold for actin filtering
+settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get option to calculate continuous z-line length 
