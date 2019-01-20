@@ -33,31 +33,42 @@
 % Irvine, CA  92697-2700
 
 
-function [ orientim, reliability ] = actinDetection( filenames, settings )
+function [ orientim, reliability, grayIM ] = ...
+    actinDetection( filename, settings, save_path )
 
-% Store the image information
-[ im_struct ] = storeImageInfo( filenames.actin );
+%Get the file parts (path, name of the file, and the extension)
+[ path, file, ext ] = fileparts( filename );
 
-% Create a new folder in the image directory with the same name as the 
-% image file if it does not exist. If it does exist, add numbers until it
-% no longer exists and then create it 
-create = true; 
-new_subfolder = ...
-    addDirectory( im_struct.im_path, im_struct.im_name, create ); 
+%Save the image image identifying information 
+%(1) filename 
+actin_name = file; 
+%(2) path
+actin_path = path; 
 
-% Save the name of the new path 
-im_struct.save_path = fullfile(im_struct.im_path, new_subfolder); 
+% Load the image
+[ im, map ] = imread( filename );
+
+if nargin < 3 
+    % Create a new folder in the image directory with the same name as the 
+    % image file if it does not exist. If it does exist, add numbers until 
+    % it no longer exists and then create it 
+    create = true; 
+    new_subfolder = ...
+        addDirectory( actin_path, actin_name, create ); 
+
+    % Save the name of the new path 
+    save_path = fullfile(actin_path, new_subfolder); 
+end 
 
 % Compute the actin orientation and reliability
-[ grayIM, ~, ~, orientim, reliability ] = ...
-    orientInfo( im_struct.img, im_struct.im_name, ...
-    im_struct.save_path, settings);
+[ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
+    orientInfo( im, settings.Options, settings.tophat_size);
 
 % Only keep orientation values with a reliability greater than 0.5
 reliability_binary = reliability > settings.reliability_thresh;
 
 % Get the size of the image
-[d1, d2] = size(grayIM); 
+[height, width] = size(grayIM); 
 
 % Size of border to remove
 br = 10; 
@@ -65,12 +76,23 @@ br = 10;
 % Remove 10 pixel wide border (br) where orientation values are not accurate
 reliability_binary(:,1:1:br) = 0;
 reliability_binary(1:1:br,:) = 0;
-reliability_binary(:,d2-br:1:d2) = 0;
-reliability_binary(d1-br:1:d1,:) = 0;
+reliability_binary(:,width-br:1:width) = 0;
+reliability_binary(height-br:1:height,:) = 0;
 
 % Multiply orientation angles by the binary mask image to remove
 % data where there are no cells
 orientim = orientim.*reliability_binary;
+
+% Save the diffusion filtered actin image
+imwrite( CEDgray, fullfile(save_path, ...
+    strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
+    'Compression','none');
+
+% Save the top hat filtered image 
+imwrite( CEDtophat, fullfile(save_path, ...
+    strcat( actin_name, '_ActinTopHatFiltered.tif' ) ),...
+    'Compression','none');
+
     
 end
 

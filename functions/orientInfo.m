@@ -10,18 +10,14 @@
 %       settings    - structural array that contains the following
 %                       parameters from the GUI:
 function [ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
-    orientInfo( im, save_name, save_path, settings)
+    orientInfo( im, Options, tophat_size)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% Initalize Image %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Save the Options struct from settings 
-Options = settings.Options;
 
 %Create a grayscale version of the image (if it was not already in
 %grayscale) 
 [ grayIM ] = makeGray( im ); 
 
-%%%%%%%%%%%%%%%%%%%%%%%% Run Diffusion Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Run Diffusion Filter:
 % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
 % contrast and calculates the orientation vectors for later usage. 
 % The parameters (supplied by the GUI) are (1) Orientation Smoothing and
@@ -38,46 +34,16 @@ clc;
 % Convert the matrix to be an intensity image 
 CEDgray = mat2gray( CEDgray );
 
-% If the user would like to display the filtered image, display it
-if settings.disp_df
-    % Open a figure and display the image
-    figure; imshow( CEDgray );
-    
-    % Save the figure. 
-    imwrite( CEDgray, fullfile(save_path, ...
-        strcat( save_name, '_DiffusionFiltered.tif' ) ),...
-        'Compression','none');
-
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%% Run Top Hat Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-disp('Top Hat Filtering...');
-
+% Run Top Hat Filter:
 %Compute the top hat filter using the disk structuring element with the
 %threshold defined by the user input tophat filter. It then adjusts the
 %image so that 1% of data is saturated at low and high intensities of the
 %image 
 CEDtophat = imadjust( imtophat( CEDgray, strel( 'disk', ...
-    settings.tophat_size ) ) );
-
-% If the user would like to display the filtered image, display it
-if settings.disp_tophat
-    % Open a figure and display the image
-    figure; imshow( CEDtophat ); 
-    
-    % Save the figure. 
-    imwrite( CEDtophat, fullfile(save_path, ...
-        strcat( save_name, '_TopHatFiltered.tif' ) ),...
-        'Compression','none');
-    
-end
-
-%%%%%%%%%%%%%%%%%% Calculate Orientation Vectors %%%%%%%%%%%%%%%%%%%%%%%%%%
+    tophat_size ) ) );
 
 % Calculate orientation vectors
-[orientim, reliability] = ...
-    ridgeorient(CEDtophat, ...
+[orientim, reliability] = ridgeorient(CEDtophat, ...
     Options.sigma, Options.rho, Options.rho);
 
 end
