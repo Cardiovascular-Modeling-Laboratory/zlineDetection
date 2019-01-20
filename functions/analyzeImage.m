@@ -36,9 +36,11 @@ Options = settings.Options;
 % Store the image information
 [ im_struct ] = storeImageInfo( filenames.zline );
 
+%>> copied
 %Create a grayscale version of the image (if it was not already in
 %grayscale) 
 [ im_struct.gray ] = makeGray( im_struct.img ); 
+%>> copied
 
 % Create a new folder in the image directory with the same name as the 
 % image file if it does not exist. If it does exist, add numbers until it
