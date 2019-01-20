@@ -57,7 +57,7 @@ im_struct.save_path = fullfile(im_struct.im_path, new_subfolder);
 % (2) Diffusion Time 
 
 % Start a wait bar 
-hwait = waitbar(0,'Diffusion Filter...');
+disp('Diffusion Filter...');
 
 % Inputs are the grayscale image and the Options struct from settings. 
 % The output is the diffusion filtered image and eigenvectors - Not sure
@@ -86,7 +86,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%% Run Top Hat Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Update waitbar 
-waitbar(0.5,hwait,'Top Hat Filter...');
+disp('Top Hat Filter...');
 
 %Compute the top hat filter using the disk structuring element with the
 %threshold defined by the user input tophat filter. It then adjusts the
@@ -110,9 +110,6 @@ end
 
 %%%%%%%%%%%%%%%%%% Calculate Orientation Vectors %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Update waitbar 
-waitbar(0.7,hwait,'Calculating Orientations...');
-
 % Calculate orientation vectors
 [im_struct.orientim, im_struct.reliability] = ...
     ridgeorient(im_struct.CEDtophat, ...
@@ -121,7 +118,7 @@ waitbar(0.7,hwait,'Calculating Orientations...');
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Update waitbar 
-waitbar(0.7,hwait,'Threshold and Clean...');
+disp('Threshold and Clean...');
 
 % Use adaptive thresholding to convert to black and white.  
 [ im_struct.CEDbw, im_struct.surface_thresh ] = ...
@@ -160,7 +157,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Skeletonize %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Update waitbar 
-waitbar(0.8,hwait,'Skeletonization...');
+disp('Skeletonization...');
 
 % Use Matlab skeletonization morphological function, convert to a skeleton,
 % fill inside spaces and then conver to a skeleton again.
@@ -193,79 +190,40 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % If the image should not be filtered with actin, set the final mask equal
-% to the trimmed skeleton. 
+% to the trimmed skeleton and save 
 
+if ~settings.actin_filt
+    % Set the final skeleton equal to the trimmed skeleton
+    im_struct.skel_final = im_struct.skelTrim; 
+    
+    % Create a mask of all ones for now.
+    im_struct.mask = ones(size(im_struct.skelTrim)); 
+    
+else
+    disp('Actin Filtering...'); 
+    % % Save the actin analysis image name 
+    % actinAnalysis_imagename = ...
+    %     strrep(im_struct.im_name, '_w1mCherry', '_zlineActinDirector.mat'); 
+    % 
+    % % Load the actin analysis file 
+    % actin_analysis = ...
+    %     load(fullfile(im_struct.im_path,actinAnalysis_imagename)); 
+    % 
+    % % Create a threshold 
+    % thresh = 0.5; 
+    % 
+    % % Filter with actin and save final skeleton 
+    % [ im_struct.mask, im_struct.skel_final, actin_filtering] = ...
+    %     filterWithActin( actin_analysis.director, ...
+    %     actin_analysis.dims, im_struct.orientim, thresh); 
+    % 
+    % % Remove regions that were not part of the binary skeleton
+    % im_struct.orientim(~im_struct.skel_final) = NaN; 
+    % 
+    % % Save the actin analysis struct 
+    % im_struct.actin_filtering = actin_filtering; 
 
-
-% Comment out mask creation phase for now - just want to test parameter
-% choices
-im_struct.skel_final = im_struct.skelTrim; 
-
-% % %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % Create a mask to remove false z-lines  
-% 
-% % This function will be used to seelct regions of the image that should be
-% % included in analysis 
-% % If include is true then the mask will only include the selected regions 
-% % If include is false, the mask will exclude the selected regions 
-% % im_struct.mask  = select_ROI( mat2gray(im_struct.img) , ...
-% %     im_struct.skelTrim, 0 );
-% 
-% % >>>>>TEMPORARY make a mask of all ones for now.
-% im_struct.mask = ones(size(im_struct.skelTrim)); 
-% 
-% % Save the mask. 
-% imwrite( im_struct.mask, fullfile(save_path, ...
-%     strcat( im_struct.im_name, '_Mask.tif' ) ),...
-%     'Compression','none');
-%     
-% % Create final skeleton 
-% im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
-% 
-% % Save the final skeleton. 
-% imwrite( im_struct.skel_final, fullfile(save_path, ...
-%     strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
-%     'Compression','none');
-% 
-% %%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% % Update waitbar 
-% waitbar(0.9,hwait,'Calculating Orientations...');
-% 
-% % Eventually add into GUI, but for now just set values. 
-% settings.gradientsigma = Options.sigma;
-% settings.blocksigma = Options.rho; 
-% settings.orientsmoothsigma = Options.rho; 
-% 
-% % Calculate orientation vectors
-% [im_struct.orientim, ~] = ridgeorient(im_struct.CEDtophat, ...
-%     settings.gradientsigma, settings.blocksigma,...
-%     settings.orientsmoothsigma);
-% 
-% % Remove regions that were not part of the binary skeleton
-% im_struct.orientim(~im_struct.skel_final) = NaN; 
-% 
-% % Save the actin analysis image name 
-% actinAnalysis_imagename = ...
-%     strrep(im_struct.im_name, '_w1mCherry', '_zlineActinDirector.mat'); 
-% 
-% % Load the actin analysis file 
-% actin_analysis = ...
-%     load(fullfile(im_struct.im_path,actinAnalysis_imagename)); 
-% 
-% % Create a threshold 
-% thresh = 0.5; 
-% 
-% % Filter with actin and save final skeleton 
-% [ im_struct.mask, im_struct.skel_final, actin_filtering] = ...
-%     filterWithActin( actin_analysis.director, ...
-%     actin_analysis.dims, im_struct.orientim, thresh); 
-% 
-% % Remove regions that were not part of the binary skeleton
-% im_struct.orientim(~im_struct.skel_final) = NaN; 
-% 
-% % Save the actin analysis struct 
-% im_struct.actin_filtering = actin_filtering; 
+end 
 
 % Save the mask. 
 imwrite( im_struct.mask, fullfile(save_path, ...
@@ -277,8 +235,10 @@ imwrite( im_struct.skel_final, fullfile(save_path, ...
     strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
     'Compression','none');
 
-% Close the wait bar
-close(hwait)
+%%%%%%%%%%%%%%%%% Report Final Orentation Vectors %%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Remove regions that were not part of the binary skeleton
+im_struct.orientim(~im_struct.skel_final) = NaN; 
 
 % Display that you're saving the data
 disp('Saving Data...'); 
@@ -287,5 +247,7 @@ disp('Saving Data...');
 save(fullfile(save_path, strcat(im_struct.im_name,...
     '_OrientationAnalysis.mat')), 'im_struct', 'settings');
 
+% Clear command line 
+clc; 
 end
 
