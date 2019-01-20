@@ -1,7 +1,30 @@
+% GRIDDIRECTOR - This function will break an image up into grid_size(1) 
+% x grid_size(2) pieces and report the director and OOP 
+%
+% Usage:
+%  [  ] = gridDirector(  );
+%
+% Arguments:
+%       orientation_matrix    - A matrix of orientation vectors 
+%       grid_size             - Vector 1 x 2 that contains the size of the
+%                               grids 
+% 
+% Returns:
+%       dims
+%       oop 
+%       director
+%       grid_info
+%       visualization_matrix 
+% 
+% Tessa Morris
+% Advisor: Anna Grosberg
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
+
 function [ dims, oop, director, grid_info, visualization_matrix] = ...
     gridDirector( orientation_matrix, grid_size )
-%This function will break an image up into grid_size(1) x grid_size(2)
-%pieces and report the director and OOP 
+
 
 %Get size of the matrix of orientation angles 
 [m1, m2] = size(orientation_matrix); 
