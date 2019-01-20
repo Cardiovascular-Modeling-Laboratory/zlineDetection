@@ -59,6 +59,7 @@ handles.output = hObject;
 addpath('functions');
 addpath('functions/coherencefilter_version5b');
 addpath('functions/continuous_zline_detection');
+addpath('functions/actin_filtering');
 
 
 % Update handles structure
