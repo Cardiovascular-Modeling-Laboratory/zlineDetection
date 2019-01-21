@@ -73,6 +73,8 @@ else
     
     %Create a dot product matrix of all zeros
     dp = zeros(size(im_struct.orientim)); 
+    
+    disp('Parameter Exploration for actin detect grid sizes...'); 
 end 
 %Create mask 
 mask = ones(size(im_struct.orientim)); 
@@ -91,7 +93,7 @@ if settings.actin_thresh <= 1
     %actin)
     mask(isnan(mask)) = 1; 
 else
-    disp('Parameter Exploration for actin detect...'); 
+    disp('Parameter Exploration for actin detect threshold...'); 
 end 
 
 end
