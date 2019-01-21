@@ -21,9 +21,6 @@
 
 function [ mask, actin_struct ] = ...
     filterWithActin( im_struct, filenames, settings, save_path)
-% function [ mask, final_skel, actin_filtering ] = ...
-%     filterWithActin( director, dims, orientim, thresh)
-
 
 % Create a struct to hold all of the information for the actin image 
 actin_struct = struct(); 
@@ -36,46 +33,21 @@ actin_struct = struct();
 
 % Compute the director for each grid 
 [ actin_struct.dims, actin_struct.oop, actin_struct.director, ...
-    actin_struct.grid_info, actin_struct.visualization_matrix] = ...
+    actin_struct.grid_info, actin_struct.visualization_matrix, ...
+    actin_struct.director_matrix] = ...
     gridDirector( actin_struct.actin_orientim, settings.grid_size );
 
-% Visualize the actin director on top of the z-line image 
+% Visualize the actin director on top of the z-line image by first
+% displaying the z-line image and then plotting the orinetation vectors. 
+spacing = 15; color_spec = 'b'; 
+plotOrientationVectors(actin_struct.visualization_matrix,...
+    mat2gray(im_struct.gray),spacing, color_spec) 
 
-
-        %Convert to gray images 
-        zline_image = mat2gray(temp_zline_image);   
-        
-        %Show the zline image and visualize the director
-        spacing = 15; color_spec = 'b'; 
-        plotOrientationVectors(visualization_matrix, zline_image, ...
-            spacing, color_spec) 
-        
-        
-
-
-%Total number of grids
-n = size(director,1); 
+%Take the dot product sqrt(cos(th1 - th2)^2);
+dp = sqrt(cos(im_struct.orientim - actin_struct.director_matrix).^2); 
 
 %Create mask 
 mask = ones(size(orientim)); 
-
-%Create a direcor matrix
-dir_mat = ones(size(orientim)); 
-
-%Check to make sure the direcor isn't in radians
-if max(director) > 10
-    director = deg2rad(director); 
-end 
-
-%Loop through each grid and place the director of each grid as the value in
-%the grid
-for k = 1:n
-    %Set the value each grid equal to its director
-    dir_mat(dims(k,1):dims(k,2),dims(k,3):dims(k,4)) = director(k,1);     
-end 
-
-%Take the dot product sqrt(cos(th1 - th2)^2);
-dp = sqrt(cos(orientim - dir_mat).^2); 
 
 %If dot product is closer to 1, the angles are more parallel and should be
 %removed

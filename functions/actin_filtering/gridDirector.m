@@ -22,7 +22,7 @@
 % University of California, Irvine 
 
 
-function [ dims, oops, directors, grid_info, visualization_matrix] = ...
+function [ dims, oops, directors, grid_info, visualization_matrix, dir_mat] = ...
     gridDirector( orientation_matrix, grid_size )
 
 
@@ -33,6 +33,9 @@ function [ dims, oops, directors, grid_info, visualization_matrix] = ...
 %grid
 visualization_matrix = zeros(m1,m2); 
 visualization_matrix(visualization_matrix == 0) = NaN; 
+
+%Initailize a matrix of the directors
+dir_mat = zeros(m1,m2); 
 
 % Create grids of the sizes declared in grid size
 if length(grid_size) == 1
@@ -117,6 +120,9 @@ for d1 = 1:grid_size(1):m1
         
         %Save the dimensions 
         dims(n,1) = d1; dims(n,2) = s1; dims(n,3) = d2; dims(n,4) = s2; 
+        
+        %Create a matrix of the director values
+        dir_mat(dims(n,1):dims(n,2),dims(n,3):dims(n,4)) = director(n,1);
         
         %Increase the counter 
         n = n+1; 
