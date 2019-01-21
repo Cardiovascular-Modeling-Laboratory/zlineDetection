@@ -88,9 +88,6 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
             summary_explore.grid_sizes= zeros(tot, 1);     
         end 
         
-        %Save the pure save path 
-        im_struct.save_path = image_savepath; 
-        
         %Create a new path to store grid size explorations 
         new_subfolder = strcat('Exploration_Size', num2str(grids));
 
@@ -109,6 +106,9 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
         %Run the explore actin 
         [ actin_explore ] = ...
             exploreFilterWithActin( im_struct, settings, actin_explore); 
+        
+        %Change the save path back to the original save path. 
+        im_struct.save_path = image_savepath; 
         
         %Store the non sarc amount
         summary_explore.non_sarcs{n,1} = actin_explore.non_sarcs; 

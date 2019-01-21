@@ -152,13 +152,14 @@ summary_name = appendFilename( im_struct.save_path, summary_name );
 save(fullfile(im_struct.save_path, summary_name), ...
     'im_struct', 'settings', 'actin_explore');
 
+
 %Plot the resulting data 
 figure; 
 hold on; 
 
 %Plot the threshold vs. the median
 subplot(3,2,1); 
-plot(actin_explore.actin_thresh, actin_explore.medians, 'o', ...
+plot(actin_explore.actin_thresh, actin_explore.medians, 'o', 'color', 'k', ...
     'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Median (\mu m) vs Actin Threshold'),...
@@ -169,7 +170,7 @@ xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
 
 %Plot the threshold vs. the sum
 subplot(3,2,2); 
-plot(actin_explore.actin_thresh, actin_explore.sums, 'o', ...
+plot(actin_explore.actin_thresh, actin_explore.sums, 'o', 'color', 'k', ...
     'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Sum (\mu m) vs Actin Threshold'),...
@@ -180,7 +181,7 @@ xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
 
 %Plot the non-zline fraction vs. actin trheshold 
 subplot(3,2,3); 
-plot(actin_explore.actin_thresh, actin_explore.non_sarcs, 'o', ...
+plot(actin_explore.actin_thresh, actin_explore.non_sarcs, 'o', 'color', 'k', ...
     'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Non Z-line Fraction vs Actin Threshold'),...
@@ -191,7 +192,7 @@ xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
 
 %Plot the median vs non zline 
 subplot(3,2,4); 
-plot(actin_explore.non_sarcs, actin_explore.medians, 'o', ...
+plot(actin_explore.non_sarcs, actin_explore.medians, 'o', 'color', 'k', ...
     'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Median (\mu m) vs Non Z-line Fraction'),...
@@ -202,7 +203,7 @@ xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
 
 %Plot the sum vs non zline 
 subplot(3,2,5); 
-plot(actin_explore.non_sarcs, actin_explore.sums, 'o', ...
+plot(actin_explore.non_sarcs, actin_explore.sums, 'o', 'color', 'k', ...
     'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Sum (\mu m) vs Non Z-line Fraction'),...
@@ -215,5 +216,6 @@ xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
 saveas(gcf, fullfile(im_struct.save_path, ...
     strcat(im_struct.im_name, '_ActinExploration')), 'pdf');
 
+close;
 end
 
