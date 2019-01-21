@@ -51,14 +51,14 @@ if settings.disp_actin
 
     % Save figure 
     saveas(gcf, fullfile(im_struct.save_path, ...
-        strcat( im_struct.im_name, 'zlineActinDirector.tif' )), 'tiffn');
+        strcat( im_struct.im_name, '_zlineActinDirector.tif' )), 'tiffn');
 end 
 
 %Take the dot product sqrt(cos(th1 - th2)^2);
 dp = sqrt(cos(im_struct.orientim - actin_struct.director_matrix).^2); 
 
 %Create mask 
-mask = ones(size(orientim)); 
+mask = ones(size(im_struct.orientim)); 
 
 % If the threshold is greater than 1 that means that the user would like to
 % do a parameter exploration 
