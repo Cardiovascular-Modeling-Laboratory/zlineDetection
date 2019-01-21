@@ -50,7 +50,7 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
         %Final skeleton 
         skel_final = im_struct.skel_final;
         %Old save path 
-        old_sp = im_struct.save_path; 
+        image_savepath = im_struct.save_path; 
         % Save the pre-filtered skeleton for calculation of the non-sarc
         % percentages
         pre_filt = im_struct.skel_final; 
@@ -87,6 +87,10 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
             %Create a matrix to store all of the grid sizes
             summary_explore.grid_sizes= zeros(tot, 1);     
         end 
+        
+        %Save the pure save path 
+        im_struct.save_path = image_savepath; 
+        
         %Create a new path to store grid size explorations 
         new_subfolder = strcat('Exploration_Size', num2str(grids));
 
@@ -235,10 +239,10 @@ if settings.actin_thresh > 1
     summary_name = strcat(im_struct.im_name, '_GridActinExploration.mat');
 
     % If the filename exists, add a number until it doesn't 
-    summary_name = appendFilename( old_sp, summary_name ); 
+    summary_name = appendFilename( image_savepath, summary_name ); 
 
     % Save the data (append on each iteration)
-    save(fullfile(old_sp, summary_name), ...
+    save(fullfile(image_savepath, summary_name), ...
         'im_struct', 'settings', 'actin_explore','summary_explore');
     
 else
