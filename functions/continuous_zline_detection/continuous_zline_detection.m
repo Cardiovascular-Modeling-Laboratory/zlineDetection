@@ -4,7 +4,7 @@ function [ distances_um ] = continuous_zline_detection(im_struct, settings)
 
 %%%%%%%%%%%%%%%%%%%%%%%% LOAD FROM IM_STRUCT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check to see if this is a parameter exploration for actin filtering
-if actin_thresh <= 1
+if settings.actin_thresh <= 1
     %Load orientation angles from the image structure
     angles = im_struct.orientim; 
 
