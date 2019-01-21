@@ -122,7 +122,7 @@ for d1 = 1:grid_size(1):m1
         dims(n,1) = d1; dims(n,2) = s1; dims(n,3) = d2; dims(n,4) = s2; 
         
         %Create a matrix of the director values
-        dir_mat(dims(n,1):dims(n,2),dims(n,3):dims(n,4)) = director(n,1);
+        dir_mat(dims(n,1):dims(n,2),dims(n,3):dims(n,4)) = directors(n,1);
         
         %Increase the counter 
         n = n+1; 
