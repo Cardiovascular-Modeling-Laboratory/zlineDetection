@@ -10,7 +10,7 @@ new_subfolder = ...
     addDirectory( im_struct.save_path, new_subfolder, create ); 
 
 % Save the name of the new path 
-actin_explore.save_path = fullfile(im_struct.im_path, new_subfolder); 
+actin_explore.save_path = fullfile(im_struct.save_path, new_subfolder); 
 
 
 %Create a cell to store all of the masks
