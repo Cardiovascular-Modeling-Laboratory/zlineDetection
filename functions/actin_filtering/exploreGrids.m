@@ -4,11 +4,11 @@ function [ actin_explore ] = ...
 
 
 %Total number of grids
-tot = length(actin.grid_min:actin_explore.grid_step:actin_explore.grid_max);
+tot = length(actin_explore.grid_min:actin_explore.grid_step:actin_explore.grid_max);
 %Start counter 
 n = 0;
 %Loop trhough all of the grids 
-for grids = round(actin.grid_min:actin_explore.grid_step:actin_explore.grid_max)
+for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.grid_max)
     
     %Set the grid size to the current grid size 
     settings.grid_size(1) = grids; 
