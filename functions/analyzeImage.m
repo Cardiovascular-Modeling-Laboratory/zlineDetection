@@ -188,6 +188,19 @@ imwrite( im_struct.skel_final, fullfile(im_struct.save_path, ...
 % Remove regions that were not part of the binary skeleton
 im_struct.orientim(~im_struct.skel_final) = NaN; 
 
+% Post filtering skeleton 
+post_filt = im_struct.skel_final;
+post_filt = post_filt(:);
+post_filt(post_filt == 0) = []; 
+% Pre filtering skeleton 
+pre_filt = im_struct.skelTrim; 
+pre_filt = pre_filt(:); 
+pre_filt(pre_filt == 0) = []; 
+% Calculate the non-sarcomeric alpha actinin 
+% number of pixles eliminated / # total # of pixles positive for alpha
+% actinin 
+im_struct.non_sarc = (length(pre_filt) - length(post_filt))/ length(pre_filt);
+
 % Display that you're saving the data
 disp('Saving Data...'); 
 
