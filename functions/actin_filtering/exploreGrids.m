@@ -106,20 +106,20 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
         [ actin_explore ] = ...
             exploreFilterWithActin( im_struct, settings, actin_explore); 
         
-        %Store the new information 
+        %Store the non sarc amount
         summary_explore.non_sarcs{n,1} = actin_explore.non_sarcs; 
 
-        %Create a matrix to store all of the medians 
+        %Store the medians 
         summary_explore.medians{n,1} = actin_explore.medians; 
 
-        %Create a matrix to store all of the sums 
+        %Store the sums 
         summary_explore.sums{n,1} = actin_explore.sums;
             
-        %Create a matrix to store all of the threshold values 
+        %Store the threshold values 
         summary_explore.actin_thresh{n,1} = actin_explore.actin_thresh;   
             
-        %Create a matrix to store all of the grid sizes
-        summary_explore.grid_sizes(n,1)= actin_explore.grid_sizes;   
+        %Store the grid sizes
+        summary_explore.grid_sizes(n,1)= grids;   
             
     else
         %Filter normally 
