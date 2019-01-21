@@ -66,7 +66,7 @@ saveas(gcf, fullfile(im_struct.save_path, fig_name(1:end-4)), 'tiffn');
 
 
 % If the actin detect image is available, plot the z-lines on top of it 
-if actin_filt
+if settings.actin_filt
     % Save the actin struct
     actin_struct = im_struct.actin_struct;
     
@@ -84,9 +84,11 @@ if actin_filt
     %Get the file parts of the actin 
     [~, actin_name] = fileparts(actin_struct.filename);
     
-    %Save the actin image as a .tif 
-    actin_name = strcat('zlines_', actin_name);
-    saveas(gcf, fullfile(im_struct.save_path, actin_name), 'tiffn');
+    %Save the actin image as a .tif and .fig
+    actin_name = strcat('zlines_', actin_name,'.fig');
+    savefig(fullfile(im_struct.save_path, actin_name));
+    saveas(gcf, fullfile(im_struct.save_path, actin_name(1:end-4)),...
+        'tiffn');
 
 end 
 
