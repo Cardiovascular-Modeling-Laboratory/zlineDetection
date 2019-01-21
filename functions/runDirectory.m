@@ -76,6 +76,22 @@ for k = 1:zn
     % Store the current actin filename if applicable 
     if settings.actin_filt
         filenames.actin = fullfile(actin_path{1}, actin_images{1,k});
+        
+        % On the first iteration, if this is a parameter exploration,
+        % prompt the user for the range
+        if settings.actin_thresh > 1 && k == 1
+            
+            %Prompt Questions
+            prompt = {'Minimum Threshold:','Max Threshold:',...
+                'Step Size:'};
+            %Title of prompt
+            title = 'Actin Filtering Parameter Exploration';
+            %Default inputs
+            definput = {'0','1','0.05'};
+            %Save answers
+            thresh_answer = inputdlg(prompt,title,dims,definput); 
+
+        end 
     else
         filenames.actin = NaN; 
     end 
@@ -83,8 +99,33 @@ for k = 1:zn
     % Perform the analysis including saving the image 
     im_struct = analyzeImage( filenames, settings ); 
     
+    % If the user wants to perform a parameter exploration for actin
+    % filtering
+    if settings.actin_thresh > 1
+        %Create a struct to hold all of the relevant information for the
+        %actin parameter exploration
+        actin_explore = struct(); 
+        
+        %Store the answers to the exploration prompt for the rang eof
+        %threshold values 
+        actin_explore.min_thresh = str2double(thresh_answer{1});
+        actin_explore.max_thresh = str2double(thresh_answer{2});
+        actin_explore.thresh_step = str2double(thresh_answer{3});
+        
+        %Check to make sure that the values are in range 
+        actin_explore.min_thresh(actin_explore.min_thresh<0) = 0; 
+        actin_explore.max_thresh(actin_explore.min_thresh>1) = 1; 
+        actin_explore.thresh_step(actin_explore.thresh_step <= 0 || ...
+            actin_explore.thresh_step >= 1) = 0.05;
+                
+        %Loop through the range and save the skeleton, continuous z-line
+        %length and the non sarc amount. 
+        
+    end 
+    
+    
     % If the user wants to calculate continuous z-line length 
-    if settings.tf_CZL 
+    if settings.tf_CZL && settings.actin_thresh <=1 
 
         if k == 1
             %Create a cell to store all distances 
@@ -141,7 +182,7 @@ for k = 1:zn
 
     % If the user wants to calculate OOP - Will need to change when I'm
     % analyzing tissues. 
-    if settings.tf_OOP
+    if settings.tf_OOP && settings.actin_thresh <=1 
         %Save the orientation vectors as a new vairable
         angles = im_struct.orientim; 
         %If there are any NaN values in the angles matrix, set them to 0.

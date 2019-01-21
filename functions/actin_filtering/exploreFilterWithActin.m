@@ -1,15 +1,17 @@
-function [ mask, final_skel, actin_filtering ] = ...
-    exploreFilterWithActin( director, dims, orientim, current_path, save_name,...
-    czl)
+function [ actin_explore ] = ...
+    exploreFilterWithActin( im_struct, settings, actin_explore)
 
 % Create a new directory to store all data
-folderName = strcat(save_name,'_Explore');
-save_path = fullfile(current_path, folderName); 
+new_subfolder = 'ActinFilteringExploration';
 
-% If the path does not exist create it
-if ~exist(save_path,'dir')
-    mkdir(save_path);
-end
+% If it does not exist, create it (or append and then create). 
+create = true; 
+new_subfolder = ...
+    addDirectory( im_struct.save_path, new_subfolder, create ); 
+
+% Save the name of the new path 
+actin_explore.save_path = fullfile(im_struct.im_path, new_subfolder); 
+
     
 %Total number of grids
 n = size(director,1); 
