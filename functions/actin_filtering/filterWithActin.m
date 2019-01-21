@@ -45,6 +45,7 @@ actin_struct.filename = filenames.actin;
 if settings.disp_actin
     % Visualize the actin director on top of the z-line image by first
     % displaying the z-line image and then plotting the orinetation vectors. 
+    figure;
     spacing = 15; color_spec = 'b'; 
     plotOrientationVectors(actin_struct.visualization_matrix,...
         mat2gray(im_struct.gray),spacing, color_spec) 
