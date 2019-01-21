@@ -71,11 +71,11 @@ for k = 1:zn
     filenames = struct; 
     
     % Store the current z-line filename 
-    filenames.zline = strcat(zline_path{1}, zline_images{1,k});
+    filenames.zline = fullfile(zline_path{1}, zline_images{1,k});
     
     % Store the current actin filename if applicable 
     if settings.actin_filt
-        filenames.actin = strcat(actin_path{1}, actin_images{1,k});
+        filenames.actin = fullfile(actin_path{1}, actin_images{1,k});
     else
         filenames.actin = NaN; 
     end 
