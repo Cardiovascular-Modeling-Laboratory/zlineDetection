@@ -38,11 +38,20 @@ actin_explore.medians = zeros(length(actin_explore.min_thresh:...
     actin_explore.thresh_step:...
     actin_explore.max_thresh), 1); 
 
+%Create a matrix to store all of the sums 
+actin_explore.sums = zeros(length(actin_explore.min_thresh:...
+    actin_explore.thresh_step:...
+    actin_explore.max_thresh), 1); 
+
 %Create a matrix to store all of the non-sarc percentages 
 actin_explore.non_sarcs = zeros(length(actin_explore.min_thresh:...
     actin_explore.thresh_step:...
     actin_explore.max_thresh), 1); 
 
+%Create a matrix to store all of the threshold values
+actin_explore.actin_thresh = zeros(length(actin_explore.min_thresh:...
+    actin_explore.thresh_step:...
+    actin_explore.max_thresh), 1); 
 
 % Start a counter 
 actin_explore.n = 0; 
@@ -121,65 +130,27 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
     im_struct.actin_explore = actin_explore; 
     
     % Calculate the continuous z-line lengths 
+    [ actin_explore.lengths{actin_explore.n,1} ] = ...
+        continuous_zline_detection(im_struct, settings);
     
-    %If analyzing continuous z-line length add folder to path 
-    if czl
-       addpath('/Users/tessamorris/Documents/MATLAB/continous_line_detection/');
-       dot_product_error = 0.99;
-       pix2um = 6.22; 
-       
-       %Save the angles and set NaNs equal to 0
-       angles = orientim.*final_skel; 
-       angles(isnan(angles)) = 0;
-       %Calculate the continuous z-line length 
-       [ distances_um ] = continuous_zline_detection(angles, ...
-            pix2um, current_path, strcat(save_name,'.tif'), ...
-            dot_product_error, false); 
-        %Add title to image 
-        title(strcat('Threshold: ', num2str(thresh)), ...
-            'FontSize', 14, 'FontWeight', 'bold'); 
-        %Save the zline image
-        saveas(gcf, fullfile(save_path, ...
-                strcat(save_name,'_ZLINES_thresh',...
-                strrep(num2str(thresh),'.',''))), 'tiffn');
-        close all; 
-        
-        %Get statistics
-        med_dist = median(distances_um); 
-        sum_lengths = sum(distances_um); 
-        %Open figure
-        figure; 
-        
-        %Plot histogram 
-        histogram(distances_um);
-        set(gca,'fontsize',12)
-        hist_name = strcat('Median: ', num2str(med_dist),' \mu m', ...
-            ' ; Sum: ', num2str(sum_lengths), ' \mu m');
-        title(hist_name,'FontSize',14,'FontWeight','bold');
-        xlabel('Continuous Z-line Lengths (\mu m)','FontSize',14,...
-            'FontWeight','bold');
-        ylabel('Frequency','FontSize',14,'FontWeight','bold');
-        saveas(gcf, fullfile(save_path, ...
-                strcat(save_name,'_ZLINES_hist_thresh',...
-                strrep(num2str(thresh),'.',''))), 'pdf');
-        close all; 
-            
-    else 
-        figure; imshow(final_skel); 
-        title(strcat('Threshold: ', num2str(thresh)), 'FontSize', 14, 'FontWeight', 'bold'); 
-        saveas(gcf, fullfile(save_path, ...
-                strcat(save_name,'_thresh',...
-                strrep(num2str(thresh),'.',''))), 'pdf');
-        close all; 
-    end 
+    %Close all figures
+    close all; 
+    
+    %Find the median continuous z-line length
+    actin_explore.medians(actin_explore.n,1) = ...
+        median(actin_explore.lengths{actin_explore.n,1});
+    %Find the sum continuous z-line length
+    actin_explore.sums(actin_explore.n,1) = ...
+        sum(actin_explore.lengths{actin_explore.n,1});
+    
+    %Save the threshold value 
+    actin_explore.actin_thresh(actin_explore.n,1) = thresh;
+    
+    % Append the file 
+    save(fullfile(actin_explore.save_path, strcat(im_struct.im_name,...
+        '_ActinExploration.mat')), 'actin_explore');
+
 end 
-
-
-% Save all of the actin filtering data in a structural array 
-actin_filtering = struct(); 
-actin_filtering.directors = director; 
-actin_filtering.dims = dims; 
-actin_filtering.threshold = thresh; 
 
 end
 
