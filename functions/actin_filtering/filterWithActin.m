@@ -65,10 +65,10 @@ mask = ones(size(im_struct.orientim));
 if settings.actin_thresh <= 1
     %If dot product is closer to 1, the angles are more parallel and should 
     %be removed
-    mask(dp >= thresh) = 0; 
+    mask(dp >= settings.actin_thresh) = 0; 
     %If dot product is closer to 0, the angles are more perpendicular and
     %should be kept
-    mask(dp < thresh) = 1; 
+    mask(dp < settings.actin_thresh) = 1; 
 
     %The NaN postitions should be set equal to 1 (meaning no director for
     %actin)
