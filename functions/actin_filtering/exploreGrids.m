@@ -12,7 +12,10 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
     
     %Set the grid size to the current grid size 
     settings.grid_size(1) = grids; 
-    settings.grid_size(2) = grids;   
+    settings.grid_size(2) = grids; 
+    
+    %Save the actin_struct
+    actin_struct = im_struct.actin_struct; 
     
     % Compute the director for each grid 
     [ actin_struct.dims, actin_struct.oop, actin_struct.director, ...
@@ -20,6 +23,9 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
         actin_struct.director_matrix] = ...
         gridDirector( actin_struct.actin_orientim, settings.grid_size );
 
+    %Resave the actin_struct in the image struct
+    im_struct.actin_struct = actin_struct; 
+    
     % Save the image 
     if settings.disp_actin
         % Visualize the actin director on top of the z-line image by first
