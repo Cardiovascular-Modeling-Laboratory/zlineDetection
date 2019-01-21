@@ -34,7 +34,7 @@
 
 
 function [ orientim, reliability, grayIM ] = ...
-    actinDetection( filename, settings, save_path )
+    actinDetection( filename, settings, disp_actin, save_path )
 
 %Get the file parts (path, name of the file, and the extension)
 [ path, file, ext ] = fileparts( filename );
@@ -48,7 +48,7 @@ actin_path = path;
 % Load the image
 [ im, map ] = imread( filename );
 
-if nargin < 3 
+if nargin < 4 
     % Create a new folder in the image directory with the same name as the 
     % image file if it does not exist. If it does exist, add numbers until 
     % it no longer exists and then create it 
@@ -83,16 +83,17 @@ reliability_binary(height-br:1:height,:) = 0;
 % data where there are no cells
 orientim = orientim.*reliability_binary;
 
-% Save the diffusion filtered actin image
-imwrite( CEDgray, fullfile(save_path, ...
-    strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
-    'Compression','none');
+if disp_actin
+    % Save the diffusion filtered actin image
+    imwrite( CEDgray, fullfile(save_path, ...
+        strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
+        'Compression','none');
 
-% Save the top hat filtered image 
-imwrite( CEDtophat, fullfile(save_path, ...
-    strcat( actin_name, '_ActinTopHatFiltered.tif' ) ),...
-    'Compression','none');
-
+    % Save the top hat filtered image 
+    imwrite( CEDtophat, fullfile(save_path, ...
+        strcat( actin_name, '_ActinTopHatFiltered.tif' ) ),...
+        'Compression','none');
+end 
     
 end
 

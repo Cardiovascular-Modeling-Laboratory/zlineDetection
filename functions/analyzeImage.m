@@ -30,9 +30,6 @@ function [ im_struct ] = analyzeImage( filenames, settings )
 
 %%%%%%%%%%%%%%%%%%%%%%%% Initalize Image Info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Save the Options struct from settings 
-Options = settings.Options;
-
 % Store the image information
 [ im_struct ] = storeImageInfo( filenames.zline );
 
@@ -47,7 +44,7 @@ new_subfolder = ...
 im_struct.save_path = fullfile(im_struct.im_path, new_subfolder); 
 
 %%%%%%%%%%%%%%%%% Compute Orientation Information %%%%%%%%%%%%%%%%%%%%%%%%%
-% Update waitbar 
+% Update user 
 disp('Filtering and computing orientation information...');
 
 % Fitler the image using coherence-enhancing anisotropic diffusion 
@@ -83,7 +80,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Update waitbar 
+% Update user
 disp('Threshold and Clean...');
 
 % Use adaptive thresholding to convert to black and white.  
@@ -122,7 +119,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Skeletonize %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Update waitbar 
+% Update user 
 disp('Skeletonization...');
 
 % Use Matlab skeletonization morphological function, convert to a skeleton,
@@ -162,42 +159,18 @@ if ~settings.actin_filt
     % Set the final skeleton equal to the trimmed skeleton
     im_struct.skel_final = im_struct.skelTrim; 
     
-    % Create a mask of all ones for now.
+    % Create a mask of all ones.
     im_struct.mask = ones(size(im_struct.skelTrim)); 
     
 else
     disp('Actin Filtering...'); 
+    
+    % Remove false sarcomeres by looking at the actin directors
     [ im_struct.mask, im_struct.actin_struct ] = ...
     filterWithActin( im_struct, filenames, settings, save_path); 
 
-%     % Compute the orientation vectors for actin
-%     [ im_struct.actin_orientim, im_struct.actin_reliability, ...
-%         im_struct.actin_im ] = ...
-%         actinDetection( filenames.actin, settings, save_path ); 
-%     
-    
-    % % Save the actin analysis image name 
-    % actinAnalysis_imagename = ...
-    %     strrep(im_struct.im_name, '_w1mCherry', '_zlineActinDirector.mat'); 
-    % 
-    % % Load the actin analysis file 
-    % actin_analysis = ...
-    %     load(fullfile(im_struct.im_path,actinAnalysis_imagename)); 
-    % 
-    % % Create a threshold 
-    % thresh = 0.5; 
-    % 
-    % % Filter with actin and save final skeleton 
-    % [ im_struct.mask, im_struct.skel_final, actin_filtering] = ...
-    %     filterWithActin( actin_analysis.director, ...
-    %     actin_analysis.dims, im_struct.orientim, thresh); 
-    % 
-    % % Remove regions that were not part of the binary skeleton
-    % im_struct.orientim(~im_struct.skel_final) = NaN; 
-    % 
-    % % Save the actin analysis struct 
-    % im_struct.actin_filtering = actin_filtering; 
-
+    % Multiply the mask by the trimmed skeleton to get the final skeleton
+    im_struct.skel_final = im_struct.mask.*im_struct.skelTrim;
 end 
 
 % Save the mask. 
