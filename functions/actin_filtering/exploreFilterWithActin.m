@@ -121,6 +121,9 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
         (length(pre_filt) - length(post_filt))/ ...
         length(pre_filt);
     
+    %Save the threshold value 
+    actin_explore.actin_thresh(actin_explore.n,1) = thresh;
+    
     % Store the actin_explore struct inside of the im_struct
     im_struct.actin_explore = actin_explore; 
     
@@ -137,9 +140,6 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
     %Find the sum continuous z-line length
     actin_explore.sums(actin_explore.n,1) = ...
         sum(actin_explore.lengths{actin_explore.n,1});
-    
-    %Save the threshold value 
-    actin_explore.actin_thresh(actin_explore.n,1) = thresh;
 end 
 
 % Create a name to save the file 
