@@ -65,7 +65,7 @@ end
     orientInfo( im, settings.Options, settings.tophat_size);
 
 % Only keep orientation values with a reliability greater than 0.5
-reliability_binary = reliability > settings.reliability_thresh;
+reliability_binary = reliability > settings.actin_thresh;
 
 % Get the size of the image
 [height, width] = size(grayIM); 
