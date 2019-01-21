@@ -86,10 +86,12 @@ for k = 1:zn
                 'Step Size:'};
             %Title of prompt
             title = 'Actin Filtering Parameter Exploration';
+            %Dimensions
+            dims = [1 35];
             %Default inputs
             definput = {'0','1','0.05'};
             %Save answers
-            thresh_answer = inputdlg(prompt,title,definput); 
+            thresh_answer = inputdlg(prompt,title,dims,definput);
 
         end 
     else
