@@ -20,7 +20,7 @@
 
 
 function [ mask, actin_struct, dp ] = ...
-    filterWithActin( im_struct, filenames, settings, save_path)
+    filterWithActin( im_struct, filenames, settings)
 
 % Create a struct to hold all of the information for the actin image 
 actin_struct = struct(); 
@@ -31,7 +31,7 @@ actin_struct.filename = filenames.actin;
 % Compute the orientation vectors for actin
 [ actin_struct.actin_orientim, actin_struct.actin_reliability, ...
     actin_struct.actin_im ] = ...
-    actinDetection( filenames.actin, settings, save_path, ...
+    actinDetection( filenames.actin, settings, im_struct.save_path, ...
     settings.disp_actin); 
 
 % Compute the director for each grid 

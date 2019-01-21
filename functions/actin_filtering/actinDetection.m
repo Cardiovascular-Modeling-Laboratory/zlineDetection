@@ -48,7 +48,7 @@ actin_path = path;
 % Load the image
 [ im, map ] = imread( filename );
 
-if nargin < 4 
+if nargin == 3 
     % Create a new folder in the image directory with the same name as the 
     % image file if it does not exist. If it does exist, add numbers until 
     % it no longer exists and then create it 
