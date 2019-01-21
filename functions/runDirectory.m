@@ -36,7 +36,7 @@ end
 if settings.actin_filt
     [ actin_images, actin_path, an ] = ...
         load_files( {'*GFP*.TIF';'*GFP*.tif';'*.*'}, ...
-        'Select images stained for actin...', zline_path{1,1});
+        'Select images stained for actin...', zline_path{1});
     
     % Make sure that the actin files were selected.
     if isequal(actin_path, 0); 
