@@ -24,91 +24,81 @@
 % University of California, Irvine 
 
 
-function [ im_struct ] = analyzeImage( filenames, settings )
+function [ im_struct ] = analyzeImage( filename, settings )
 %This function will be the "main" analyzing script for a series of
 %functions 
 
 %%%%%%%%%%%%%%%%%%%%%%%% Initalize Image Info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Save the Options struct from settings 
+Options = settings.Options;
+
 % Store the image information
-[ im_struct ] = storeImageInfo( filenames.zline );
-
-% Create a new folder in the image directory with the same name as the 
-% image file if it does not exist. If it does exist, add numbers until it
-% no longer exists and then create it 
-create = true; 
-new_subfolder = ...
-    addDirectory( im_struct.im_path, im_struct.im_name, create ); 
-
-% Save the name of the new path 
-im_struct.save_path = fullfile(im_struct.im_path, new_subfolder); 
-
-%%%%%%%%%%%%%%%%% Compute Orientation Information %%%%%%%%%%%%%%%%%%%%%%%%%
-% Update user 
-disp('Filtering and computing orientation information...');
+[ im_struct ] = storeImageInfo( filename );
 
 %Create a grayscale version of the image (if it was not already in
 %grayscale) 
-[ im_struct.gray ] = makeGray( im_struct.img); 
+[ im_struct.gray ] = makeGray( im_struct.img ); 
 
-% Run Diffusion Filter:
+% Create a new folder in the image directory with the same name as the 
+% image file 
+mkdir(im_struct.im_path,im_struct.im_name); 
+
+% Save the name of the new path 
+save_path = strcat(im_struct.im_path, '/', im_struct.im_name); 
+im_struct.save_path = save_path; 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% Run Coherence Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
 % contrast and calculates the orientation vectors for later usage. 
 % The parameters (supplied by the GUI) are (1) Orientation Smoothing and
 % (2) Diffusion Time 
 
+% Start a wait bar 
+hwait = waitbar(0,'Diffusion Filter...');
+
 % Inputs are the grayscale image and the Options struct from settings. 
 % The output is the diffusion filtered image and eigenvectors - Not sure
 % why this is important, but... 
-[ CEDgray, ~, ~ ] = CoherenceFilter( im_struct.gray, settings.Options );
-
-% Clear the command line 
-clc; 
+[ im_struct.CEDgray, im_struct.v1x, im_struct.v1y ] = ...
+    CoherenceFilter( im_struct.gray, settings.Options );
 
 % Convert the matrix to be an intensity image 
-CEDgray = mat2gray( CEDgray );
+im_struct.CEDgray = mat2gray( im_struct.CEDgray );
 
-% Run Top Hat Filter:
-%Compute the top hat filter using the disk structuring element with the
-%threshold defined by the user input tophat filter. It then adjusts the
-%image so that 1% of data is saturated at low and high intensities of the
-%image 
-CEDtophat = imadjust( imtophat( CEDgray, strel( 'disk', ...
-    tophat_size ) ) );
-
-% Calculate orientation vectors
-[orientim, reliability] = ridgeorient(CEDtophat, ...
-    Options.sigma, Options.rho, Options.rho);
-
-
-
-
-% % Fitler the image using coherence-enhancing anisotropic diffusion 
-% % filtering and top hat filtering, then compute the orientation vectors 
-% [ im_struct.gray, im_struct.CEDgray, im_struct.CEDtophat, ...
-%     im_struct.orientim, im_struct.reliability ] = ...
-%     orientInfo( im_struct.img, settings.Options, settings.tophat_size); 
-
-% If the user would like to display the diffusion filtered image, display 
-% it
+% If the user would like to display the filtered image, display it
 if settings.disp_df
     % Open a figure and display the image
     figure; imshow( im_struct.CEDgray );
     
     % Save the figure. 
-    imwrite( im_struct.CEDgray, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.CEDgray, fullfile(save_path, ...
         strcat( im_struct.im_name, '_DiffusionFiltered.tif' ) ),...
         'Compression','none');
 
 end
 
-% If the user would like to display the top hat filtered image, display it
+%%%%%%%%%%%%%%%%%%%%%%%%% Run Top Hat Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Update waitbar 
+waitbar(0.5,hwait,'Top Hat Filter...');
+
+%Compute the top hat filter using the disk structuring element with the
+%threshold defined by the user input tophat filter. It then adjusts the
+%image so that 1% of data is saturated at low and high intensities of the
+%image 
+im_struct.CEDtophat = ...
+    imadjust( imtophat( im_struct.CEDgray, ...
+    strel( 'disk', settings.tophat_size ) ) );
+
+% If the user would like to display the filtered image, display it
 if settings.disp_tophat
     % Open a figure and display the image
     figure; imshow( im_struct.CEDtophat ); 
     
     % Save the figure. 
-    imwrite( im_struct.CEDtophat, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.CEDtophat, fullfile(save_path, ...
         strcat( im_struct.im_name, '_TopHatFiltered.tif' ) ),...
         'Compression','none');
     
@@ -116,15 +106,12 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Update user
-disp('Threshold and Clean...');
+% Update waitbar 
+waitbar(0.7,hwait,'Threshold and Clean...');
 
 % Use adaptive thresholding to convert to black and white.  
 [ im_struct.CEDbw, im_struct.surface_thresh ] = ...
     segmentImage( im_struct.CEDtophat ); 
-
-% Remove regions that are not reliable (less than 0.5)
-im_struct.CEDbw( im_struct.reliability < settings.reliability_thresh) = 0; 
 
 % If the user would like to display the filtered image, display it
 if settings.disp_bw
@@ -132,7 +119,7 @@ if settings.disp_bw
     figure; imshow( im_struct.CEDbw )
     
     % Save the figure. 
-    imwrite( im_struct.CEDbw, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.CEDbw, fullfile(save_path, ...
         strcat( im_struct.im_name, '_Binariazed.tif' ) ),...
         'Compression','none');
     
@@ -147,7 +134,7 @@ if settings.disp_nonoise
     figure; imshow(im_struct.CEDclean)
     
     % Save the figure. 
-    imwrite( im_struct.CEDclean, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.CEDclean, fullfile(save_path, ...
         strcat( im_struct.im_name, '_BinariazedClean.tif' ) ),...
         'Compression','none');
     
@@ -155,8 +142,8 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Skeletonize %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Update user 
-disp('Skeletonization...');
+% Update waitbar 
+waitbar(0.8,hwait,'Skeletonization...');
 
 % Use Matlab skeletonization morphological function, convert to a skeleton,
 % fill inside spaces and then conver to a skeleton again.
@@ -173,7 +160,7 @@ if settings.disp_skel
     figure; imshow( im_struct.skel ); 
     
     % Save the figure. 
-    imwrite( im_struct.skel, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.skel, fullfile(save_path, ...
         strcat( im_struct.im_name, '_Skeleton.tif' ) ),...
         'Compression','none');
     
@@ -181,71 +168,66 @@ if settings.disp_skel
     figure; imshow(im_struct.skelTrim)
 
     % Save the figure. 
-    imwrite( im_struct.skelTrim, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.skelTrim, fullfile(save_path, ...
         strcat( im_struct.im_name, '_SkeletonTrimmed.tif' ) ),...
         'Compression','none');
     
 end
 
-%%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% If the image should not be filtered with actin, set the final mask equal
-% to the trimmed skeleton and save 
+% Comment out mask creation phase for now - just want to test parameter
+% choices
+im_struct.skel_final = im_struct.skelTrim; 
 
-if ~settings.actin_filt
-    % Set the final skeleton equal to the trimmed skeleton
-    im_struct.skel_final = im_struct.skelTrim; 
-    
-    % Create a mask of all ones.
-    im_struct.mask = ones(size(im_struct.skelTrim)); 
-    
-else
-    disp('Actin Filtering...'); 
-    
-    % Remove false sarcomeres by looking at the actin directors
-    [ im_struct.mask, im_struct.actin_struct, im_struct.dp ] = ...
-    filterWithActin( im_struct, filenames, settings); 
-    
-    % Remove regions wh
-    % Multiply the mask by the trimmed skeleton to get the final skeleton
-    im_struct.skel_final = im_struct.mask.*im_struct.skelTrim;
-end 
+% %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Create a mask to remove false z-lines  
+
+% This function will be used to seelct regions of the image that should be
+% included in analysis 
+% If include is true then the mask will only include the selected regions 
+% If include is false, the mask will exclude the selected regions 
+im_struct.mask  = select_ROI( mat2gray(im_struct.img) , ...
+    im_struct.skelTrim, 0 );
+% im_struct.mask = select_ROI( im_struct.skelTrim, 0 ); 
 
 % Save the mask. 
-imwrite( im_struct.mask, fullfile(im_struct.save_path, ...
+imwrite( im_struct.mask, fullfile(save_path, ...
     strcat( im_struct.im_name, '_Mask.tif' ) ),...
     'Compression','none');
+    
+% Create final skeleton 
+im_struct.skel_final = im_struct.mask .* im_struct.skelTrim; 
 
 % Save the final skeleton. 
-imwrite( im_struct.skel_final, fullfile(im_struct.save_path, ...
+imwrite( im_struct.skel_final, fullfile(save_path, ...
     strcat( im_struct.im_name, '_SkeletonMasked.tif' ) ),...
     'Compression','none');
 
-%%%%%%%%%%%%%%%%% Report Final Orentation Vectors %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% Generate Angles Map %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Update waitbar 
+waitbar(0.9,hwait,'Calculating Orientations...');
+
+% Eventually add into GUI, but for now just set values. 
+settings.gradientsigma = 1;
+settings.blocksigma = 3; 
+settings.orientsmoothsigma = 3; 
+
+% Calculate orientation vectors
+[im_struct.orientim, ~] = ridgeorient(im_struct.CEDtophat, ...
+    settings.gradientsigma, settings.blocksigma,...
+    settings.orientsmoothsigma);
 
 % Remove regions that were not part of the binary skeleton
 im_struct.orientim(~im_struct.skel_final) = NaN; 
 
-% Post filtering skeleton 
-post_filt = im_struct.skel_final;
-post_filt = post_filt(:);
-post_filt(post_filt == 0) = []; 
-% Pre filtering skeleton 
-pre_filt = im_struct.skelTrim; 
-pre_filt = pre_filt(:); 
-pre_filt(pre_filt == 0) = []; 
-% Calculate the non-sarcomeric alpha actinin 
-% number of pixles eliminated / # total # of pixles positive for alpha
-% actinin 
-im_struct.non_sarc = (length(pre_filt) - length(post_filt))/ length(pre_filt);
+% Close the wait bar
+close(hwait)
 
 % Display that you're saving the data
 disp('Saving Data...'); 
 
 % Save the data 
-save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
+save(fullfile(save_path, strcat(im_struct.im_name,...
     '_OrientationAnalysis.mat')), 'im_struct', 'settings');
 
-% Clear command line 
-clc; 
 end
-
