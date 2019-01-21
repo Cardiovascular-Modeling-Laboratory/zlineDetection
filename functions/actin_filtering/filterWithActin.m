@@ -34,30 +34,46 @@ actin_struct.filename = filenames.actin;
     actinDetection( filenames.actin, settings, settings.disp_actin, ...
     im_struct.save_path); 
 
-% Compute the director for each grid 
-[ actin_struct.dims, actin_struct.oop, actin_struct.director, ...
-    actin_struct.grid_info, actin_struct.visualization_matrix, ...
-    actin_struct.director_matrix] = ...
-    gridDirector( actin_struct.actin_orientim, settings.grid_size );
+% If not doing a grid parameter exploration comput the director for each
+% grid. If not then procceed to parameter exploration. 
+if ~settings.grid_explore 
+    % Compute the director for each grid 
+    [ actin_struct.dims, actin_struct.oop, actin_struct.director, ...
+        actin_struct.grid_info, actin_struct.visualization_matrix, ...
+        actin_struct.director_matrix] = ...
+        gridDirector( actin_struct.actin_orientim, settings.grid_size );
 
+    % Save the image 
+    if settings.disp_actin
+        % Visualize the actin director on top of the z-line image by first
+        % displaying the z-line image and then plotting the orinetation 
+        %vectors. 
+        figure;
+        spacing = 15; color_spec = 'b'; 
+        plotOrientationVectors(actin_struct.visualization_matrix,...
+            mat2gray(im_struct.gray),spacing, color_spec) 
 
-% Save the image 
-if settings.disp_actin
-    % Visualize the actin director on top of the z-line image by first
-    % displaying the z-line image and then plotting the orinetation vectors. 
-    figure;
-    spacing = 15; color_spec = 'b'; 
-    plotOrientationVectors(actin_struct.visualization_matrix,...
-        mat2gray(im_struct.gray),spacing, color_spec) 
+        % Save figure 
+        saveas(gcf, fullfile(im_struct.save_path, ...
+            strcat( im_struct.im_name, '_zlineActinDirector.tif' )), ...
+            'tiffn');
+    end 
 
-    % Save figure 
-    saveas(gcf, fullfile(im_struct.save_path, ...
-        strcat( im_struct.im_name, '_zlineActinDirector.tif' )), 'tiffn');
+    %Take the dot product sqrt(cos(th1 - th2)^2);
+    dp = sqrt(cos(im_struct.orientim - actin_struct.director_matrix).^2); 
+    
+else
+    %Set grid director ouputs to not numbers
+    actin_struct.dims = NaN;
+    actin_struct.oop = NaN;
+    actin_struct.director = NaN; 
+    actin_struct.grid_info = NaN; 
+    actin_struct.visualization_matrix = NaN;
+    actin_struct.director_matrix = NaN; 
+    
+    %Create a dot product matrix of all zeros
+    dp = zeros(size(im_struct.orientim)); 
 end 
-
-%Take the dot product sqrt(cos(th1 - th2)^2);
-dp = sqrt(cos(im_struct.orientim - actin_struct.director_matrix).^2); 
-
 %Create mask 
 mask = ones(size(im_struct.orientim)); 
 

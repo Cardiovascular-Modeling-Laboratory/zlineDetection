@@ -167,6 +167,8 @@ for k = 1:zn
                 actin_explore.grid_min = str2double(grid_answer{1});
                 actin_explore.grid_max = str2double(grid_answer{2});
                 actin_explore.grid_step = str2double(grid_answer{3});
+                %Look at the different grids. 
+%                 exploreGrids(im_struct, settings, actin_explore);
             end 
         else
             disp('To be implemented...'); 
@@ -175,6 +177,8 @@ for k = 1:zn
             actin_explore.grid_min = str2double(grid_answer{1});
             actin_explore.grid_max = str2double(grid_answer{2});
             actin_explore.grid_step = str2double(grid_answer{3});
+%             %Look at the different grids. 
+%             exploreGrids(im_struct, settings, actin_explore);
         end 
     end 
     
