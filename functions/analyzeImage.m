@@ -87,8 +87,10 @@ disp('Threshold and Clean...');
 [ im_struct.CEDbw, im_struct.surface_thresh ] = ...
     segmentImage( im_struct.CEDtophat ); 
 
-% Remove regions that are not reliable (less than 0.5)
-im_struct.CEDbw( im_struct.reliability < settings.actin_thresh) = 0; 
+if settings.actin_thresh <=1 
+    % Remove regions that are not reliable (less than 0.5)
+    im_struct.CEDbw( im_struct.reliability < settings.actin_thresh) = 0; 
+end 
 
 % If the user would like to display the filtered image, display it
 if settings.disp_bw

@@ -12,7 +12,6 @@ new_subfolder = ...
 % Save the name of the new path 
 actin_explore.save_path = fullfile(im_struct.save_path, new_subfolder); 
 
-
 %Create a cell to store all of the masks
 actin_explore.masks = ...
     cell(length(actin_explore.min_thresh:actin_explore.thresh_step:...
@@ -62,9 +61,15 @@ pre_filt = im_struct.skel_final;
 pre_filt = pre_filt(:); 
 pre_filt(pre_filt == 0) = []; 
 
+% Create a name to save the file 
+summary_name = strcat(im_struct.im_name, '_ActinExploration.mat');
+
+% If the filename exists, add a number until it doesn't 
+summary_name = appendFilename( im_struct.save_path, summary_name ); 
+
 % Save the data (append on each iteration)
-save(fullfile(actin_explore.save_path, strcat(im_struct.im_name,...
-    '_ActinExploration.mat')), 'im_struct', 'settings', 'actin_explore');
+save(fullfile(im_struct.save_path, summary_name), ...
+    'im_struct', 'settings', 'actin_explore');
 
 for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
         actin_explore.max_thresh
@@ -147,8 +152,8 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
     actin_explore.actin_thresh(actin_explore.n,1) = thresh;
     
     % Append the file 
-    save(fullfile(actin_explore.save_path, strcat(im_struct.im_name,...
-        '_ActinExploration.mat')), 'actin_explore');
+    save(fullfile(actin_explore.save_path, summary_name), ...
+        'actin_explore', '-append');
 end 
 
 %Plot the resulting data 
@@ -157,6 +162,8 @@ hold on;
 
 %Plot the threshold vs. the median
 subplot(3,2,1); 
+plot(actin_explore.actin_thresh, actin_explore.medians, 'o', ...
+    'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Median (\mu m) vs Actin Threshold'),...
     'FontSize',12,'FontWeight','bold');
@@ -166,6 +173,8 @@ xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
 
 %Plot the threshold vs. the sum
 subplot(3,2,2); 
+plot(actin_explore.actin_thresh, actin_explore.sums, 'o', ...
+    'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Sum (\mu m) vs Actin Threshold'),...
     'FontSize',12,'FontWeight','bold');
@@ -173,8 +182,10 @@ ylabel('Total CZL (\mu m)','FontSize',12,...
     'FontWeight','bold');
 xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
 
-%Plot the threshold vs. the sum
+%Plot the non-zline fraction vs. actin trheshold 
 subplot(3,2,3); 
+plot(actin_explore.actin_thresh, actin_explore.non_sarcs, 'o', ...
+    'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Non Z-line Fraction vs Actin Threshold'),...
     'FontSize',12,'FontWeight','bold');
@@ -184,6 +195,8 @@ xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
 
 %Plot the median vs non zline 
 subplot(3,2,4); 
+plot(actin_explore.non_sarcs, actin_explore.medians, 'o', ...
+    'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Median (\mu m) vs Non Z-line Fraction'),...
     'FontSize',12,'FontWeight','bold');
@@ -193,6 +206,8 @@ xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
 
 %Plot the sum vs non zline 
 subplot(3,2,5); 
+plot(actin_explore.non_sarcs, actin_explore.sums, 'o', ...
+    'MarkerFaceColor', 'k'); 
 set(gca,'fontsize',12)
 title( strcat('Sum (\mu m) vs Non Z-line Fraction'),...
     'FontSize',12,'FontWeight','bold');
