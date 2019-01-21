@@ -61,25 +61,15 @@ pre_filt = im_struct.skel_final;
 pre_filt = pre_filt(:); 
 pre_filt(pre_filt == 0) = []; 
 
-% Create a name to save the file 
-summary_name = strcat(im_struct.im_name, '_ActinExploration.mat');
-
-% If the filename exists, add a number until it doesn't 
-summary_name = appendFilename( im_struct.save_path, summary_name ); 
-
-% Save the data (append on each iteration)
-save(fullfile(im_struct.save_path, summary_name), ...
-    'im_struct', 'settings', 'actin_explore');
-
 for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
         actin_explore.max_thresh
+    
+    %Increase counter 
+    actin_explore.n = actin_explore.n + 1; 
     
     %Create a temporary save name 
     save_name = strcat(im_struct.im_name, '_ACTINthresh', ...
         num2str(actin_explore.n));
-    
-    %Increase counter 
-    actin_explore.n = actin_explore.n+1; 
     
     %Create a matrix to store the mask 
     mask = ones(size(im_struct.orientim)); 
@@ -150,11 +140,17 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
     
     %Save the threshold value 
     actin_explore.actin_thresh(actin_explore.n,1) = thresh;
-    
-    % Append the file 
-    save(fullfile(im_struct.save_path, summary_name), ...
-        'actin_explore', '-append');
 end 
+
+% Create a name to save the file 
+summary_name = strcat(im_struct.im_name, '_ActinExploration.mat');
+
+% If the filename exists, add a number until it doesn't 
+summary_name = appendFilename( im_struct.save_path, summary_name ); 
+
+% Save the data (append on each iteration)
+save(fullfile(im_struct.save_path, summary_name), ...
+    'im_struct', 'settings', 'actin_explore');
 
 %Plot the resulting data 
 figure; 
