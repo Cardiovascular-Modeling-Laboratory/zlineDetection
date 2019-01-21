@@ -22,8 +22,9 @@
 % University of California, Irvine 
 
 
-function [ dims, oops, directors, grid_info, visualization_matrix, dir_mat] = ...
-    gridDirector( orientation_matrix, grid_size )
+function [ dims, oops, directors, grid_info, ...
+    visualization_matrix, dir_mat] = ...
+    gridDirector( orientation_matrix, grid_size)
 
 
 %Get size of the matrix of orientation angles 
