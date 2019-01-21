@@ -89,7 +89,7 @@ for k = 1:zn
             %Dimensions
             dims = [1 35];
             %Default inputs
-            definput = {'0','1','0.05'};
+            definput = {'0.05','1','0.05'};
             %Save answers
             thresh_answer = inputdlg(prompt,prompt_title,dims,definput);
 
