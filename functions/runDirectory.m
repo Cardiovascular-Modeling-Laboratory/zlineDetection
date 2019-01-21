@@ -120,7 +120,7 @@ for k = 1:zn
                 
         %Loop through the range and save the skeleton, continuous z-line
         %length and the non sarc amount. 
-        
+        exploreFilterWithActin( im_struct, settings, actin_explore);
     end 
     
     

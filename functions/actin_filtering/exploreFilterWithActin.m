@@ -149,8 +149,60 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
     % Append the file 
     save(fullfile(actin_explore.save_path, strcat(im_struct.im_name,...
         '_ActinExploration.mat')), 'actin_explore');
-
 end 
+
+%Plot the resulting data 
+figure; 
+hold on; 
+
+%Plot the threshold vs. the median
+subplot(3,2,1); 
+set(gca,'fontsize',12)
+title( strcat('Median (\mu m) vs Actin Threshold'),...
+    'FontSize',12,'FontWeight','bold');
+ylabel('Median CZL (\mu m)','FontSize',12,...
+    'FontWeight','bold');
+xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
+
+%Plot the threshold vs. the sum
+subplot(3,2,2); 
+set(gca,'fontsize',12)
+title( strcat('Sum (\mu m) vs Actin Threshold'),...
+    'FontSize',12,'FontWeight','bold');
+ylabel('Total CZL (\mu m)','FontSize',12,...
+    'FontWeight','bold');
+xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
+
+%Plot the threshold vs. the sum
+subplot(3,2,3); 
+set(gca,'fontsize',12)
+title( strcat('Non Z-line Fraction vs Actin Threshold'),...
+    'FontSize',12,'FontWeight','bold');
+ylabel('Non Z-line Fraction','FontSize',12,...
+    'FontWeight','bold');
+xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
+
+%Plot the median vs non zline 
+subplot(3,2,4); 
+set(gca,'fontsize',12)
+title( strcat('Median (\mu m) vs Non Z-line Fraction'),...
+    'FontSize',12,'FontWeight','bold');
+ylabel('Median CZL (\mu m)','FontSize',12,...
+    'FontWeight','bold');
+xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
+
+%Plot the sum vs non zline 
+subplot(3,2,5); 
+set(gca,'fontsize',12)
+title( strcat('Sum (\mu m) vs Non Z-line Fraction'),...
+    'FontSize',12,'FontWeight','bold');
+ylabel('Total CZL (\mu m)','FontSize',12,...
+    'FontWeight','bold');
+xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
+
+%Save pdf
+saveas(gcf, fullfile(im_struct.save_path, ...
+    strcat(im_struct.im_name, '_ActinExploration')), 'pdf');
 
 end
 
