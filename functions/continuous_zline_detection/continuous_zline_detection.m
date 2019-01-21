@@ -3,14 +3,31 @@ function [ distances_um ] = continuous_zline_detection(im_struct, settings)
 % actinin stained sarcomeres. 
 
 %%%%%%%%%%%%%%%%%%%%%%%% LOAD FROM IM_STRUCT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Load orientation angles from the image structure
-angles = im_struct.orientim; 
+% Check to see if this is a parameter exploration for actin filtering
+if actin_thresh <= 1
+    %Load orientation angles from the image structure
+    angles = im_struct.orientim; 
 
-%Create a .mat filename 
-output_filename = strcat( im_struct.im_name, '_zlines.mat'); 
+    %Create a .mat filename 
+    output_filename = strcat( im_struct.im_name, '_zlines.mat'); 
 
-%Store the location to save all of the files
-save_path = im_struct.save_path; 
+    %Store the location to save all of the files
+    save_path = im_struct.save_path; 
+else 
+    %Save the actin explore struct 
+    actin_explore = im_struct.actin_explore; 
+    
+    %Load orientation angles from the current iteration of the
+    %actin_explore struct
+    angles = actin_explore.orientims{actin_explore.n,1};
+    
+    %Create a .mat filename 
+    output_filename = strcat( im_struct.im_name,'_ACTINthresh', ...
+        num2str(actin_explore.n), '_zlines.mat'); 
+    
+    %Store the location to save all of the files 
+    save_path = actin_explore.save_path; 
+end 
 
 %If there are any NaN values in the angles matrix, set them to 0.
 angles(isnan(angles)) = 0; 
