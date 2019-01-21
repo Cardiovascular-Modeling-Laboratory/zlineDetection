@@ -22,7 +22,7 @@
 % University of California, Irvine 
 
 
-function [ dims, oop, director, grid_info, visualization_matrix] = ...
+function [ dims, oops, directors, grid_info, visualization_matrix] = ...
     gridDirector( orientation_matrix, grid_size )
 
 
@@ -54,10 +54,10 @@ tot_grids = length(1:grid_size(1):m1)*length(1:grid_size(2):m2);
 dims = zeros(tot_grids,4); 
 
 % Save the OOP 
-oop = zeros(tot_grids,1); 
+oops = zeros(tot_grids,1); 
 
 % Save the director 
-director = zeros(tot_grids,1); 
+directors = zeros(tot_grids,1); 
 
 % Save number of nonzero pixels and the total number of pixels 
 % [size1, size 2, total pixels, total nonzero pixels] 
@@ -98,22 +98,22 @@ for d1 = 1:grid_size(1):m1
         % in the grid 
         if grid_info(n,4) > 0 
             %Calculate the OOP and director 
-            [ oop(n,1), director_angle, ~ ] = ...
+            [ oops(n,1), director_angle, ~ ] = ...
                 calculate_OOP( temp_array ); 
             
             %Covert the director angle to radians
-            director(n,1) = deg2rad(director_angle); 
+            directors(n,1) = deg2rad(director_angle); 
         else
             % If there aren't any orientation vectors in the grid, set the
             % oop and director equal to zero. 
-            oop(n,1) = NaN; 
-            director(n,1) = NaN; 
+            oops(n,1) = NaN; 
+            directors(n,1) = NaN; 
         end 
         
         %Set the middle of the grid in the visualization matrix equal to
         %the director
         visualization_matrix(round((d1+s1)/2),round((d2+s2)/2)) = ...
-            director(n,1); 
+            directors(n,1); 
         
         %Save the dimensions 
         dims(n,1) = d1; dims(n,2) = s1; dims(n,3) = d2; dims(n,4) = s2; 

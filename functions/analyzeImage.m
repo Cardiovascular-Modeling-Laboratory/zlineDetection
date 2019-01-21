@@ -167,12 +167,14 @@ if ~settings.actin_filt
     
 else
     disp('Actin Filtering...'); 
-    
-    % Compute the orientation vectors for actin
-    [ im_struct.actin_orientim, im_struct.actin_reliability, ...
-        im_struct.actin_im ] = ...
-        actinDetection( filenames.actin, settings, save_path ); 
-    
+    [ im_struct.mask, im_struct.actin_struct ] = ...
+    filterWithActin( im_struct, filenames, settings, save_path); 
+
+%     % Compute the orientation vectors for actin
+%     [ im_struct.actin_orientim, im_struct.actin_reliability, ...
+%         im_struct.actin_im ] = ...
+%         actinDetection( filenames.actin, settings, save_path ); 
+%     
     
     % % Save the actin analysis image name 
     % actinAnalysis_imagename = ...

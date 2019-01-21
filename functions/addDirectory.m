@@ -1,4 +1,4 @@
-% appendName - This function will check if a directory exists. If
+% addDirectory - This function will check if a directory exists. If
 % it does exist, it will keep adding numbers until it no longer exists and
 % then create that directory if the user would like, otherwise it will just
 % output the non existing directory
