@@ -6,6 +6,12 @@ function [ distances_um ] = continuous_zline_detection(im_struct, settings)
 %Load orientation angles from the image structure
 angles = im_struct.orientim; 
 
+%Create a .mat filename 
+output_filename = strcat( im_struct.im_name, '_zlines.mat'); 
+
+%Store the location to save all of the files
+save_path = im_struct.save_path; 
+
 %If there are any NaN values in the angles matrix, set them to 0.
 angles(isnan(angles)) = 0; 
 
@@ -18,9 +24,6 @@ dot_product_error = settings.dp_threshold;
 %Save the image and convert to a matrix 
 BW = im_struct.img; 
 BW = mat2gray(BW);
-
-%Create a .mat filename 
-output_filename = strcat( im_struct.im_name, '_zlines.mat'); 
 
 %Find the nonzero positions of this matrix and get their values. 
 [ nonzero_rows, nonzero_cols] = find(angles);
@@ -60,9 +63,9 @@ disp('Plotting and calculating the lengths of continuous z-lines...');
 
 %Save as a .fig file (Matlab Figure)
 fig_name = strcat('z_lines_', im_struct.im_name, '.fig');
-savefig(fullfile(im_struct.save_path, fig_name));
+savefig(fullfile(save_path, fig_name));
 %Save as a .tif file
-saveas(gcf, fullfile(im_struct.save_path, fig_name(1:end-4)), 'tiffn');
+saveas(gcf, fullfile(save_path, fig_name(1:end-4)), 'tiffn');
 
 
 % If the actin detect image is available, plot the z-lines on top of it 
@@ -86,8 +89,8 @@ if settings.actin_filt
     
     %Save the actin image as a .tif and .fig
     actin_name = strcat('zlines_', actin_name,'.fig');
-    savefig(fullfile(im_struct.save_path, actin_name));
-    saveas(gcf, fullfile(im_struct.save_path, actin_name(1:end-4)),...
+    savefig(fullfile(save_path, actin_name));
+    saveas(gcf, fullfile(save_path, actin_name(1:end-4)),...
         'tiffn');
 
 end 
@@ -104,7 +107,7 @@ disp('Saving data...');
 
 %Save the (1) z-line clusters (2) cluster trackers (3) distances in microns
 %(4) distances in microns (5) number removed 
-save(fullfile(im_struct.save_path, output_filename), 'zline_clusters', ...
+save(fullfile(save_path, output_filename), 'zline_clusters', ...
     'cluster_tracker','distances_no_nan', ...
     'distances_um', 'rmCount');
 end 
