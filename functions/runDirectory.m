@@ -85,13 +85,13 @@ for k = 1:zn
             prompt = {'Minimum Threshold:','Max Threshold:',...
                 'Step Size:'};
             %Title of prompt
-            title = 'Actin Filtering Parameter Exploration';
+            prompt_title = 'Actin Filtering Parameter Exploration';
             %Dimensions
             dims = [1 35];
             %Default inputs
             definput = {'0','1','0.05'};
             %Save answers
-            thresh_answer = inputdlg(prompt,title,dims,definput);
+            thresh_answer = inputdlg(prompt,prompt_title,dims,definput);
 
         end 
     else
