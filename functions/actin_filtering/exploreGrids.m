@@ -113,7 +113,7 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
         summary_explore.medians{n,1} = actin_explore.medians; 
 
         %Create a matrix to store all of the sums 
-        summary_explore.sums{n,1} = actin_explore.sum;
+        summary_explore.sums{n,1} = actin_explore.sums;
             
         %Create a matrix to store all of the threshold values 
         summary_explore.actin_thresh{n,1} = actin_explore.actin_thresh;   
