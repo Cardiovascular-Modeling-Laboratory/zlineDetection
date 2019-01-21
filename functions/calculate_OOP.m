@@ -4,7 +4,7 @@ function [ OOP, directionAngle, direction_error ] = ...
 %orientationalOrder_Matrix_function from OOP_MultipleCond 
 
 %Reshape the matrix and remove all zero values. 
-reshaped_matrix = angles_matrix; 
+reshaped_matrix = angles_matrix(:); 
 reshaped_matrix(reshaped_matrix == 0) = []; 
 
 r = zeros(2, length(reshaped_matrix));
