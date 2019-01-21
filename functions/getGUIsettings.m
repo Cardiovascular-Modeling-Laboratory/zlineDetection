@@ -84,8 +84,8 @@ settings.bio_noise_area = str2double(get(handles.bio_noise_area, 'String'));
 settings.noise_area= round( settings.bio_noise_area.*(pix2um.^2) ); 
 
 %Reliability threshold 
-settings.reliability_thresh = ...
-    str2double(get(handles.reliability_thresh, 'String')); 
+settings.actin_thresh = ...
+    str2double(get(handles.actin_thresh, 'String')); 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 

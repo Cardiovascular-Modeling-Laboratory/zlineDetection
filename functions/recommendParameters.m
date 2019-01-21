@@ -25,7 +25,7 @@ settings.bio_tophat_size = 0.5;
 settings.bio_noise_area = 0.2; 
 
 % Remove non-reliable orientations from the orientation matrix
-settings.reliability_thresh = 0.5;
+settings.actin_thresh = 0.5;
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 

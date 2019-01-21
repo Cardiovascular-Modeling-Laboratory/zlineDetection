@@ -88,7 +88,7 @@ disp('Threshold and Clean...');
     segmentImage( im_struct.CEDtophat ); 
 
 % Remove regions that are not reliable (less than 0.5)
-im_struct.CEDbw( im_struct.reliability < settings.reliability_thresh) = 0; 
+im_struct.CEDbw( im_struct.reliability < settings.actin_thresh) = 0; 
 
 % If the user would like to display the filtered image, display it
 if settings.disp_bw
@@ -168,7 +168,8 @@ else
     % Remove false sarcomeres by looking at the actin directors
     [ im_struct.mask, im_struct.actin_struct, im_struct.dp ] = ...
     filterWithActin( im_struct, filenames, settings); 
-
+    
+    % Remove regions wh
     % Multiply the mask by the trimmed skeleton to get the final skeleton
     im_struct.skel_final = im_struct.mask.*im_struct.skelTrim;
 end 
