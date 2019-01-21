@@ -5,6 +5,7 @@ function [ distances_um ] = continuous_zline_detection(im_struct, settings)
 %%%%%%%%%%%%%%%%%%%%%%%% LOAD FROM IM_STRUCT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Load orientation angles from the image structure
 angles = im_struct.orientim; 
+
 %If there are any NaN values in the angles matrix, set them to 0.
 angles(isnan(angles)) = 0; 
 
@@ -62,6 +63,32 @@ fig_name = strcat('z_lines_', im_struct.im_name, '.fig');
 savefig(fullfile(im_struct.save_path, fig_name));
 %Save as a .tif file
 saveas(gcf, fullfile(im_struct.save_path, fig_name(1:end-4)), 'tiffn');
+
+
+% If the actin detect image is available, plot the z-lines on top of it 
+if actin_filt
+    % Save the actin struct
+    actin_struct = im_struct.actin_struct;
+    
+    %Save the actin image
+    actin_im = actin_struct.actin_im;
+    
+    %Convert to gray matrix
+    actin_im = mat2gray(actin_im); 
+    
+    %Plot z-lines on top of the actin image 
+    disp('Plotting continuous z-lines on actin image...'); 
+    [ ~, ~, ~ ] = ...
+        calculate_lengths( actin_im, zline_clusters);
+    
+    %Get the file parts of the actin 
+    [~, actin_name] = fileparts(actin_struct.filename);
+    
+    %Save the actin image as a .tif 
+    actin_name = strcat('zlines_', actin_name);
+    saveas(gcf, fullfile(im_struct.save_path, actin_name), 'tiffn');
+
+end 
 
 %Remove any nan from distances 
 distances_no_nan = distance_storage; 
