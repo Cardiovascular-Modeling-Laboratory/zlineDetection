@@ -111,16 +111,16 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
             exploreFilterWithActin( im_struct, settings, actin_explore); 
         
         %Store the non sarc amount
-        summary_explore.non_sarcs{n,1} = actin_explore.non_sarcs(n,1); 
+        summary_explore.non_sarcs{n,1} = actin_explore.non_sarcs; 
 
         %Store the medians 
-        summary_explore.medians{n,1} = actin_explore.medians(n,1); 
+        summary_explore.medians{n,1} = actin_explore.medians; 
 
         %Store the sums 
-        summary_explore.sums{n,1} = actin_explore.sums(n,1);
+        summary_explore.sums{n,1} = actin_explore.sums;
             
         %Store the threshold values 
-        summary_explore.actin_thresh{n,1} = actin_explore.actin_thresh(n,1);   
+        summary_explore.actin_thresh{n,1} = actin_explore.actin_thresh;   
             
         %Store the grid sizes
         summary_explore.grid_sizes(n,1)= grids;   
@@ -234,7 +234,10 @@ end
 
 %Summary and saving data
 if settings.actin_thresh > 1
-    %Save all of the analysis 
+    
+    %Summarize the analysis 
+    actinExplorePlots( im_struct, summary_explore, actin_explore, settings ); 
+    
     % Create a name to save the file 
     summary_name = strcat(im_struct.im_name, '_GridActinExploration.mat');
 
