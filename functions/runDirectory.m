@@ -82,47 +82,100 @@ for k = 1:zn
         if settings.actin_thresh > 1 && k == 1
             
             %Prompt Questions
-            prompt = {'Minimum Threshold:','Max Threshold:',...
+            thresh_prompt = {'Minimum Threshold:','Max Threshold:',...
                 'Step Size:'};
             %Title of prompt
-            prompt_title = 'Actin Filtering Parameter Exploration';
+            thresh_title = 'Actin Filtering Parameter Exploration';
             %Dimensions
-            dims = [1 35];
+            thresh_dims = [1 35];
             %Default inputs
-            definput = {'0.05','1','0.05'};
+            thresh_definput = {'0.05','1','0.05'};
             %Save answers
-            thresh_answer = inputdlg(prompt,prompt_title,dims,definput);
-
+            thresh_answer = inputdlg(thresh_prompt,thresh_title,...
+                thresh_dims,thresh_definput);
+            
+            %Ask if they'd also like to do grid size exploration. 
+            grid_q = questdlg(...
+                'Would you also like to do a grid size exploration?',...
+                'Yes', 'No'); 
+            if strcmp(grid_q, 'Yes')
+                grid_prompt = {'Smallest Grid:','Largest Grid:',...
+                'Step Size:'};
+                grid_title = 'Grid Size Exploration';
+                grid_dims = [1,35];
+                grid_definput = {'10', '30','10'}; 
+                grid_answer = inputdlg(grid_prompt,grid_title,...
+                grid_dims,grid_definput);
+                
+                %Create a new setting 
+                settings.grid_explore = true; 
+            else
+                settings.grid_explore = false; 
+            end
+        elseif k==1 && sum(settings.grid_size) == 0
+                grid_prompt = {'Smallest Grid:','Largest Grid:',...
+                'Step Size:'};
+                grid_title = 'Grid Size Exploration';
+                grid_dims = [1,35];
+                grid_definput = {'10', '30','10'}; 
+                grid_answer = inputdlg(grid_prompt,grid_title,...
+                grid_dims,grid_definput);
+                
+                %Create a new setting 
+                settings.grid_explore = true; 
+            else
+                settings.grid_explore = false; 
+                
         end 
     else
         filenames.actin = NaN; 
+        settings.grid_explore = false; 
     end 
     
     % Perform the analysis including saving the image 
     im_struct = analyzeImage( filenames, settings ); 
     
+    
     % If the user wants to perform a parameter exploration for actin
     % filtering
-    if settings.actin_thresh > 1
+    if settings.actin_thresh > 1 || settings.grid_explore
         %Create a struct to hold all of the relevant information for the
         %actin parameter exploration
         actin_explore = struct(); 
         
-        %Store the answers to the exploration prompt for the rang eof
-        %threshold values 
-        actin_explore.min_thresh = str2double(thresh_answer{1});
-        actin_explore.max_thresh = str2double(thresh_answer{2});
-        actin_explore.thresh_step = str2double(thresh_answer{3});
-        
-        %Check to make sure that the values are in range 
-        actin_explore.min_thresh(actin_explore.min_thresh<0) = 0; 
-        actin_explore.max_thresh(actin_explore.min_thresh>1) = 1; 
-        actin_explore.thresh_step(actin_explore.thresh_step <= 0 || ...
-            actin_explore.thresh_step >= 1) = 0.05;
-                
-        %Loop through the range and save the skeleton, continuous z-line
-        %length and the non sarc amount. 
-        exploreFilterWithActin( im_struct, settings, actin_explore);
+        if settings.actin_thresh > 1
+            %Store the answers to the exploration prompt for the rang eof
+            %threshold values 
+            actin_explore.min_thresh = str2double(thresh_answer{1});
+            actin_explore.max_thresh = str2double(thresh_answer{2});
+            actin_explore.thresh_step = str2double(thresh_answer{3});
+
+            %Check to make sure that the values are in range 
+            actin_explore.min_thresh(actin_explore.min_thresh<0) = 0; 
+            actin_explore.max_thresh(actin_explore.min_thresh>1) = 1; 
+            actin_explore.thresh_step(actin_explore.thresh_step <= 0 || ...
+                actin_explore.thresh_step >= 1) = 0.05;
+            
+            %If the user just wants to explore the actin threshold, but not
+            %do a grid exploration 
+            if ~settings.grid_explore 
+                %Loop through the range and save the skeleton, continuous 
+                %z-line length and the non sarc amount. 
+                exploreFilterWithActin( im_struct, settings, actin_explore);
+            else 
+                %Store grid sizes 
+                actin_explore.grid_min = str2double(grid_answer{1});
+                actin_explore.grid_max = str2double(grid_answer{2});
+                actin_explore.grid_step = str2double(grid_answer{3});
+            end 
+        else
+            disp('To be implemented...'); 
+            disp('Just do a grid exploration with a set actin threshold.');
+            %Store grid sizes 
+            actin_explore.grid_min = str2double(grid_answer{1});
+            actin_explore.grid_max = str2double(grid_answer{2});
+            actin_explore.grid_step = str2double(grid_answer{3});
+        end 
     end 
     
     
