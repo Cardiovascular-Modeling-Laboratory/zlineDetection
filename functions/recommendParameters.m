@@ -24,8 +24,9 @@ settings.bio_tophat_size = 0.5;
 % Size of small objects to be removed using bwareopen
 settings.bio_noise_area = 0.2; 
 
-% Remove non-reliable orientations from the orientation matrix
-settings.actin_thresh = 0.5;
+% Remove non-reliable orientations from the orientation matrix based on the
+% actin orientation
+settings.reliability_thresh = 0.5;
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
