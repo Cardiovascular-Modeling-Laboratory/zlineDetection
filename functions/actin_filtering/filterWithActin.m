@@ -19,7 +19,7 @@
 % University of California, Irvine 
 
 
-function [ mask, actin_struct ] = ...
+function [ mask, actin_struct, dp ] = ...
     filterWithActin( im_struct, filenames, settings, save_path)
 
 % Create a struct to hold all of the information for the actin image 

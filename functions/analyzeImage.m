@@ -166,7 +166,7 @@ else
     disp('Actin Filtering...'); 
     
     % Remove false sarcomeres by looking at the actin directors
-    [ im_struct.mask, im_struct.actin_struct ] = ...
+    [ im_struct.mask, im_struct.actin_struct, im_struct.dp ] = ...
     filterWithActin( im_struct, filenames, settings, save_path); 
 
     % Multiply the mask by the trimmed skeleton to get the final skeleton
