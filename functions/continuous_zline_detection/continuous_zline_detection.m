@@ -112,7 +112,7 @@ if settings.actin_filt
     
     %Get the file parts of the actin 
     [~, actin_name] = fileparts(actin_struct.filename);
-    
+    disp(actin_struct.filename); 
     %If this is a parameter exploration, add the parameter threshold number
     if settings.actin_thresh > 1
         %Add title
