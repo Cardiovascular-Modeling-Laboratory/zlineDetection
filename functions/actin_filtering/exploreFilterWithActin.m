@@ -127,6 +127,9 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
     % Store the actin_explore struct inside of the im_struct
     im_struct.actin_explore = actin_explore; 
     
+    %Close all figures
+    close all; 
+    
     % Calculate the continuous z-line lengths 
     [ actin_explore.lengths{actin_explore.n,1} ] = ...
         continuous_zline_detection(im_struct, settings);

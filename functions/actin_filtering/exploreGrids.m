@@ -208,6 +208,9 @@ for grids = round(actin_explore.grid_min:actin_explore.grid_step:actin_explore.g
             (length(pre_filt) - length(post_filt))/ ...
             length(pre_filt);
 
+        %Close all figures
+        close all; 
+        
         % Calculate the continuous z-line lengths 
         [ actin_explore.lengths{n,1} ] = ...
             continuous_zline_detection(im_struct, settings);

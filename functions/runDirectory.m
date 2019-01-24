@@ -214,7 +214,9 @@ for k = 1:zn
                     'all_lengths', 'all_medians', 'image_files');
             end 
         end 
-        
+        %Close all other figures so there isn't a chance of plotting
+        %over anything
+        close all; 
         %Calculate the continuous z-line length 
         all_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
         
