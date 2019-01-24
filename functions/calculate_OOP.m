@@ -1,4 +1,4 @@
-function [ OOP, directionAngle, direction_error ] = ...
+function [ OOP, directionAngle, direction_error, director ] = ...
     calculate_OOP( angles_matrix )
 %Function to calculate the OOP code, which is based on the 
 %orientationalOrder_Matrix_function from OOP_MultipleCond 
@@ -7,11 +7,13 @@ function [ OOP, directionAngle, direction_error ] = ...
 reshaped_matrix = angles_matrix(:); 
 reshaped_matrix(reshaped_matrix == 0) = []; 
 
+%Initialize a matrix to store the x and y components of each orientation
+%vector
 r = zeros(2, length(reshaped_matrix));
 
 %Calculate x and y components of each vector r
-    r(1,:) = cos(reshaped_matrix);
-    r(2,:) = sin(reshaped_matrix);
+r(1,:) = cos(reshaped_matrix);
+r(2,:) = sin(reshaped_matrix);
         
         
 %Calculate the Orientational Order Tensor for each r and 
@@ -41,8 +43,22 @@ director = directions(:,I);
 %180 degrees will match this director. To help compare these results to
 %the plot results we enforce the period to match the period of the
 %original data.
-directionAngle_default = acosd(director(1)/sum(director.^2));
-directionAngle = directionAngle_default+180*(floor(min(reshaped_matrix)/pi()));
+% directionAngle_default = acosd(director(1)/sum(director.^2));
+% directionAngle = directionAngle_default+180*(floor(min(reshaped_matrix)/pi()));
+
+%Calculate the angle corresponding to the director, by taking the inverse
+%tangent of the y component of the director divided by the x component. 
+directionAngle = atand(director(2)/director(1)); 
+
+% Because these are pseduo vectors if the angle is less than 0 degrees
+% add 180 and if it is more than 180, subtract 0 
+if directionAngle < 0
+    directionAngle = directionAngle + 180;
+    disp('Added 180 to director');
+elseif directionAngle > 180
+    directionAngle = directionAngle - 180;
+    disp('Subracted 180 from director');    
+end
 
 %Calculate the difference between the director and the mean of the
 %angles. Note, that these are not necessarily the same thing because we
