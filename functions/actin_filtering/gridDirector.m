@@ -102,7 +102,7 @@ for d1 = 1:grid_size(1):m1
         % in the grid 
         if grid_info(n,4) > 0 
             %Calculate the OOP and director 
-            [ oops(n,1), director_angle, ~ ] = ...
+            [ oops(n,1), director_angle, ~, ~] = ...
                 calculate_OOP( temp_array ); 
             
             %Covert the director angle to radians

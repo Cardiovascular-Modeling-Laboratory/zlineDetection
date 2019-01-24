@@ -54,10 +54,8 @@ directionAngle = atand(director(2)/director(1));
 % add 180 and if it is more than 180, subtract 0 
 if directionAngle < 0
     directionAngle = directionAngle + 180;
-    disp('Added 180 to director');
 elseif directionAngle > 180
     directionAngle = directionAngle - 180;
-    disp('Subracted 180 from director');    
 end
 
 %Calculate the difference between the director and the mean of the
