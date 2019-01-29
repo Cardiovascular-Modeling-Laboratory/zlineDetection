@@ -12,7 +12,7 @@ if settings.actin_thresh > 1 && settings.grid_explore
     for z = 1:length(zline_images)
         
         %Display message
-        dispmsg = strcat('Image ', num2str(z), ' of ', ...
+        dispmsg = strcat('Image ', {' '},num2str(z), ' of ', {' '}, ...
             num2str(length(zline_images)));
         disp(dispmsg);
         toc

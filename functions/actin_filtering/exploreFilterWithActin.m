@@ -134,6 +134,8 @@ for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
     [ actin_explore.lengths{actin_explore.n,1} ] = ...
         continuous_zline_detection(im_struct, settings);
     
+    %Clear the command line 
+    clc 
     %Close all figures
     close all; 
     
