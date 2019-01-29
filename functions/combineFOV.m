@@ -79,57 +79,90 @@ if settings.actin_thresh > 1 && settings.grid_explore
             %Save actin_explore
             actin_explore = actinexplore_data.actin_explore; 
             
-            
             %Loop through and save all of the actin_thresholds 
-            for f = 1: size(actin_thresh,1)
+            for f = 1:size(actin_thresh,1)
+                
+                %Calculate the position 
+                p = 1 + (z-1) + ...
+                    length(zline_images)*size(grid_sizes,1)*(f-1) + ...
+                    length(zline_images)*(g-1); 
                 %Store the current grid size
-                exploration_values(n,1) = grid_sizes(g,1); 
+                exploration_values(p,1) = grid_sizes(g,1); 
                 %Store the current actin threshold 
-                exploration_values(n,2) = actin_thresh(f,1); 
+                exploration_values(p,2) = actin_thresh(f,1); 
                 %Store the current filename 
-                filenames{n,1} = strcat(file, ext); 
+                filenames{p,1} = strcat(file, ext); 
                 
                 %Individually calculated values
-                non_sarcs(n,1) = actin_explore.non_sarcs(f,1);
-                medians(n,1)= actin_explore.medians(f,1);
-                sums(n,1)= actin_explore.sums(f,1);
+                non_sarcs(p,1) = actin_explore.non_sarcs(f,1);
+                medians(p,1)= actin_explore.medians(f,1);
+                sums(p,1)= actin_explore.sums(f,1);
                 
                 %Get the pre_filtering (n,1) lengths
-                nonsarc_data(n,1) = length(pre_filtered);
+                nonsarc_data(p,1) = length(pre_filtered);
             
                 %Get the post_filtering (n,1) lengths
                 post_filt = actin_explore.final_skels{f,1};
                 post_filt = post_filt(:);
                 post_filt(post_filt == 0) = [];    
-                nonsarc_data(n,2) = length(post_filt);
+                nonsarc_data(p,2) = length(post_filt);
                 
                 %Store the lengths
-                lengths{n,1} = actin_explore.lengths{f,1};
+                lengths{p,1} = actin_explore.lengths{f,1};
                 
                 %Increase the count 
                 n = n+1;
                 
             end 
-            
-            
-% pre_filt = im_struct.skel_final; 
-% pre_filt = pre_filt(:); 
-% pre_filt(pre_filt == 0) = [];             
-% Isolate the number of pixels in the post filtering skeleton 
-%     post_filt = actin_explore.final_skels{actin_explore.n,1};
-%     post_filt = post_filt(:);
-%     post_filt(post_filt == 0) = []; 
-%     
-%     % Calculate the non-sarcomeric alpha actinin 
-%     % number of pixles eliminated / # total # of pixles positive for alpha
-%     % actinin 
-%     actin_explore.non_sarcs(actin_explore.n,1) = ...
-%         (length(pre_filt) - length(post_filt))/ ...
-%         length(pre_filt);
     
         end 
         
+    end
+    
+    %Initialize matrices to store the median, sum, nonsarc, grid values
+    CS_median = zeros(size(actin_thresh,1)*size(grid_sizes,1),1); 
+    CS_sum = zeros(size(actin_thresh,1)*size(grid_sizes,1),1); 
+    CS_nonsarc = zeros(size(actin_thresh,1)*size(grid_sizes,1),1); 
+    CS_explorevalues = zeros(size(actin_thresh,1)*size(grid_sizes,1),2); 
+    
+    %Summarize values
+    for cond = 1:size(actin_thresh,1)*size(grid_sizes,1)
+        %Number of values for each condition 
+        n = length(zline_images); 
+        %Get the start and end positions
+        pa = 1 + (cond - 1)*n; 
+        po = cond*n;
+        
+        %Get the lengths
+        temp_l = concatCells( lengths, pa, po); 
+        %Calculate the median czl 
+        CS_median(cond,1) = median(temp_l); 
+        %Calculate the sum czl 
+        CS_sum(cond,1) = sum(temp_l); 
+        %Calculate the non sarc fracion 
+        CS_nonsarc(cond,1) = ...
+            (sum(nonsarc_data(pa:po,1)) -sum(nonsarc_data(pa:po,2)))/...
+            sum(nonsarc_data(pa:po,1)); 
+
+        %Save the exploration values
+        %Grid sizes
+        CS_explorevalues(cond,1) =  exploration_values(pa,1); 
+        CS_explorevalues(cond,2) =  exploration_values(pa,2); 
     end 
+    
+    %Get date
+    date_format = 'yyyymmdd';
+    today_date = datestr(now,date_format);
+    
+    %Get the the new filename
+    [ new_filename ] = appendFilename( path, ...
+        strcat('CS_Summary',today_date,'.mat') );
+    
+    %Save 
+    save(fullfile(path, new_filename), 'non_sarcs', 'medians',...
+        'sums','nonsarc_data','exploration_values','filenames',...
+        'lengths','CS_median','CS_sum','CS_nonsarc', 'CS_explorevalues');
+            
 else
     disp('Not yet implemented...'); 
 end 

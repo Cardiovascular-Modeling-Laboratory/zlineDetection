@@ -64,9 +64,16 @@ else
     an = NaN; 
 end 
 
-
+%Begin a timer 
+tic; 
 % Loop through all of the image files 
 for k = 1:zn 
+    %Display information about the image 
+    dispmsg = strcat('Analyzing Image ', {' '},num2str(k), ' of ', {' '}, ...
+        num2str(zn));
+    disp(dispmsg);
+    toc
+        
     % Create a struct of file names 
     filenames = struct; 
     
