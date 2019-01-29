@@ -162,7 +162,9 @@ if settings.actin_thresh > 1 && settings.grid_explore
     save(fullfile(path, new_filename), 'non_sarcs', 'medians',...
         'sums','nonsarc_data','exploration_values','filenames',...
         'lengths','CS_median','CS_sum','CS_nonsarc', 'CS_explorevalues');
-            
+    
+    %Plot the median results 
+
 else
     disp('Not yet implemented...'); 
 end 
