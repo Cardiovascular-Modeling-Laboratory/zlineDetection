@@ -164,7 +164,34 @@ if settings.actin_thresh > 1 && settings.grid_explore
         'lengths','CS_median','CS_sum','CS_nonsarc', 'CS_explorevalues');
     
     %Plot the median results 
-
+    names = struct(); 
+    names.x = 'Actin Filtering Threshold'; 
+    names.y = 'Median Continuous Z-line Lengths (\mu m)';
+    names.title = 'Anisotropic Coverslip: Median Continuous Z-line Lengths';
+    names.savename = 'CS_MedianSummary'; 
+    names.path = path; 
+    plotCSresults( CS_explorevalues, medians,CS_median, n, names ); 
+    close; 
+    
+    %Plot the sum results 
+    names.y = 'Total Continuous Z-line Lengths (\mu m)';
+    names.title = 'Anisotropic Coverslip: Mean Total Continuous Z-line Lengths';
+    names.savename = 'CS_AverageTotalSummary'; 
+    plotCSresults( CS_explorevalues, sums, CS_sum, n, names ); 
+    close; 
+    
+    names.title = 'Anisotropic Coverslip: Total Continuous Z-line Lengths';
+    names.savename = 'CS_TotalSummary'; 
+    plotCSresults( CS_explorevalues, [], CS_sum, n, names ); 
+    close; 
+    
+    %Plot the non_sarc fraction results
+    names.y = 'Non-Sarc Fraction';
+    names.title = 'Anisotropic Coverslip: Non Sarc Fraction';
+    names.savename = 'CS_NonSarcSummary'; 
+    plotCSresults( CS_explorevalues, non_sarcs, CS_nonsarc, n, names ); 
+    close; 
+    
 else
     disp('Not yet implemented...'); 
 end 
