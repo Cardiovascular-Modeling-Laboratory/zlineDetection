@@ -144,10 +144,22 @@ distances_um = distances_no_nan/pix2um;
 %Save information
 disp('Saving data...'); 
 
+%Save a struct
+CZL_struct = struct(); 
+CZL_struct.zline_clusters = zline_clusters; 
+CZL_struct.cluster_tracker = cluster_tracker; 
+CZL_struct.distances_no_nan = distances_no_nan; 
+CZL_struct.distances_um = distances_um; 
+CZL_struct.rmCount = rmCount; 
+
 %Save the (1) z-line clusters (2) cluster trackers (3) distances in microns
 %(4) distances in microns (5) number removed 
-save(fullfile(save_path, strcat(output_filename,'_zlines.mat')), ...
-    'zline_clusters', 'cluster_tracker','distances_no_nan', ...
-    'distances_um', 'rmCount');
+% save(fullfile(save_path, strcat(output_filename,'_zlines.mat')), ...
+%     'zline_clusters', 'cluster_tracker','distances_no_nan', ...
+%     'distances_um', 'rmCount');
 
+%Append summary file with OOP 
+save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
+   '_OrientationAnalysis.mat')), 'CZL_struct', '-append');
+       
 end 
