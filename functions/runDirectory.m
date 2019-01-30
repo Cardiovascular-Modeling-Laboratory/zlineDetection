@@ -315,7 +315,7 @@ if cardio_type == 1
             CS_CZL.mean_median = mean(CS_CZL.FOV_medians); 
             CS_CZL.std_median = std(CS_CZL.FOV_medians);
             
-            if exist(fullfile(zline_path{1}, summary_file_name),2) == 2
+            if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
                 save(fullfile(zline_path{1}, summary_file_name), ...
                     'CS_CZL', '-append')
             else
@@ -347,7 +347,7 @@ if cardio_type == 1
             CS_OOP.director ] = calculate_OOP( CS_OOP.CS_angles  ); 
         
             %Save the data
-            if exist(fullfile(zline_path{1}, summary_file_name),2) == 2
+            if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
                 save(fullfile(zline_path{1}, summary_file_name), ...
                     'CS_OOP', '-append')
             else
