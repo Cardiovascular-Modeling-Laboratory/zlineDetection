@@ -199,41 +199,32 @@ for k = 1:zn
     
     % If the user wants to calculate continuous z-line length 
     if settings.tf_CZL && settings.actin_thresh <=1 
-
+        
+        %Initialize variables 
         if k == 1
-            %Create a cell to store all distances 
+            %Create a cell to store all of the CZL data 
             all_lengths = cell(1,zn); 
-            all_medians = cell(1,zn); 
-            
-            %If there is more than one image being analyzed, create a summary
-            %file 
-            if zn > 1
-                %Get today's date in string form.
-                date_format = 'yyyy_mm_dd';
-                today_date = datestr(now,date_format);
-
-                %Create a summary file name 
-                summary_file_name = strcat(today_date, ...
-                    '_zline_summary.mat');
-
-                %Save and create a summary file
-                save(fullfile(zline_path{1}, summary_file_name), ...
-                    'all_lengths', 'all_medians', 'image_files');
-            end 
+            all_medians = zeros(1,zn); 
+            all_sums = zeros(1,zn);  
         end 
+        
         %Close all other figures so there isn't a chance of plotting
         %over anything
         close all; 
+        
         %Calculate the continuous z-line length 
         all_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
         
         %Compute the median
-        all_medians{1,k} = median( all_lengths{1,k} ); 
+        all_medians(1,k) = median( all_lengths{1,k} ); 
+        
+        %Compute the sum 
+        all_sums(1,k) = sum(all_lengths{1,k}); 
         
         %Create a histogram of the distances
         figure; histogram(all_lengths{1,k});
         set(gca,'fontsize',16)
-        hist_name = strcat('Median: ', num2str(all_medians{1,k}),' \mu m');
+        hist_name = strcat('Median: ', num2str(all_medians(1,k)),' \mu m');
         title(hist_name,'FontSize',18,'FontWeight','bold');
         xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
             'FontWeight','bold');
@@ -243,13 +234,6 @@ for k = 1:zn
         fig_name = strcat( im_struct.im_name, '_CZLhistogram');
         saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
         
-        %If there is more than one FOV, save a summary file
-        if zn > 1 
-            %Append the summary file 
-            save(fullfile(zline_path{1}, summary_file_name), 'all_lengths', ...
-                'all_medians','-append');
-        end 
-        
         %Close all of the images 
         close all; 
         
@@ -258,15 +242,25 @@ for k = 1:zn
     % If the user wants to calculate OOP - Will need to change when I'm
     % analyzing tissues. 
     if settings.tf_OOP && settings.actin_thresh <=1 
+        %Initialize variables 
+        if k == 1
+            %Create a cell to store all of the CZL data 
+            angles = cell(1,zn);  
+        end 
+        
+        %Save this orientation matrix 
+        angles{1,k} = im_struct.orientim;
+        
         %Save the orientation vectors as a new vairable
-        angles = im_struct.orientim; 
+        temp_angles = angles{1,k}; 
+        
         %If there are any NaN values in the angles matrix, set them to 0.
-        angles(isnan(angles)) = 0;
+        temp_angles(isnan(temp_angles)) = 0;
         %Create a structural array to store the OOP information 
         oop_struct = struct();
-        %Calculate the OOP 
-        [ oop_struct.OOP, oop_struct.directorAngle, ~ ] = ...
-            calculate_OOP( angles ); 
+        %Calculate the OOP, director vector and director angle 
+        [ oop_struct.OOP, oop_struct.directorAngle, ~, ...
+            oop_struct.director ] = calculate_OOP( temp_angles ); 
         %Append summary file with OOP 
         save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
            '_OrientationAnalysis.mat')), 'oop_struct', '-append');
@@ -283,8 +277,87 @@ end
 
 %If this is a coverslip, then concatenate the fields of view
 if cardio_type == 1
-    %Combine the FOV and plot the results of the FOV 
-    combineFOV( settings, zline_images, zline_path );
+    %If there has been an actin exploration use the function combine FOV 
+    if settings.actin_thresh > 1
+        combineFOV( settings, zline_images, zline_path );
+    else
+        %Get today's date in string form.
+        date_format = 'yyyymmdd';
+        today_date = datestr(now,date_format);
+
+        %Create the new file name 
+        summary_file_name = strcat('CS_Summary',today_date,'.mat'); 
+                
+        % If the user did CZL analysis
+        if settings.tf_CZL
+            %Create coverslip continuous z-line struct
+            CS_CZL = struct(); 
+            
+            %Save the path and image names 
+            CS_CZL.zline_images = zline_images;
+            CS_CZL.zline_path = zline_path; 
+            
+            %Save the data
+            CS_CZL.FOV_lengths = all_lengths;
+            CS_CZL.FOV_medians = all_medians;
+            CS_CZL.FOV_sums = all_sums; 
+            
+            %Concatenate the lengths matrix 
+            [ CS_CZL.CS_lengths ] = concatCells( CS_CZL.FOV_lengths,false ); 
+            
+            %Compute the median 
+            CS_CZL.CS_median = median(CS_CZL.CS_lengths); 
+            
+            %Compute the sum 
+            CS_CZL.CS_sum = sum(CS_CZL.CS_lengths); 
+            
+            %Compute the mean of the medians 
+            CS_CZL.mean_median = mean(CS_CZL.FOV_medians); 
+            CS_CZL.std_median = std(CS_CZL.FOV_medians);
+            
+            if exist(fullfile(zline_path{1}, summary_file_name),2) == 2
+                save(fullfile(zline_path{1}, summary_file_name), ...
+                    'CS_CZL', '-append')
+            else
+                save(fullfile(zline_path{1}, summary_file_name), ...
+                    'CS_CZL')
+            end 
+        % If the user did OOP analysis 
+        elseif settings.tf_OOP
+            %Create coverslip continuous z-line struct
+            CS_OOP = struct(); 
+            
+            %Save the path and image names 
+            CS_OOP.zline_images = zline_images;
+            CS_OOP.zline_path = zline_path; 
+            
+            %Save the angles 
+            CS_OOP.FOVangles = angles{1,k}; 
+            
+            %Concatenate the lengths matrix 
+            [ CS_OOP.CS_angles ] = concatCells( CS_OOP.FOVangles,true ); 
+            
+            %Remove all NaN Values
+            temp = CS_OOP.CS_angles; 
+            temp(isnan(temp)) = []; 
+            CS_OOP.CS_angles = temp; 
+            
+            %Calculate the OOP 
+            [ CS_OOP.OOP, CS_OOP.directorAngle, ~, ...
+            CS_OOP.director ] = calculate_OOP( CS_OOP.CS_angles  ); 
+        
+            %Save the data
+            if exist(fullfile(zline_path{1}, summary_file_name),2) == 2
+                save(fullfile(zline_path{1}, summary_file_name), ...
+                    'CS_OOP', '-append')
+            else
+                save(fullfile(zline_path{1}, summary_file_name), ...
+                    'CS_OOP')
+            end 
+            
+        end 
+    end 
+   
 end 
     
 end

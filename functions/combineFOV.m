@@ -134,7 +134,7 @@ if settings.actin_thresh > 1 && settings.grid_explore
         po = cond*n;
         
         %Get the lengths
-        temp_l = concatCells( lengths, pa, po); 
+        temp_l = concatCells( lengths, false, pa, po); 
         %Calculate the median czl 
         CS_median(cond,1) = median(temp_l); 
         %Calculate the sum czl 
@@ -154,9 +154,6 @@ if settings.actin_thresh > 1 && settings.grid_explore
     date_format = 'yyyymmdd';
     today_date = datestr(now,date_format);
     new_filename = strcat('CS_Summary',today_date,'.mat'); 
-%     %Get the the new filename
-%     [ new_filename ] = appendFilename( path, ...
-%         strcat('CSExplorationSummary',today_date,'.mat') );
     
     %Create a struct to store values of the coverslip
     CS_actinexplore = struct(); 
