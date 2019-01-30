@@ -272,12 +272,6 @@ for k = 1:zn
            '_OrientationAnalysis.mat')), 'oop_struct', '-append');
     end 
     
-    %If this is a coverslip, then concatenate the fields of view
-    if cardio_type == 1
-        %Combine the FOV and plot the results of the FOV 
-        combineFOV( settings, zline_images, zline_path );
-    end 
-    
     % Close all figures
     close all; 
     
@@ -286,4 +280,11 @@ for k = 1:zn
    
 end 
 
+
+%If this is a coverslip, then concatenate the fields of view
+if cardio_type == 1
+    %Combine the FOV and plot the results of the FOV 
+    combineFOV( settings, zline_images, zline_path );
+end 
+    
 end

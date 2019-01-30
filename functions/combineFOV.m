@@ -153,15 +153,37 @@ if settings.actin_thresh > 1 && settings.grid_explore
     %Get date
     date_format = 'yyyymmdd';
     today_date = datestr(now,date_format);
+    new_filename = strcat('CS_Summary',today_date,'.mat'); 
+%     %Get the the new filename
+%     [ new_filename ] = appendFilename( path, ...
+%         strcat('CSExplorationSummary',today_date,'.mat') );
     
-    %Get the the new filename
-    [ new_filename ] = appendFilename( path, ...
-        strcat('CS_Summary',today_date,'.mat') );
+    %Create a struct to store values of the coverslip
+    CS_actinexplore = struct(); 
+    CS_actinexplore.CS_median = CS_median; 
+    CS_actinexplore.CS_sum = CS_sum; 
+    CS_actinexplore.CS_nonsarc = CS_nonsarc; 
+    CS_actinexplore.CS_explorevalues = CS_nonsarc; 
     
-    %Save 
-    save(fullfile(path, new_filename), 'non_sarcs', 'medians',...
-        'sums','nonsarc_data','exploration_values','filenames',...
-        'lengths','CS_median','CS_sum','CS_nonsarc', 'CS_explorevalues');
+    %Create a struct to store values of all FOV in the coverslip
+    FOV_actinexplore = struct(); 
+    FOV_actinexplore.non_sarcs = non_sarcs; 
+    FOV_actinexplore.medians = medians;
+    FOV_actinexplore.sums = sums; 
+    FOV_actinexplore.nonsarc_data = nonsarc_data;
+    FOV_actinexplore.exploration_values = exploration_values;
+    FOV_actinexplore.filenames =filenames; 
+    FOV_actinexplore.lengths = lengths;  
+    
+    %Save the results. Create a new .mat file if it does not exist. Append
+    %it otherwise 
+    if exist(fullfile(path, new_filename),'file') == 2
+        save(fullfile(path, new_filename), 'CS_actinexplore',...
+            'FOV_actinexplore', '-append');
+    else
+        save(fullfile(path, new_filename), 'CS_actinexplore',...
+            'FOV_actinexplore');
+    end 
     
     %Plot the median results 
     names = struct(); 
