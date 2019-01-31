@@ -276,7 +276,7 @@ end
 
 
 %If this is a coverslip, then concatenate the fields of view
-if cardio_type == 1
+if settings.cardio_type == 1
     %If there has been an actin exploration use the function combine FOV 
     if settings.actin_thresh > 1
         combineFOV( settings, zline_images, zline_path );
