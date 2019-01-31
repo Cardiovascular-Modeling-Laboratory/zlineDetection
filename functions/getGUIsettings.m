@@ -129,6 +129,12 @@ settings.grid_size = grid_size;
 % Store the threshold for actin filtering
 settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
 
+% Store settings for actin threshold exploration 
+settings.exploration_grid = get(handles.exploration_grid, 'Value'); 
+% Store settings for actin grid size exploration 
+settings.exploration_grid = get(handles.exploration_actin, 'Value'); 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get option to calculate continuous z-line length 
@@ -139,6 +145,9 @@ settings.dp_threshold = str2double(get(handles.dp_threshold, 'String'));
 
 % Get option to calculate OOP 
 settings.tf_OOP = get(handles.tf_OOP, 'Value');
+
+% Number of conditions 
+settings.num_cond = str2double(get(handles.num_cond, 'String'));
 
 % Save type of image (single cell vs. tissue)
 settings.cardio_type = get(handles.cardio_type, 'Value'); 
