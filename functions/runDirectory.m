@@ -25,7 +25,7 @@ function [  ] = runDirectory( settings )
     'Select images stained for z-lines...'); 
 
 % Stop if the user hit the cancel button
-if isequal(zline_path, 0) 
+if isequal(zline_path{1,1}, 0) 
     disp('No z-line files selected. Press "Run Folder" to try again.'); 
     return; 
 end
@@ -36,7 +36,7 @@ end
 if settings.actin_filt
     [ actin_images, actin_path, an ] = ...
         load_files( {'*GFP*.TIF';'*GFP*.tif';'*.*'}, ...
-        'Select images stained for actin...');
+        'Select images stained for actin...',zline_path{1});
     
     % Make sure that the actin files were selected.
     if isequal(actin_path, 0)

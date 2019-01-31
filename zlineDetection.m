@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 31-Jan-2019 13:54:27
+% Last Modified by GUIDE v2.5 31-Jan-2019 14:12:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -323,9 +323,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in RUN_dir.
-function RUN_dir_Callback(hObject, eventdata, handles)
-% hObject    handle to RUN_dir (see GCBO)
+% --- Executes on button press in RUN.
+function RUN_Callback(hObject, eventdata, handles)
+% hObject    handle to RUN (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -335,6 +335,9 @@ settings = getGUIsettings(handles);
 
 % Select image files and run analysis.
 runDirectory( settings );
+
+% %Once completed... 
+% runMultipleCoverSlips(settings); 
 
 % --- Executes on button press in tf_OOP.
 function tf_OOP_Callback(hObject, eventdata, handles)
