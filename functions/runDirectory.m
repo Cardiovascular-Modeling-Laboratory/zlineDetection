@@ -25,7 +25,7 @@ function [  ] = runDirectory( settings )
     'Select images stained for z-lines...'); 
 
 % Stop if the user hit the cancel button
-if isequal(zline_path, 0); 
+if isequal(zline_path, 0) 
     disp('No z-line files selected. Press "Run Folder" to try again.'); 
     return; 
 end

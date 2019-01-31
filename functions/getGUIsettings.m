@@ -146,8 +146,8 @@ settings.dp_threshold = str2double(get(handles.dp_threshold, 'String'));
 % Get option to calculate OOP 
 settings.tf_OOP = get(handles.tf_OOP, 'Value');
 
-% Number of conditions 
-settings.num_cond = str2double(get(handles.num_cond, 'String'));
+% Number of coverslips
+settings.num_cs = str2double(get(handles.num_cs, 'String'));
 
 % Save type of image (single cell vs. tissue)
 settings.cardio_type = get(handles.cardio_type, 'Value'); 

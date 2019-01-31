@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 31-Jan-2019 13:12:49
+% Last Modified by GUIDE v2.5 31-Jan-2019 13:44:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -692,18 +692,18 @@ end
 
 
 
-function num_cond_Callback(hObject, eventdata, handles)
-% hObject    handle to num_cond (see GCBO)
+function num_cs_Callback(hObject, eventdata, handles)
+% hObject    handle to num_cs (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of num_cond as text
-%        str2double(get(hObject,'String')) returns contents of num_cond as a double
+% Hints: get(hObject,'String') returns contents of num_cs as text
+%        str2double(get(hObject,'String')) returns contents of num_cs as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function num_cond_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to num_cond (see GCBO)
+function num_cs_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to num_cs (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
