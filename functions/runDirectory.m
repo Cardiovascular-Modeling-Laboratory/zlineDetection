@@ -39,7 +39,7 @@ if settings.actin_filt
         'Select images stained for actin...');
     
     % Make sure that the actin files were selected.
-    if isequal(actin_path, 0); 
+    if isequal(actin_path, 0)
         disp('No actin files selected. Press "Run Folder" to try again.'); 
         return; 
     end
@@ -80,75 +80,80 @@ for k = 1:zn
     % Store the current z-line filename 
     filenames.zline = fullfile(zline_path{1}, zline_images{1,k});
     
-    % Store the current actin filename if applicable 
     if settings.actin_filt
         filenames.actin = fullfile(actin_path{1}, actin_images{1,k});
-        
-        % On the first iteration, if this is a parameter exploration,
-        % prompt the user for the range
-        if settings.actin_thresh > 1 && k == 1
-            
-            %Prompt Questions
-            thresh_prompt = {'Minimum Threshold:','Max Threshold:',...
-                'Step Size:'};
-            %Title of prompt
-            thresh_title = 'Actin Filtering Parameter Exploration';
-            %Dimensions
-            thresh_dims = [1 35];
-            %Default inputs
-            thresh_definput = {'0.05','1','0.05'};
-            %Save answers
-            thresh_answer = inputdlg(thresh_prompt,thresh_title,...
-                thresh_dims,thresh_definput);
-            
-            %Ask if they'd also like to do grid size exploration. 
-            grid_q = questdlg(...
-                'Would you also like to do a grid size exploration?',...
-                'Yes', 'No'); 
-            if strcmp(grid_q, 'Yes')
-                grid_prompt = {'Smallest Grid:','Largest Grid:',...
-                'Step Size:'};
-                grid_title = 'Grid Size Exploration';
-                grid_dims = [1,35];
-                grid_definput = {'10', '30','10'}; 
-                grid_answer = inputdlg(grid_prompt,grid_title,...
-                grid_dims,grid_definput);
-                
-                %Create a new setting 
-                settings.grid_explore = true; 
-            else
-                settings.grid_explore = false; 
-            end
-        elseif k==1 && sum(settings.grid_size) == 0
-                grid_prompt = {'Smallest Grid:','Largest Grid:',...
-                'Step Size:'};
-                grid_title = 'Grid Size Exploration';
-                grid_dims = [1,35];
-                grid_definput = {'10', '30','10'}; 
-                grid_answer = inputdlg(grid_prompt,grid_title,...
-                grid_dims,grid_definput);
-                
-                %Create a new setting 
-                settings.grid_explore = true; 
-            else
-                settings.grid_explore = false; 
-                
-        end 
-    else
+    else 
         filenames.actin = NaN; 
-        settings.grid_explore = false; 
     end 
+%     % Store the current actin filename if applicable 
+%     if settings.actin_filt
+%         filenames.actin = fullfile(actin_path{1}, actin_images{1,k});
+%         
+%         % On the first iteration, if this is a parameter exploration,
+%         % prompt the user for the range
+%         if settings.actin_thresh > 1 && k == 1
+%             
+%             %Prompt Questions
+%             thresh_prompt = {'Minimum Threshold:','Max Threshold:',...
+%                 'Step Size:'};
+%             %Title of prompt
+%             thresh_title = 'Actin Filtering Parameter Exploration';
+%             %Dimensions
+%             thresh_dims = [1 35];
+%             %Default inputs
+%             thresh_definput = {'0.05','1','0.05'};
+%             %Save answers
+%             thresh_answer = inputdlg(thresh_prompt,thresh_title,...
+%                 thresh_dims,thresh_definput);
+%             
+%             %Ask if they'd also like to do grid size exploration. 
+%             grid_q = questdlg(...
+%                 'Would you also like to do a grid size exploration?',...
+%                 'Yes', 'No'); 
+%             if strcmp(grid_q, 'Yes')
+%                 grid_prompt = {'Smallest Grid:','Largest Grid:',...
+%                 'Step Size:'};
+%                 grid_title = 'Grid Size Exploration';
+%                 grid_dims = [1,35];
+%                 grid_definput = {'10', '30','10'}; 
+%                 grid_answer = inputdlg(grid_prompt,grid_title,...
+%                 grid_dims,grid_definput);
+%                 
+%                 %Create a new setting 
+%                 settings.grid_explore = true; 
+%             else
+%                 settings.grid_explore = false; 
+%             end
+%         elseif k==1 && sum(settings.grid_size) == 0
+%                 grid_prompt = {'Smallest Grid:','Largest Grid:',...
+%                 'Step Size:'};
+%                 grid_title = 'Grid Size Exploration';
+%                 grid_dims = [1,35];
+%                 grid_definput = {'10', '30','10'}; 
+%                 grid_answer = inputdlg(grid_prompt,grid_title,...
+%                 grid_dims,grid_definput);
+%                 
+%                 %Create a new setting 
+%                 settings.grid_explore = true; 
+%             else
+%                 settings.grid_explore = false; 
+%                 
+%         end 
+%     else
+%         filenames.actin = NaN; 
+%         settings.grid_explore = false; 
+%     end 
     
     % Perform the analysis including saving the image 
     im_struct = analyzeImage( filenames, settings ); 
     
-    % Create a variable to test if the exploration is true for either actin
-    % threshold or grid
-    if settings.actin_thresh > 1 || settings.grid_explore
-        exploration = true; 
-    else
-        exploration = false; 
-    end 
+%     % Create a variable to test if the exploration is true for either actin
+%     % threshold or grid
+%     if settings.actin_thresh > 1 || settings.grid_explore
+%         exploration = true; 
+%     else
+%         exploration = false; 
+%     end 
     
     % If the user wants to perform a parameter exploration for actin
     % filtering

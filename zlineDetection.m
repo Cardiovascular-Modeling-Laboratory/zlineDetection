@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 31-Jan-2019 13:44:54
+% Last Modified by GUIDE v2.5 31-Jan-2019 13:54:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -714,19 +714,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in exploration_grid.
-function exploration_grid_Callback(hObject, eventdata, handles)
-% hObject    handle to exploration_grid (see GCBO)
+% --- Executes on button press in grid_explore.
+function grid_explore_Callback(hObject, eventdata, handles)
+% hObject    handle to grid_explore (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of exploration_grid
+% Hint: get(hObject,'Value') returns toggle state of grid_explore
 
 
-% --- Executes on button press in exploration_actin.
-function exploration_actin_Callback(hObject, eventdata, handles)
-% hObject    handle to exploration_actin (see GCBO)
+% --- Executes on button press in actinthresh_explore.
+function actinthresh_explore_Callback(hObject, eventdata, handles)
+% hObject    handle to actinthresh_explore (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of exploration_actin
+% Hint: get(hObject,'Value') returns toggle state of actinthresh_explore

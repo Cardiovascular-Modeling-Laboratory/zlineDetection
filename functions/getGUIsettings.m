@@ -130,10 +130,9 @@ settings.grid_size = grid_size;
 settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
 
 % Store settings for actin threshold exploration 
-settings.exploration_grid = get(handles.exploration_grid, 'Value'); 
+settings.grid_explore = get(handles.grid_explore, 'Value'); 
 % Store settings for actin grid size exploration 
-settings.exploration_grid = get(handles.exploration_actin, 'Value'); 
-
+settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -151,5 +150,9 @@ settings.num_cs = str2double(get(handles.num_cs, 'String'));
 
 % Save type of image (single cell vs. tissue)
 settings.cardio_type = get(handles.cardio_type, 'Value'); 
+
+%%%%%%%%%%%%%%%%%%%%% Additional Parameter Exploration  %%%%%%%%%%%%%%%%%%%
+
+settings = exploreParameters(settings);
 
 end
