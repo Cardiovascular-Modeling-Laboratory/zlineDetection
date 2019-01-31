@@ -141,11 +141,18 @@ for k = 1:zn
     
     % Perform the analysis including saving the image 
     im_struct = analyzeImage( filenames, settings ); 
-       
+    
+    % Create a variable to test if the exploration is true for either actin
+    % threshold or grid
+    if settings.actin_thresh > 1 || settings.grid_explore
+        exploration = true; 
+    else
+        exploration = false; 
+    end 
     
     % If the user wants to perform a parameter exploration for actin
     % filtering
-    if settings.actin_thresh > 1 || strcmp(grid_q, 'Yes')
+    if exploration
         %Create a struct to hold all of the relevant information for the
         %actin parameter exploration
         actin_explore = struct(); 
@@ -165,14 +172,11 @@ for k = 1:zn
             
             %If the user just wants to explore the actin threshold, but not
             %do a grid exploration 
-            if ~strcmp(grid_q, 'Yes')
+            if ~settings.grid_explore
                 %Loop through the range and save the skeleton, continuous 
                 %z-line length and the non sarc amount. 
                 exploreFilterWithActin( im_struct, settings, actin_explore);
             else 
-                %Set the explore grids equal to true
-                settings.grid_explore = true; 
-                
                 %Store grid sizes 
                 actin_explore.grid_min = str2double(grid_answer{1});
                 actin_explore.grid_max = str2double(grid_answer{2});
@@ -181,12 +185,9 @@ for k = 1:zn
                 %Look at the different grids. 
                 exploreGrids(im_struct, settings, actin_explore);
             end 
-        else
-            %Set the explore grids equal to true
-            settings.grid_explore = true; 
-                
-            disp('To be implemented...'); 
-            disp('Just do a grid exploration with a set actin threshold.');
+        else    
+            disp('To be implemented:'); 
+            disp('Only a grid exploration with a set actin threshold.');
             %Store grid sizes 
             actin_explore.grid_min = str2double(grid_answer{1});
             actin_explore.grid_max = str2double(grid_answer{2});
@@ -198,7 +199,7 @@ for k = 1:zn
     
     
     % If the user wants to calculate continuous z-line length 
-    if settings.tf_CZL && settings.actin_thresh <=1 
+    if settings.tf_CZL && ~exploration
         
         %Initialize variables 
         if k == 1
@@ -241,7 +242,7 @@ for k = 1:zn
 
     % If the user wants to calculate OOP - Will need to change when I'm
     % analyzing tissues. 
-    if settings.tf_OOP && settings.actin_thresh <=1 
+    if settings.tf_OOP && ~exploration
         %Initialize variables 
         if k == 1
             %Create a cell to store all of the CZL data 
