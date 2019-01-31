@@ -400,7 +400,17 @@ set( handles.reliability_thresh, 'String', ...
     num2str( settings.reliability_thresh ) ); 
 %>> Skeletonization Parameters (biological)
 set( handles.bio_branch_size, 'String', ...
-    num2str( settings.bio_branch_size ) ); 
+    num2str( settings.bio_branch_size ) );
+%>> Set actin filtering to be true
+set(handles.actin_filt,'Value',1);
+%>> Actin filtering parameters
+set( handles.grid1, 'String', ...
+    num2str( settings.grid1 ) );
+set( handles.grid2, 'String', ...
+    num2str( settings.grid2 ) );
+set( handles.actin_thresh, 'String', ...
+    num2str( settings.actin_thresh ) );
+
 guidata(hObject, handles);
 
 % --- Executes on selection change in cardio_type.

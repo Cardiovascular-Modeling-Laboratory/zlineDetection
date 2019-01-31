@@ -1,6 +1,10 @@
 % RECOMMENDPARAMETERS - Recommend parameters for images of cardiomyocytes
 
 function [ settings ] = recommendParameters()
+%%%%%%%%%%%%%%%%%%% Actin Filtering Parameteres %%%%%%%%%%%%%%%%%%%%%%%%
+settings.grid1 = 10; 
+settings.grid2 = 10; 
+settings.actin_thresh = 0.7; 
 
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set the sigma of gaussian smoothing before calculation of the image 
