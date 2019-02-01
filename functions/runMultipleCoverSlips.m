@@ -2,6 +2,8 @@ function [] = runMultipleCoverSlips(settings)
 %This function will be used to run multiple coverslips and obtain a summary
 %file
 
+%If the user wants to compare conditions, ask them how many 
+
 %Create a cell to hold the coverslip name 
 name_CS = cell(settings.num_cs,1);
 
@@ -15,11 +17,15 @@ actin_images = cell(settings.num_cs,1);
 actin_path = cell(settings.num_cs,1);
 an = zeros(settings.num_cs,1);
 
+%Save conditions 
+cond = zeros(settings.num_cs,1);
+
 %Set previous path equal to the current location 
 previous_path = pwd; 
 
 %Have the user select the different directories for the coverslips
 for k = 1:settings.num_cs 
+    
     %Display message telling the user which coverslip they're on 
     disp_message = strcat('Selecting Coverslip',{' '}, num2str(k),...
         {' '}, 'of', {' '}, num2str(settings.num_cs)); 
@@ -80,6 +86,10 @@ for k = 1:settings.num_cs
         actin_path = NaN; 
         an = NaN; 
     end  
+    
+    %Declare conditions for the selected coverslip 
+    cond(k,1) = declareCondition(settings.cond_name, k, settings.num_cs); 
+    
 end 
 
 %Loop through and run each FOV in each CS 

@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 31-Jan-2019 14:12:10
+% Last Modified by GUIDE v2.5 31-Jan-2019 16:21:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -733,3 +733,12 @@ function actinthresh_explore_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of actinthresh_explore
+
+
+% --- Executes on button press in multi_cond.
+function multi_cond_Callback(hObject, eventdata, handles)
+% hObject    handle to multi_cond (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of multi_cond

@@ -66,5 +66,41 @@ end
 
 %Save the actin_explore struct in settings
 settings.actin_explore = actin_explore; 
+
+%Get the number of conditions and names 
+if settings.multi_cond
+    %Prompt Questions
+    num_prompt = {'Number of conditions to compare:'};
+    %Title of prompt
+    num_title = 'Conditions';
+    %Dimensions
+    num_dims = [1 40];
+    %Default inputs
+    num_definput = {'2'};
+    %Save answers
+    num_answer = inputdlg(num_prompt,num_title,...
+        num_dims,num_definput);
+    
+    %Store the number of conditions 
+    settings.num_cond = round(str2double(num_answer{1}));
+    
+    %Ask the user for the name of the conditions 
+    type_prompt = cell(1,settings.num_cond);
+    pre = 'Name of Condition';
+    for k = 1:settings.num_cond
+        temp_text = strcat(pre, {' '}, num2str(k), ': ');
+        type_prompt{1,k} = temp_text{1,1}; 
+    end 
+    
+    %Title of prompt
+    type_title = 'Condition Names';
+    %Dimensions
+    type_dims = [1 45];
+
+    %Save answer
+    settings.cond_names = inputdlg(type_prompt,type_title,...
+        type_dims);
+end
+
 end
 

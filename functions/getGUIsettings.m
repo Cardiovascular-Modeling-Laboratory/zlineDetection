@@ -151,8 +151,12 @@ settings.num_cs = str2double(get(handles.num_cs, 'String'));
 % Save type of image (single cell vs. tissue)
 settings.cardio_type = get(handles.cardio_type, 'Value'); 
 
+% Settings
+settings.multi_cond = get(handles.multi_cond, 'Value'); 
+
 %%%%%%%%%%%%%%%%%%%%% Additional Parameter Exploration  %%%%%%%%%%%%%%%%%%%
 
 settings = exploreParameters(settings);
+
 
 end
