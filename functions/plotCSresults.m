@@ -22,7 +22,7 @@ f = 1;
 figure; 
 hold on; 
 
-for k = 1:length(afn)*length(gn)*ncond
+for k = 1:length(afn)*length(gn)
 
     %Get the start and end positions of the condition 
     pa = 1 + (k - 1)*n; 

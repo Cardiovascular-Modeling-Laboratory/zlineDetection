@@ -147,8 +147,8 @@ if settings.actin_thresh > 1 && settings.grid_explore
 
         %Save the exploration values
         %Grid sizes
-        CS_explorevalues(cond,1) = exploration_values(pa:po,1); 
-        CS_explorevalues(cond,2) = exploration_values(pa:po,2); 
+        CS_explorevalues(cond,1) = exploration_values(pa,1); 
+        CS_explorevalues(cond,2) = exploration_values(pa,2); 
     end 
     
     %Get date
