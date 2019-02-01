@@ -147,8 +147,8 @@ if settings.actin_thresh > 1 && settings.grid_explore
 
         %Save the exploration values
         %Grid sizes
-        CS_explorevalues(cond,1) =  exploration_values(pa,1); 
-        CS_explorevalues(cond,2) =  exploration_values(pa,2); 
+        CS_explorevalues(cond,1) = exploration_values(pa:po,1); 
+        CS_explorevalues(cond,2) = exploration_values(pa:po,2); 
     end 
     
     %Get date
@@ -161,7 +161,7 @@ if settings.actin_thresh > 1 && settings.grid_explore
     CS_actinexplore.CS_median = CS_median; 
     CS_actinexplore.CS_sum = CS_sum; 
     CS_actinexplore.CS_nonsarc = CS_nonsarc; 
-    CS_actinexplore.CS_explorevalues = CS_nonsarc; 
+    CS_actinexplore.CS_explorevalues = CS_explorevalues; 
     
     %Create a struct to store values of all FOV in the coverslip
     FOV_actinexplore = struct(); 

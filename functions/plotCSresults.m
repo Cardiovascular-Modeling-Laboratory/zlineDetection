@@ -1,4 +1,5 @@
-function [] = plotCSresults( CS_explorevalues, medians,CS_median, n, names )
+function [] = plotCSresults( CS_explorevalues, medians,CS_median, n,...
+    names)
 %Plot CS summaries 
 
 %Get the number of unique grid sizes
@@ -21,7 +22,7 @@ f = 1;
 figure; 
 hold on; 
 
-for k = 1:length(afn)*length(gn)
+for k = 1:length(afn)*length(gn)*ncond
 
     %Get the start and end positions of the condition 
     pa = 1 + (k - 1)*n; 
