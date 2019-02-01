@@ -82,5 +82,71 @@ for k = 1:settings.num_cs
     end  
 end 
 
+%Loop through and run each FOV in each CS 
+clear k 
+for k = 1:settings.num_cs 
+    %Run the analysis
+    [ outputs ] = ...
+        runDirectory( settings, zline_path, zline_images,...
+        actin_path, actin_images, name_CS ); 
+    
+    %Create an input struct
+    inputs = struct(); 
+    
+    %If exploration - compare conditions and coverslips 
+    if settings.exploration 
+        if k == 1
+            %Save the medians for each coverslip 
+            MultiCS_medians = zeros(zn(k,1),settings.num_cs); 
+            %Save the medians for each coverslip 
+            MultiCS_sums = zeros(zn(k,1),settings.num_cs); 
+            %Save the medians for each coverslip 
+            MultiCS_nonsarc = zeros(zn(k,1),settings.num_cs);
+            %Save the medians for each coverslip 
+            MultiCS_grid_sizes = zeros(zn(k,1),settings.num_cs);
+            MultiCS_actin_threshs = zeros(zn(k,1),settings.num_cs);
+        end 
+        
+        %Store the actin struct
+        CS_actinexplore = outputs.CS_actinexplore; 
+        
+        %Save the values of each category
+        MultiCS_medians(:,k) = CS_actinexplore.CS_median;
+        MultiCS_sums(:,k) = CS_actinexplore.CS_sum;
+        MultiCS_nonsarc(:,k) = CS_actinexplore.CS_nonsarc;
+        MultiCS_grid_sizes(:,k) = CS_actinexplore.CS_explorevalues(:,1);
+        MultiCS_actin_threshs(:,k) = CS_actinexplore.CS_explorevalues(:,2);
+    end 
+    
+    %If ~explore & actin filtering
+    if ~exploration && settings.actin_filt
+        if k == 1
+            Multi_nonsarc = zeros(zn(k,1),settings.num_cs); 
+        end 
+    end 
+    
+    
+    %If ~exploration & czl 
+    if ~exploration && settings.tf_CZL
+        
+        if k == 1
+            %Save the lengths for each CS
+            Multilengths = cell(zn(k,1),settings.num_cs);
+            %Save the median value 
+            Multimedians = zeros(zn(k,1),settings.num_cs);
+            %Save the median value 
+            Multisums = zeros(zn(k,1),settings.num_cs);
+        end 
+        %Store the continuous z-line lengths struct 
+        CS_CZL = outputs.CS_CZL; 
+         
+    end 
+    %If ~exploration & oop
+    if ~exploration && settings.tf_OOP
+        %Store the OOP struct 
+        CS_OOP = outputs.CS_OOP; 
+    end 
+end 
+
 end
 

@@ -146,7 +146,7 @@ distances_um = distances_no_nan/pix2um;
 %Save information
 disp('Saving data...'); 
 
-if settings.actin_thresh > 1
+if settings.exploration
     % Save the (1) z-line clusters (2) cluster trackers (3) distances in microns
     % (4) distances in microns (5) number removed 
     save(fullfile(save_path, strcat(output_filename,'_zlines.mat')), ...

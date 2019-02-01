@@ -1,4 +1,5 @@
-function [ ] = combineFOV( settings, zline_images, zline_path )
+function [CS_actinexplore] = ...
+    combineFOV( settings, zline_images, zline_path )
 % This function will combine the FOV for a coverslip. 
 
 % (1) The user did both a grid exploration with an actin threshold 
@@ -215,7 +216,7 @@ else
     disp('Not yet implemented...'); 
 end 
 
-toc
+end 
 
 % settings.tf_CZL
 %(2) The user only did a actin threshold exploration 
