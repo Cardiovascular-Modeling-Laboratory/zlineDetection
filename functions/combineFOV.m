@@ -125,7 +125,7 @@ if settings.actin_thresh > 1 && settings.grid_explore
     CS_sum = zeros(size(actin_thresh,1)*size(grid_sizes,1),1); 
     CS_nonsarc = zeros(size(actin_thresh,1)*size(grid_sizes,1),1); 
     CS_explorevalues = zeros(size(actin_thresh,1)*size(grid_sizes,1),2); 
-    
+    CS_lengths = cell(size(actin_thresh,1)*size(grid_sizes,1),1);
     %Summarize values
     for cond = 1:size(actin_thresh,1)*size(grid_sizes,1)
         %Number of values for each condition 
@@ -136,6 +136,8 @@ if settings.actin_thresh > 1 && settings.grid_explore
         
         %Get the lengths
         temp_l = concatCells( lengths, false, pa, po); 
+        %Store all of the lengths
+        CS_lengths{cond,1} = temp_l; 
         %Calculate the median czl 
         CS_median(cond,1) = median(temp_l); 
         %Calculate the sum czl 
@@ -144,7 +146,8 @@ if settings.actin_thresh > 1 && settings.grid_explore
         CS_nonsarc(cond,1) = ...
             (sum(nonsarc_data(pa:po,1)) -sum(nonsarc_data(pa:po,2)))/...
             sum(nonsarc_data(pa:po,1)); 
-
+        
+        
         %Save the exploration values
         %Grid sizes
         CS_explorevalues(cond,1) = exploration_values(pa,1); 
@@ -162,7 +165,7 @@ if settings.actin_thresh > 1 && settings.grid_explore
     CS_actinexplore.CS_sum = CS_sum; 
     CS_actinexplore.CS_nonsarc = CS_nonsarc; 
     CS_actinexplore.CS_explorevalues = CS_explorevalues; 
-    
+    CS_actinexplore.CS_lengths = CS_lengths; 
     %Create a struct to store values of all FOV in the coverslip
     FOV_actinexplore = struct(); 
     FOV_actinexplore.non_sarcs = non_sarcs; 
@@ -212,9 +215,14 @@ if settings.actin_thresh > 1 && settings.grid_explore
     plotCSresults( CS_explorevalues, non_sarcs, CS_nonsarc, n, names ); 
     close; 
     
+    %Save the names and settings
+    save(fullfile(path, new_filename), 'settings', 'zline_images',...
+        'zline_path', '-append');
+    
 else
     disp('Not yet implemented...'); 
 end 
+
 
 end 
 
