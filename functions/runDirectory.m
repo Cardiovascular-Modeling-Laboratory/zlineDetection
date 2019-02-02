@@ -20,6 +20,10 @@ function [ output_struct ] = ...
 %This function will take file names as an input and then loop through them,
 %calling the analyze function
 
+%%%%%%%%%%%%%%%%%%%%%% Loop through & Analyze Each FOV  %%%%%%%%%%%%%%%%%%%
+% Resulting Files:
+
+
 %Begin a timer 
 tic; 
 % Loop through all of the image files 
@@ -165,32 +169,37 @@ for k = 1:zn
    
 end 
 
+%%%%%%%%%%%%%%%%%% Summarize Results for Entire Coverslip %%%%%%%%%%%%%%%%%
+
 %Create a struct for the outputs 
 output_struct = struct(); 
 
-%>>> Summarize parameter exploration for an entire coverslip, otherwise 
-%   create a summary filename 
-    if settings.exploration && settings.cardio_type == 1
-        %This function will combine and plot all results 
-        [output_struct.CS_actinexplore] = ...
-                combineFOV( settings, zline_images, zline_path ); 
-        %Close all 
-        close all; 
-    else 
-        %Get today's date in string form.
-        date_format = 'yyyymmdd';
-        today_date = datestr(now,date_format);
+%>>> Summarize actin parameter exploration for an entire coverslip. 
+%    Otherwise create a summary filename 
+
+if settings.exploration && settings.cardio_type == 1 && zn>1 
+    %This function will combine and plot all results. This involves
+    %re-loading all of the data. 
+    [output_struct.CS_actinexplore] = ...
+            combineFOV( settings, zline_images, zline_path ); 
         
-        %Declare the type of summary file 
-        tp = {'CS', 'SC'}; 
-        
-        %Name of the summary file 
-        summary_file_name = strcat('SC', tp{settings.cardio_type},...
-            '_Summary',today_date,'.mat');
-    end 
+    %Close all 
+    close all; 
+elseif zn>1 
+    %Get today's date in string form.
+    date_format = 'yyyymmdd';
+    today_date = datestr(now,date_format);
+
+    %Declare the type of summary file 
+    tp = {'CS', 'SC'}; 
+
+    %Name of the summary file 
+    summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
+        '_Summary',today_date,'.mat');
+end 
 
 %>>> Summarize Continuous Z-line Length if there was not an exploration 
-if ~settings.exploration && settings.tf_CZL
+if ~settings.exploration && settings.tf_CZL && zn>1 
     %Create coverslip continuous z-line struct
     CS_CZL = struct(); 
             
@@ -236,7 +245,7 @@ if ~settings.exploration && settings.tf_CZL
 end 
 
 %>>> Summarize OOP if there was not an exploration 
-if ~settings.exploration && settings.tf_OOP
+if ~settings.exploration && settings.tf_OOP && zn>1
     %Create coverslip continuous z-line struct
     CS_OOP = struct(); 
             

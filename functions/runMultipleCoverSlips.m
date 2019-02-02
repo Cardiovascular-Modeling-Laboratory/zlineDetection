@@ -91,46 +91,113 @@ for k = 1:settings.num_cs
     
 end 
 
+%Initialize matrices to hold information for each coverslip
+%Save the medians for each coverslip 
+MultiCS_medians = cell(1,settings.num_cs); 
+%Save the totals for each coverslip 
+MultiCS_sums = cell(1,settings.num_cs); 
+%Save the non-sarc fraction for each coverslip 
+MultiCS_nonsarc = cell(1,settings.num_cs);
+%Save the medians for each coverslip 
+MultiCS_grid_sizes = cell(1,settings.num_cs);
+MultiCS_actin_threshs = cell(1,settings.num_cs);
+%Save the lengths for each coverslip 
+MultiCS_lengths = cell(1,settings.num_cs);
+%Save the OOP for each coverslip 
+MultiCS_OOP = cell(1,settings.num_cs);
+                        
+
+
 %Loop through and run each FOV in each CS 
 clear k 
 for k = 1:settings.num_cs 
-    %Run the analysis
+    % Analyze the Coverslip 
     [ outputs ] = ...
         runDirectory( settings, zline_path, zline_images,...
         actin_path, actin_images, name_CS ); 
     
-    %If exploration - compare conditions and coverslips 
-    if settings.exploration 
+    %If there is more than one CS store information for each coverslip in
+    %cells
+    if settings.num_cs > 1
+        % If the user did an actin exploration, store the values for each
+        % CS. 
+        if settings.exploration 
+            %Store the actin struct
+            CS_actinexplore = outputs.CS_actinexplore; 
+            
+            %Store the medians
+            MultiCS_medians{1,k} = CS_actinexplore.CS_median;
+            %Store the sums 
+            MultiCS_sums{1,k} = CS_actinexplore.CS_sum;
+            %Store the non sarc fraction
+            MultiCS_nonsarc{1,k} = CS_actinexplore.CS_nonsarc;
+            %Store the grid sizes 
+            MultiCS_grid_sizes{1,k} = ...
+                CS_actinexplore.CS_explorevalues(:,1);
+            %Store the actin thresholds 
+            MultiCS_actin_threshs{1,k} = ...
+                CS_actinexplore.CS_explorevalues(:,2);
+            %Store the lengths 
+            MultiCS_lengths{1,k} = CS_actinexplore.CS_lengths;
+            %Store the OOPs 
+            MultiCS_OOP{1,k} = CS_actinexplore.CS_OOP; 
+        else
+            %If the user did not do a parameter exploration, but did actin
+            %filter, store the grid sizes and actin thresholds
+            if settings.actin_filt
+                %Store the grid sizes 
+                MultiCS_grid_sizes{1,k} = ...
+                    CS_actinexplore.CS_explorevalues(:,1);
+                %Store the actin thresholds 
+                MultiCS_actin_threshs{1,k} = ...
+                    CS_actinexplore.CS_explorevalues(:,2);
+            else
+                %Set the grids to NaN
+                MultiCS_grid_sizes{1,k} = NaN;
+                %Set the actin thresholds to NaN
+                MultiCS_actin_threshs{1,k} = NaN;
+            end 
+            %If the user calculated the continuous z-line lengths, store
+            %those values 
+            
+            %If the user calculated the OOP, store those values for each
+            %cover slip 
+        end 
+        
+    end 
+    
+    
+    
+    
+    
+    % If exploration (and there's more than one coverslip), compare 
+    % conditions and coverslips 
+    if settings.exploration && settings.num_cs > 1 
         if k == 1
             %Save the medians for each coverslip 
             MultiCS_medians = cell(1,settings.num_cs); 
             %Save the totals for each coverslip 
-            MultiCS_sums = zeros(1,settings.num_cs); 
+            MultiCS_sums = cell(1,settings.num_cs); 
             %Save the non-sarc fraction for each coverslip 
-            MultiCS_nonsarc = zeros(1,settings.num_cs);
+            MultiCS_nonsarc = cell(1,settings.num_cs);
             %Save the medians for each coverslip 
-            MultiCS_grid_sizes = zeros(1,settings.num_cs);
-            MultiCS_actin_threshs = zeros(1,settings.num_cs);
+            MultiCS_grid_sizes = cell(1,settings.num_cs);
+            MultiCS_actin_threshs = cell(1,settings.num_cs);
             %Save the lengths for each coverslip 
-            MultiCS_lengths = cell(zn(k,1),settings.num_cs);
+            MultiCS_lengths = cell(1,settings.num_cs);
             
         end 
         
-        %Store the actin struct
-        CS_actinexplore = outputs.CS_actinexplore; 
+        
         %Store the FOV struct 
 
         %Save the values of each category
-        MultiCS_medians(:,k) = CS_actinexplore.CS_median;
-        MultiCS_sums(:,k) = CS_actinexplore.CS_sum;
-        MultiCS_nonsarc(:,k) = CS_actinexplore.CS_nonsarc;
-        MultiCS_grid_sizes(:,k) = CS_actinexplore.CS_explorevalues(:,1);
-        MultiCS_actin_threshs(:,k) = CS_actinexplore.CS_explorevalues(:,2);
-        
-        %Save the lengths 
-        for t = 1:size(CS_actinexplore.CS_lengths,1) 
-            MultiCS_lengths{t,k} = CS_actinexplore.CS_lengths(t,1); 
-        end 
+        MultiCS_medians{1,k} = CS_actinexplore.CS_median;
+        MultiCS_sums{1,k} = CS_actinexplore.CS_sum;
+        MultiCS_nonsarc{1,k} = CS_actinexplore.CS_nonsarc;
+        MultiCS_grid_sizes{1,k} = CS_actinexplore.CS_explorevalues(:,1);
+        MultiCS_actin_threshs{1,k} = CS_actinexplore.CS_explorevalues(:,2);
+        MultiCS_lengths{1,k} = CS_actinexplore.CS_lengths; 
     end 
     
     %If ~explore & actin filtering
