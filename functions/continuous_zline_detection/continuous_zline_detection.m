@@ -4,7 +4,7 @@ function [ distances_um ] = continuous_zline_detection(im_struct, settings)
 
 %%%%%%%%%%%%%%%%%%%%%%%% LOAD FROM IM_STRUCT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check to see if this is a parameter exploration for actin filtering
-if settings.actin_thresh <= 1
+if ~settings.actinthresh_explore && ~settings.grid_explore
     %Load orientation angles from the image structure
     angles = im_struct.orientim; 
 
@@ -21,11 +21,16 @@ else
     %actin_explore struct
     angles = actin_explore.orientims{actin_explore.n,1};
     
-%     %Create a .mat filename 
-%     output_filename = strcat( im_struct.im_name,'_ACTINthresh', ...
-%         num2str(actin_explore.n), '_zlines.mat'); 
-    output_filename = strcat( im_struct.im_name,'_ACTINthresh', ...
-        num2str(actin_explore.n)); 
+    %Create a .mat filename (only save the threshold if this is a threshold
+    %exploration 
+    if settings.actinthresh_explore
+        output_filename = strcat( im_struct.im_name,'_ACTINthresh', ...
+            num2str(actin_explore.n)); 
+    else
+        output_filename = strcat( im_struct.im_name ); 
+  
+    end 
+    
     %Store the location to save all of the files 
     save_path = actin_explore.save_path; 
 end 
@@ -80,12 +85,14 @@ disp('Plotting and calculating the lengths of continuous z-lines...');
     calculate_lengths( BW, zline_clusters);
 
 %If this is a actin filtering parameter exploration, add a title
-if settings.actin_thresh > 1
+if settings.actinthresh_explore || settings.grid_explore
+    im_title = strcat(strrep(im_struct.im_name,'_', '\_'), ...
+        '; Actin Threshold: ', {' '}, ...
+        num2str(actin_explore.thresholds(actin_explore.n,1)),...
+        {' '},'; Grid Size: ',num2str(settings.grid_size(1))); 
+    
     %Add title
-    title(strcat(strrep(im_struct.im_name,'_', '\_'), ...
-        '; Actin Threshold: ', ...
-        num2str(actin_explore.actin_thresh(actin_explore.n,1))),...
-        'FontSize',14,'FontWeight','bold');
+    title(im_title{1,1},'FontSize',14,'FontWeight','bold');
 end
 
 %Save as a .fig file (Matlab Figure)
@@ -95,8 +102,9 @@ savefig(fullfile(save_path, fig_name));
 saveas(gcf, fullfile(save_path, fig_name(1:end-4)), 'tiffn');
 
 
+settings.pltZact = false; 
 % If the actin detect image is available, plot the z-lines on top of it 
-if settings.actin_filt
+if settings.pltZact 
     % Save the actin struct
     actin_struct = im_struct.actin_struct;
     
@@ -115,12 +123,16 @@ if settings.actin_filt
     [~, actin_name] = fileparts(actin_struct.filename);
     disp(actin_struct.filename); 
     %If this is a parameter exploration, add the parameter threshold number
-    if settings.actin_thresh > 1
+    if settings.actinthresh_explore || settings.grid_explore
+        
         %Add title
-        title(strcat(strrep(actin_name,'_', '\_'),...
-            '; Actin Threshold: ', ...
-            num2str(actin_explore.actin_thresh(actin_explore.n,1))),...
-            'FontSize',14,'FontWeight','bold');
+        im_title = strcat(strrep(actin_name,'_', '\_'), ...
+            '; Actin Threshold: ', {' '}, ...
+            num2str(actin_explore.actin_thresh(actin_explore.n,1)),...
+            {' '},'; Grid Size: ',num2str(settings.grid_size(1))); 
+        %Add title
+        title(im_title{1,1},'FontSize',14,'FontWeight','bold');
+
         %Save the actin image as a .tif and .fig
         actin_name = strcat(actin_name, '_ACTINthresh', ...
             num2str(actin_explore.n),'_zlines');
@@ -133,7 +145,6 @@ if settings.actin_filt
     savefig(fullfile(save_path, actin_name));
     saveas(gcf, fullfile(save_path, actin_name(1:end-4)),...
         'tiffn');
-
 end 
 
 %Remove any nan from distances 
