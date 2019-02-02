@@ -1,151 +1,301 @@
 function [ actin_explore ] = ...
     exploreFilterWithActin( im_struct, settings, actin_explore)
 
-% Create a new directory to store all data
-new_subfolder = 'ActinFilteringExploration';
+%%%%%%%%%%%%%%%%%%%%%%% Initialize Grids %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% If it does not exist, create it (or append and then create). 
-create = true; 
-new_subfolder = ...
-    addDirectory( im_struct.save_path, new_subfolder, create ); 
+% Set values for the grid exploration 
+gmin = settings.grid_size(1); 
+gmax = gmin; 
+gstep = 1; 
 
-% Save the name of the new path 
-actin_explore.save_path = fullfile(im_struct.save_path, new_subfolder); 
+%If requested, Get the range of values for the grid exploration 
+if settings.grid_explore
+    %Get the min, max, and step size 
+    gmin = actin_explore.grid_min; 
+    gmax = actin_explore.grid_max; 
+    gstep = actin_explore.grid_step; 
 
-%Create a cell to store all of the masks
-actin_explore.masks = ...
-    cell(length(actin_explore.min_thresh:actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+end 
 
-%Create a cell to store all of the final skeletons
-actin_explore.final_skels = ...
-    cell(length(actin_explore.min_thresh:actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+%Get the total and unique values for the grids 
+unique_grids = round( gmin:gstep:gmax ); 
+gtot = length(unique_grids); 
 
-%Create a cell to store all of the orientation matrices
-actin_explore.orientims = ...
-    cell(length(actin_explore.min_thresh:actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+%%%%%%%%%%%%%%%%%%%%%%% Initialize Thresholds %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Create a cell to store all of the continuous z-line lengths
-actin_explore.lengths = ...
-    cell(length(actin_explore.min_thresh:actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+% Set values for the threshold exploration 
+atmin = settings.actin_thresh; 
+atmax = gmin; 
+atstep = 1; 
 
-%Create a matrix to store all of the medians 
-actin_explore.medians = zeros(length(actin_explore.min_thresh:...
-    actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+%If requested, Get the range of values for the actin threshold exploration
+if settings.actinthresh_explore
+    %Get the min, max, and step size 
+    atmin = settings.min_thresh; 
+    atmax = settings.max_thresh;
+    atstep = settings.thresh_step;
+end
 
-%Create a matrix to store all of the sums 
-actin_explore.sums = zeros(length(actin_explore.min_thresh:...
-    actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+%Get the total and unique values for actin threshold
+unique_thresh = atmin:atstep:atmax; 
+attot = length(unique_thresh); 
 
-%Create a matrix to store all of the non-sarc percentages 
-actin_explore.non_sarcs = zeros(length(actin_explore.min_thresh:...
-    actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+        
+%%%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Create a matrix to store all of the threshold values
-actin_explore.actin_thresh = zeros(length(actin_explore.min_thresh:...
-    actin_explore.thresh_step:...
-    actin_explore.max_thresh), 1); 
+%Caclulate the total number of data points 
+tot = attot*gtot; 
 
-% Start a counter 
-actin_explore.n = 0; 
+%>> ALL EXPLORE: Create a matrix to store all of the non-sarc fractions 
+non_sarcs = zeros(tot, 1); 
+%>> ALL EXPLORE: Create a matrix to store all of the medians 
+medians = zeros(tot, 1); 
+%>> ALL EXPLORE: Create a matrix to store all of the sums 
+sums = zeros(tot, 1);
+%>> ALL EXPLORE: Create a matrix to store all of the threshold values 
+thresholds = zeros(tot, 1);   
+%>> ALL EXPLORE: Create a matrix to store all of the grid sizes
+grid_sizes= zeros(tot, 1);     
+%>> ALL EXPLORE: Create a cell to store all of the masks
+masks = cell(tot, 1); 
+%>> ALL EXPLORE: Create a cell to store all of the continuous z-line 
+% lengths
+lengths = cell(tot, 1);
+%>> ALL EXPLORE: Create a cell to store all of the final skeletons
+final_skels = cell(tot, 1);
+%>> ALL EXPLORE: Create a cell to store all of the orientation matrices
+orientims = cell(tot, 1);
+%>> ALL EXPLORE: Create a matrix to store all of post-filtered values
+post_filt = zeros(tot,1); 
+
+
+%Old save path 
+image_savepath = im_struct.save_path;
+
+% Save the prefiltered skeleton 
+prefilt_skel = im_struct.skel_final;
 
 % Save the pre-filtered skeleton for calculation of the non-sarc
 % percentages
-pre_filt = im_struct.skel_final; 
-pre_filt = pre_filt(:); 
+pre_filt = prefilt_skel(:); 
 pre_filt(pre_filt == 0) = []; 
+pre_filt = length(pre_filt); 
 
-for thresh = actin_explore.min_thresh:actin_explore.thresh_step:...
-        actin_explore.max_thresh
-    
-    %Increase counter 
-    actin_explore.n = actin_explore.n + 1; 
-    
-    %Create a temporary save name 
-    save_name = strcat(im_struct.im_name, '_ACTINthresh', ...
-        num2str(actin_explore.n));
-    
-    %Create a matrix to store the mask 
-    mask = ones(size(im_struct.orientim)); 
-    
-    %If dot product is closer to 1, the angles are more parallel and should be
-    %removed
-    mask(im_struct.dp >= thresh) = 0; 
-    %If dot product is closer to 0, the angles are more perpendicular and
-    %should be kept
-    mask(im_struct.dp < thresh) = 1; 
+%%%%%%%%%%%%%%%%%% Loop through all explore options %%%%%%%%%%%%%%%%%%%%%%%
 
-    %The NaN postitions should be set equal to 1 (meaning no director for
-    %actin)
-    mask(isnan(mask)) = 1; 
+%Start a counter 
+n = 0; 
+%Loop through grids
+for g = 1:gtot
+    
+    %Set the grid size to the current grid size 
+    settings.grid_size(1) = unique_grids(g); 
+    settings.grid_size(2) = unique_grids(g); 
+    
+    %Save the actin_struct
+    actin_struct = im_struct.actin_struct; 
+    
+    % Compute the director for each grid 
+    [ actin_struct.dims, actin_struct.oop, actin_struct.director, ...
+        actin_struct.grid_info, actin_struct.visualization_matrix, ...
+        actin_struct.director_matrix] = ...
+        gridDirector( actin_struct.actin_orientim, settings.grid_size );
+    
+    %Resave the actin_struct in the image struct
+    im_struct.actin_struct = actin_struct; 
+    
+    % Save the image of the actin directors on top of the z-lines  
+    if settings.disp_actin
+        % Visualize the actin director on top of the z-line image by first
+        % displaying the z-line image and then plotting the orinetation 
+        %vectors. 
+        figure;
+        spacing = 15; color_spec = 'b'; 
+        plotOrientationVectors(actin_struct.visualization_matrix,...
+            mat2gray(im_struct.gray),spacing, color_spec) 
 
-    %Store the mask in the masks cell
-    actin_explore.masks{actin_explore.n,1} = mask; 
+        % Save figure 
+        saveas(gcf, fullfile(im_struct.save_path, ...
+            strcat( im_struct.im_name, '_zlineActinDirector_GRID', ...
+            num2str(unique_grids(g)),'.tif')), 'tiffn');
+    end 
     
-    %Modify the final skeleton by multiplying by the maks 
-    actin_explore.final_skels{actin_explore.n,1} = ...
-        im_struct.skel_final.*mask; 
-    
-    % Remove regions that were not part of the binary skeleton
-    temp_orientim = im_struct.orientim; 
-    temp_orientim(~actin_explore.final_skels{actin_explore.n,1}) = NaN; 
-    actin_explore.orientims{actin_explore.n,1} = temp_orientim; 
+    %Take the dot product sqrt(cos(th1 - th2)^2);
+    im_struct.dp = ...
+        sqrt(cos(im_struct.orientim - actin_struct.director_matrix).^2);
     
     
-    % Save the mask. 
-    imwrite( mask, fullfile(actin_explore.save_path, ...
-        strcat( save_name, '_Mask.tif' ) ),...
-        'Compression','none');
+    % Start a counter for just actin thresholds 
+    actin_explore.n = 0; 
+    
+    %Create a cell to store all of the orientation matrices
+    actin_explore.orientims = cell(attot, 1);
+    
+    %Create a matrix to store all of the threshold values
+    actin_explore.thresholds = zeros(attot, 1);    
+    
+    %Loop through the actin thresholds 
+    for a = 1:attot
+        %Increase the counter for the total matrix 
+        n = n+1; 
+        
+        %Increase actin threshold counter
+        actin_explore.n = actin_explore.n+1; 
+        
+        %Store the current grid size
+        thresholds(n,1) = unique_grids(g);   
 
-    % Save the final skeleton. 
-    imwrite( actin_explore.final_skels{actin_explore.n,1}, ...
-        fullfile(actin_explore.save_path, ...
-        strcat( save_name, '_Skeleton.tif' ) ),...
-        'Compression','none');
+        %Store the current actin threshold
+        grid_sizes(n,1) = unique_thresh(a);  
+        
+        %If there is more than one grid size, create a new folder 
+        if settings.grid_explore
+            %Create a new path to store grid size explorations 
+            new_subfolder = strcat('Exploration_Size', ...
+                num2str(unique_grids(g)));
+
+            % If it does not exist, create it (or append and then create). 
+            create = true; 
+            new_subfolder = ...
+                addDirectory( im_struct.save_path, new_subfolder, create ); 
+
+            %Save the new path
+            actin_explore.grid_savepath = ...
+                fullfile(im_struct.save_path, new_subfolder); 
+
+            %Change the save_path to the new directory 
+            im_struct.save_path = actin_explore.grid_savepath;
+            
+            %Set path for the continuous z-line 
+            actin_explore.save_path = actin_explore.grid_savepath; 
+            
+        end 
+        
+        %If there is more than one actin threshold, create a new folder  
+        if settings.actinthresh_explore
+            % Create a new directory to store all data
+            new_subfolder = 'ActinFilteringExploration';
+
+            % If it does not exist, create it (or append and then create). 
+            create = true; 
+            new_subfolder = ...
+                addDirectory( im_struct.save_path, new_subfolder, create ); 
+
+            % Save the name of the new path 
+            actin_explore.save_path = fullfile(im_struct.save_path, ...
+                new_subfolder); 
+            
+            %Create a temporary save_name 
+            save_name = strcat(im_struct.im_name, '_ACTINthresh', ...
+                num2str(actin_explore.n));
+
+        end 
+        
+            %Create a matrix to store the mask 
+            mask = ones(size(im_struct.orientim)); 
+
+            %If dot product is closer to 1, the angles are more parallel 
+            %and should be removed
+            mask(im_struct.dp >= thresh) = 0; 
+            %If dot product is closer to 0, the angles are more 
+            %perpendicular andshould be kept
+            mask(im_struct.dp < thresh) = 1; 
+
+            %The NaN postitions should be set equal to 1 (meaning no 
+            %director for actin)
+            mask(isnan(mask)) = 1; 
+
+            %Store the mask in the masks cell
+            masks{n,1} = mask; 
     
-    % Isolate the number of pixels in the post filtering skeleton 
-    post_filt = actin_explore.final_skels{actin_explore.n,1};
-    post_filt = post_filt(:);
-    post_filt(post_filt == 0) = []; 
+            %Modify the final skeleton by multiplying by the maks 
+            final_skels{n,1} = im_struct.skel_final.*mask; 
     
-    % Calculate the non-sarcomeric alpha actinin 
-    % number of pixles eliminated / # total # of pixles positive for alpha
-    % actinin 
-    actin_explore.non_sarcs(actin_explore.n,1) = ...
-        (length(pre_filt) - length(post_filt))/ ...
-        length(pre_filt);
+            % Remove regions that were not part of the binary skeleton
+            temp_orientim = im_struct.orientim; 
+            temp_orientim(~final_skels{n,1}) = NaN; 
+            
+            %Store the orientation matrix in the global matrix 
+            orientims{n,1} = temp_orientim; 
     
-    %Save the threshold value 
-    actin_explore.actin_thresh(actin_explore.n,1) = thresh;
+            % Save the mask. 
+            imwrite( mask, fullfile(actin_explore.save_path, ...
+                strcat( save_name, '_Mask.tif' ) ),...
+                'Compression','none');
+
+            % Save the final skeleton. 
+            imwrite(final_skels{n,1}, ...
+                fullfile(actin_explore.save_path, ...
+                strcat( save_name, '_Skeleton.tif' ) ),...
+                'Compression','none');
     
-    % Store the actin_explore struct inside of the im_struct
-    im_struct.actin_explore = actin_explore; 
+            % Isolate the number of pixels in the post filtering skeleton 
+            temp_post = final_skels{n,1};
+            temp_post = temp_post(:);
+            temp_post(temp_post == 0) = []; 
+            post_filt(n,1) = length(temp_post); 
     
-    %Close all figures
-    close all; 
+            % Calculate the non-sarcomeric alpha actinin 
+            % number of pixles eliminated / # total # of pixles positive for alpha
+            % actinin 
+            non_sarcs(n,1) = (pre_filt - post_filt)/pre_filt;
+
+            %Save the threshold value 
+            actin_explore.actin_thresh(actin_explore.n,1) = thresh;
     
-    % Calculate the continuous z-line lengths 
-    [ actin_explore.lengths{actin_explore.n,1} ] = ...
-        continuous_zline_detection(im_struct, settings);
+            %Close all figures
+            close all; 
+            
+            %For the continuous z-line lengths store the orientation matrix
+            actin_explore.orientims{actin_explore.n,1} = orientims{n,1};
+            
+            %For the continuous z-line lengths store the threshold values 
+            actin_explore.thresholds{actin_explore.n,1} = unique_thresh(a);
+            
+            %For the continuous z-lien lengths store the actin_explore 
+            %struct inside of the im_struct
+            im_struct.actin_explore = actin_explore; 
+            
+            % Calculate the continuous z-line lengths 
+            lengths{n,1} = continuous_zline_detection(im_struct, settings);
+
+            %Clear the command line 
+            clc 
+            
+            %Close all figures
+            close all; 
+
+            %Find the median continuous z-line length
+            medians(n,1) = median(lengths{n,1});
+            %Find the sum continuous z-line length
+            sums(n,1) = sum(lengths{n,1});
+    end
     
-    %Clear the command line 
-    clc 
-    %Close all figures
-    close all; 
-    
-    %Find the median continuous z-line length
-    actin_explore.medians(actin_explore.n,1) = ...
-        median(actin_explore.lengths{actin_explore.n,1});
-    %Find the sum continuous z-line length
-    actin_explore.sums(actin_explore.n,1) = ...
-        sum(actin_explore.lengths{actin_explore.n,1});
-end 
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Plot and Save Data %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Replace the value of the im_struct back to what it was 
+im_struct.save_path = image_savepath; 
+
+
+% Save all of the relevant data in the actin_explore struct 
+actin_explore.non_sarcs = non_sarcs; 
+actin_explore.medians = medians; 
+actin_explore.sums = sums;
+actin_explore.thresholds = thresholds;   
+actin_explore.grid_sizes = grid_sizes;     
+actin_explore.masks = masks; 
+actin_explore.lengths = lengths;
+actin_explore.final_skels = final_skels;
+actin_explore.orientims = orientims;
+actin_explore.post_filt = post_filt; 
+actin_explore.prefilt_skel = prefilt_skel;
+actin_explore.pre_filt = pre_filt; 
+
+% Summarize the analysis 
+actinExplorePlots( im_struct, actin_explore, settings ); 
 
 % Create a name to save the file 
 summary_name = strcat(im_struct.im_name, '_ActinExploration.mat');
@@ -158,69 +308,4 @@ save(fullfile(im_struct.save_path, summary_name), ...
     'im_struct', 'settings', 'actin_explore');
 
 
-%Plot the resulting data 
-figure; 
-hold on; 
-
-%Plot the threshold vs. the median
-subplot(3,2,1); 
-plot(actin_explore.actin_thresh, actin_explore.medians, 'o', 'color', 'k', ...
-    'MarkerFaceColor', 'k'); 
-set(gca,'fontsize',12)
-title( strcat('Median (\mu m) vs Actin Threshold'),...
-    'FontSize',12,'FontWeight','bold');
-ylabel('Median CZL (\mu m)','FontSize',12,...
-    'FontWeight','bold');
-xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
-
-%Plot the threshold vs. the sum
-subplot(3,2,2); 
-plot(actin_explore.actin_thresh, actin_explore.sums, 'o', 'color', 'k', ...
-    'MarkerFaceColor', 'k'); 
-set(gca,'fontsize',12)
-title( strcat('Sum (\mu m) vs Actin Threshold'),...
-    'FontSize',12,'FontWeight','bold');
-ylabel('Total CZL (\mu m)','FontSize',12,...
-    'FontWeight','bold');
-xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
-
-%Plot the non-zline fraction vs. actin trheshold 
-subplot(3,2,3); 
-plot(actin_explore.actin_thresh, actin_explore.non_sarcs, 'o', 'color', 'k', ...
-    'MarkerFaceColor', 'k'); 
-set(gca,'fontsize',12)
-title( strcat('Non Z-line Fraction vs Actin Threshold'),...
-    'FontSize',12,'FontWeight','bold');
-ylabel('Non Z-line Fraction','FontSize',12,...
-    'FontWeight','bold');
-xlabel('Actin Threshold (dot product)','FontSize',12,'FontWeight','bold');
-
-%Plot the median vs non zline 
-subplot(3,2,4); 
-plot(actin_explore.non_sarcs, actin_explore.medians, 'o', 'color', 'k', ...
-    'MarkerFaceColor', 'k'); 
-set(gca,'fontsize',12)
-title( strcat('Median (\mu m) vs Non Z-line Fraction'),...
-    'FontSize',12,'FontWeight','bold');
-ylabel('Median CZL (\mu m)','FontSize',12,...
-    'FontWeight','bold');
-xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
-
-%Plot the sum vs non zline 
-subplot(3,2,5); 
-plot(actin_explore.non_sarcs, actin_explore.sums, 'o', 'color', 'k', ...
-    'MarkerFaceColor', 'k'); 
-set(gca,'fontsize',12)
-title( strcat('Sum (\mu m) vs Non Z-line Fraction'),...
-    'FontSize',12,'FontWeight','bold');
-ylabel('Total CZL (\mu m)','FontSize',12,...
-    'FontWeight','bold');
-xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
-
-%Save pdf
-saveas(gcf, fullfile(im_struct.save_path, ...
-    strcat(im_struct.im_name, '_ActinExploration')), 'pdf');
-
-close;
 end
-
