@@ -1,6 +1,29 @@
 function [CS_actinexplore] = ...
     combineFOV( settings, zline_images, zline_path )
-% This function will combine the FOV for a coverslip. 
+% This function will combine the FOV for a single coverslip
+
+
+% Get the number of different grids. If there was no grid exploration, this
+% value is just equal to 1. 
+if ~grid_explore
+    % Set the number of different grid options equal to 1
+    gn = 1; 
+    % Set the grid sizes equal to the GUI input value 
+    grid_sizes = settings.grid_size(1); 
+end 
+
+% Get the number of different actin thresholds. If there was no actin
+% exploration this value is equal to 1 
+if ~actinthresh_explore
+    % Set the number of different actin threshold options equal to 1 
+    an = 1; 
+    % Set the actin threshold equal to the GUI input value 
+    thresh_vals = settings.actin_thresh; 
+end 
+
+
+% If the user did an exploration value get the values 
+
 
 % (1) The user did both a grid exploration with an actin threshold 
 % exploration 

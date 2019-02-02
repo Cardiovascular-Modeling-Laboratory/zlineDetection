@@ -20,9 +20,11 @@ function [ output_struct ] = ...
 %This function will take file names as an input and then loop through them,
 %calling the analyze function
 
-%%%%%%%%%%%%%%%%%%%%%% Loop through & Analyze Each FOV  %%%%%%%%%%%%%%%%%%%
-% Resulting Files:
+%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
+%%%%%%%%%%%%%%%%%%%%%% Loop through & Analyze Each FOV  %%%%%%%%%%%%%%%%%%%
 
 %Begin a timer 
 tic; 
@@ -81,6 +83,13 @@ for k = 1:zn
         end 
     end 
     
+    %If the user wants to filter with actin, save the non_sarc fraction
+    if settings.actin_filt && ~exploration 
+        %Initalize variables
+        CS_nonsarc = cell(1,zn); 
+        
+        CS_nonsarc{1,k} = im_struct.non_sarc; 
+    end 
     
     % If the user wants to calculate continuous z-line length 
     if settings.tf_CZL && ~exploration
@@ -270,9 +279,9 @@ if ~settings.exploration && settings.tf_OOP && zn>1
         CS_OOP.director ] = calculate_OOP( CS_OOP.CS_angles  ); 
     else 
         %Store the OOP and director 
-        CS_OOP.SC_oops = oops; 
+        CS_OOP.CS_oops = oops; 
         %Create a cell to store all of the direction angles 
-        CS_OOP.SC_directors=directors; 
+        CS_OOP.CS_directors=directors; 
     end 
     
     %Save the data
