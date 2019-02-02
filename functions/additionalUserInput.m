@@ -102,5 +102,46 @@ if settings.multi_cond
         type_dims);
 end
 
+%Get the name and location of summary file 
+if settings.num_cs > 1
+    %Display message to select path 
+    disp('Select a location to save summary analysis for all Coverslips'); 
+    %Ask the user for the location of the summary file 
+    settings.SUMMARY_path = uigetdir(pwd,'Save Location for Summary Files'); 
+    
+    %Get the parts of the summary path 
+    pathparts = strsplit(settings.SUMMARY_path,filesep); 
+    
+    %Find the location of the current folder 
+    potential_end = size(pathparts,2); 
+    while isempty(pathparts{1,potential_end})
+        potential_end = potential_end -1; 
+    end 
+    
+    %Get the name of folder 
+    base_name = pathparts{1,potential_end}; 
+    
+    %Get today's date
+    date_format = 'yyyymmdd';
+    today_date = datestr(now,date_format);
+    
+    %Suggested suggested name for files  
+    suggested_name = strcat(base_name, '_MultiCondSummary_',today_date);
+    
+    %Ask the user for the summary name 
+    %Prompt Questions
+    sumname_prompt = {'Name of Summary File for Multiple Coverslips (no extension):'};
+    %Title of prompt
+    sumname_title = 'Summary File Name';
+    %Dimensions
+    sumname_dims = [1 80];
+    %Default inputs
+    sumname_definput = {suggested_name};
+    %Save answers
+    settings.SUMMARY_name = inputdlg(sumname_prompt,sumname_title,...
+        sumname_dims,sumname_definput);
+end 
+
+
 end
 
