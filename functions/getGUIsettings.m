@@ -158,5 +158,11 @@ settings.multi_cond = get(handles.multi_cond, 'Value');
 
 settings = exploreParameters(settings);
 
+%%%%%%%%%%%%%%%%%%%%% Summary Filename For CS  %%%%%%%%%%%%%%%%%%%
+if settings.num_cs > 1
+    disp('Select a location to save summary analysis for all Coverslips'); 
+    settings.SUM_path = uigetdir(pwd,'Save Location for Summary Files'); 
+    
+end 
 
 end

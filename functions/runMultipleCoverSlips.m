@@ -2,7 +2,6 @@ function [] = runMultipleCoverSlips(settings)
 %This function will be used to run multiple coverslips and obtain a summary
 %file
 
-%If the user wants to compare conditions, ask them how many 
 
 %Create a cell to hold the coverslip name 
 name_CS = cell(settings.num_cs,1);
