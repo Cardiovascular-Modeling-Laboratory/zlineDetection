@@ -1,25 +1,54 @@
-function [CS_actinexplore] = ...
-    combineFOV( settings, zline_images, zline_path )
+function [CS_results] = combineFOV( settings, CS_results )
 % This function will combine the FOV for a single coverslip
 
 
-% Get the number of different grids. If there was no grid exploration, this
-% value is just equal to 1. 
-if ~grid_explore
-    % Set the number of different grid options equal to 1
-    gn = 1; 
-    % Set the grid sizes equal to the GUI input value 
-    grid_sizes = settings.grid_size(1); 
-end 
+%Get unique threshold values 
+unique_thresh = unique(CS_results.FOV_thresholds); 
+attot = length(unqiue_thresh); 
+%Get unique grid sizes
+unique_grids = unique(CS_results.FOV_grid_sizes); 
+gtot = length(unique_grids); 
 
-% Get the number of different actin thresholds. If there was no actin
-% exploration this value is equal to 1 
-if ~actinthresh_explore
-    % Set the number of different actin threshold options equal to 1 
-    an = 1; 
-    % Set the actin threshold equal to the GUI input value 
-    thresh_vals = settings.actin_thresh; 
-end 
+%Get the number of FOV 
+zn = length(CS_results.zline_images); 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CZL  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot continuous z-line lengths and median of all lengths
+
+
+% % Get the number of different grids. If there was no grid exploration, this
+% % value is just equal to 1. 
+% if ~grid_explore
+%     % Set the number of different grid options equal to 1
+%     gn = 1; 
+%     % Set the grid sizes equal to the GUI input value 
+%     grid_sizes = settings.grid_size(1); 
+% end 
+% 
+% % Get the number of different actin thresholds. If there was no actin
+% % exploration this value is equal to 1 
+% if ~actinthresh_explore
+%     % Set the number of different actin threshold options equal to 1 
+%     an = 1; 
+%     % Set the actin threshold equal to the GUI input value 
+%     thresh_vals = settings.actin_thresh; 
+% end 
+% 
+% 
+
+
+
+
+%NON-SARC 
+
+%CZL 
+
+%OOP
+
+
+
+
+
 
 
 % If the user did an exploration value get the values 

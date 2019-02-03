@@ -202,6 +202,10 @@ end
 %Create a struct for the outputs 
 CS_results = struct(); 
 
+%>>> Files 
+CS_results.zline_path = zline_path;
+CS_results.zline_images = zline_images; 
+
 %>>> ACTIN FILTERING: Non Sarc Fractions
 CS_results.FOV_nonsarc = FOV_nonsarc;
 CS_results.FOV_prefiltered = FOV_prefiltered;
@@ -219,8 +223,16 @@ CS_results.FOV_thresholds = FOV_thresholds;
 CS_results.FOV_grid_sizes = FOV_grid_sizes; 
 
 
-% %Combine the FOV and save plots and .mat file  
-CS_results = combineFOV( settings, CS_results ); 
+%Combine the FOV and save plots and .mat file  
+%If this is a tissue combine the FOV, otherwise save
+if settings.cardio_type == 1
+    %Combine the FOV 
+    CS_results = combineFOV( settings, CS_results ); 
+    %Save the combined FOV 
+else
+    SC_results = CS_results;
+    %Save the FOV results 
+end 
         
 % %>>> Summarize actin parameter exploration for an entire coverslip. 
 % %    Otherwise create a summary filename 

@@ -7,7 +7,7 @@ function [ condition_values, mean_condition, std_condition,...
 if ~isempty(grid_sizes)
     unique_grids = unique(grid_sizes); 
     gn = length(unique_grids); 
-else
+else 
     gn = 1; 
 end    
 
