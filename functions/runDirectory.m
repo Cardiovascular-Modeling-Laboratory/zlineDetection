@@ -223,129 +223,45 @@ CS_results.FOV_thresholds = FOV_thresholds;
 CS_results.FOV_grid_sizes = FOV_grid_sizes; 
 
 
+% Get today's date in string form.
+date_format = 'yyyymmdd';
+today_date = datestr(now,date_format);
+
+%Declare the type of summary file 
+tp = {'CS', 'SC'}; 
+
+%Name of the summary file 
+summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
+    '_Summary',today_date,'.mat');
+
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
 if settings.cardio_type == 1
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
-    %Save the combined FOV 
+    
+    %Save the summary file 
+    if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
+        save(fullfile(zline_path{1}, summary_file_name), ...
+            'CS_results', '-append')
+    else
+        save(fullfile(zline_path{1}, summary_file_name), ...
+            'CS_results')
+    end 
+    
 else
+    %Save the struct as Single Cell instead of Coverslip
     SC_results = CS_results;
-    %Save the FOV results 
+    
+    %Save the summary file 
+    if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
+        save(fullfile(zline_path{1}, summary_file_name), ...
+            'SC_results', '-append')
+    else
+        save(fullfile(zline_path{1}, summary_file_name), ...
+            'SC_results')
+    end 
+    
 end 
-        
-% %>>> Summarize actin parameter exploration for an entire coverslip. 
-% %    Otherwise create a summary filename 
-% 
-% if settings.exploration && settings.cardio_type == 1 && zn>1 
-%     %This function will combine and plot all results. This involves
-%     %re-loading all of the data. 
-%     [output_struct.CS_actinexplore] = ...
-%             combineFOV( settings, zline_images, zline_path ); 
-%         
-%     %Close all 
-%     close all; 
-% elseif zn>1 
-%     %Get today's date in string form.
-%     date_format = 'yyyymmdd';
-%     today_date = datestr(now,date_format);
-% 
-%     %Declare the type of summary file 
-%     tp = {'CS', 'SC'}; 
-% 
-%     %Name of the summary file 
-%     summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
-%         '_Summary',today_date,'.mat');
-% end 
-% 
-% %>>> Summarize Continuous Z-line Length if there was not an exploration 
-% if ~settings.exploration && settings.tf_CZL && zn>1 
-%     %Create coverslip continuous z-line struct
-%     CS_CZL = struct(); 
-%             
-%     %Save the path and image names 
-%     CS_CZL.zline_images = zline_images;
-%     CS_CZL.zline_path = zline_path; 
-%             
-%     %Save the data
-%     CS_CZL.FOV_lengths = all_lengths;
-%     CS_CZL.FOV_medians = all_medians;
-%     CS_CZL.FOV_sums = all_sums; 
-%     
-%     %Compute the mean and standard deviation of the medians 
-%     CS_CZL.mean_median = mean(CS_CZL.FOV_medians); 
-%     CS_CZL.std_median = std(CS_CZL.FOV_medians);
-%     %Compute the mean and standard deviation of the sums
-%     CS_CZL.mean_sums= mean(CS_CZL.FOV_sums); 
-%     CS_CZL.std_sums = std(CS_CZL.FOV_sums);
-%     
-%     if settings.cardio_type == 1
-%         %Concatenate the lengths matrix 
-%         CS_CZL.CS_lengths = concatCells( CS_CZL.FOV_lengths,false ); 
-%             
-%         %Compute the median 
-%         CS_CZL.CS_median = median(CS_CZL.CS_lengths); 
-%             
-%         %Compute the sum 
-%         CS_CZL.CS_sum = sum(CS_CZL.CS_lengths); 
-%     end 
-%     
-%     %Save as an output 
-%     output_struct.CS_CZL = CS_CZL; 
-%     
-%     %Save the summary file 
-%     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
-%         save(fullfile(zline_path{1}, summary_file_name), ...
-%             'CS_CZL', '-append')
-%     else
-%         save(fullfile(zline_path{1}, summary_file_name), ...
-%             'CS_CZL')
-%     end 
-% 
-% end 
-% 
-% %>>> Summarize OOP if there was not an exploration 
-% if ~settings.exploration && settings.tf_OOP && zn>1
-%     %Create coverslip continuous z-line struct
-%     CS_OOP = struct(); 
-%             
-%     %Save the path and image names 
-%     CS_OOP.zline_images = zline_images;
-%     CS_OOP.zline_path = zline_path; 
-%      
-%     if settings.cardio_type == 1
-%         %Save the angles 
-%         CS_OOP.FOVangles = angles; 
-% 
-%         %Concatenate the lengths matrix 
-%         CS_OOP.CS_angles = concatCells( CS_OOP.FOVangles,true ); 
-% 
-%         %Remove all NaN Values
-%         temp = CS_OOP.CS_angles; 
-%         temp(isnan(temp)) = []; 
-%         CS_OOP.CS_angles = temp; 
-% 
-%         %Calculate the OOP 
-%         [ CS_OOP.OOP, CS_OOP.directorAngle, ~, ...
-%         CS_OOP.director ] = calculate_OOP( CS_OOP.CS_angles  ); 
-%     else 
-%         %Store the OOP and director 
-%         CS_OOP.CS_oops = oops; 
-%         %Create a cell to store all of the direction angles 
-%         CS_OOP.CS_directors=directors; 
-%     end 
-%     
-%     %Save the data
-%     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
-%         save(fullfile(zline_path{1}, summary_file_name), ...
-%             'CS_OOP', '-append')
-%     else
-%         save(fullfile(zline_path{1}, summary_file_name), ...
-%             'CS_OOP')
-%     end
-% 
-%     %Save as an output
-%     output_struct.CS_OOP = CS_OOP; 
-% end 
     
 end

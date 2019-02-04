@@ -3,21 +3,12 @@ function [ condition_values, mean_condition, std_condition,...
     plotConditions(data_points, descriptors, cond_names,...
     grid_sizes, actin_threshs, plot_names, compute_median)
 
-%Get the number of unique grid sizes
-if ~isempty(grid_sizes)
-    unique_grids = unique(grid_sizes); 
-    gn = length(unique_grids); 
-else 
-    gn = 1; 
-end    
+%Get the number of unique grid sizes and threshold values 
+unique_grids = unique(grid_sizes); 
+gn = length(unique_grids); 
+unique_thresh = unique(actin_threshs); 
+afn = length(unique_thresh); 
 
-%Get the number of unique actin filter sizes 
-if ~isempty(actin_threshs)
-    unique_thresh = unique(actin_threshs); 
-    afn = length(unique_thresh); 
-else
-    afn = 1; 
-end 
 
 %Save the number of condition names 
 n_cond = length(cond_names); 
