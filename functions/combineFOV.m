@@ -12,6 +12,116 @@ gtot = length(unique_grids);
 %Get the number of FOV 
 zn = length(CS_results.zline_images); 
 
+%Get the total number of conditions 
+tot = attot*gtot; 
+
+%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%>>> Continuous Z-line Length
+CS_lengths = cell(1,tot); 
+CS_medians = zeros(1,tot); 
+CS_sums = zeros(1,tot);  
+FOV_lengths = cell(1,tot); 
+FOVstats_medians = zeros(2,tot); %1: mean 2: stdev 
+FOVstats_sums = zeros(2,tot);  %1: mean 2: stdev 
+
+%>>> Non Sarc Fractions 
+CS_nonsarc = zeros(1,tot);
+FOVstats_nonsarc = zeros(2,tot);%1: mean 2: stdev 
+
+%>>> OOP 
+CS_OOPs = zeros(1,tot);
+FOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
+
+%>>> EXPLORATION
+CS_thresholds = zeros(1,tot);
+CS_gridsizes = zeros(1,tot);
+
+%Properly ordered FOV values
+FOV_Grouped = struct; 
+%>>> ACTIN FILTERING: Non Sarc Fractions (NO EXPLORATION) 
+FOV_Grouped.FOV_nonsarc = zeros(1,tot*zn);
+FOV_Grouped.FOV_prefiltered = zeros(1,tot*zn);
+FOV_Grouped.FOV_postfiltered = zeros(1,tot*zn);
+
+%>>> ACTIN FILTERING: Continuous z-line length (NO EXPLORATION) 
+FOV_Grouped.FOV_lengths = cell(1,tot*zn); 
+FOV_Grouped.FOV_medians = zeros(1,tot*zn);
+FOV_Grouped.FOV_sums = zeros(1,tot*zn);
+
+%>>> ACTIN FILTERING: OOP (NO EXPLORATION) 
+FOV_Grouped.FOV_angles = cell(1,tot*zn);  
+FOV_Grouped.FOV_OOPs = zeros(1,tot*zn);  
+
+%>>> EXPLORATION
+FOV_Grouped.FOV_thresholds = zeros(1,tot*zn);  
+FOV_Grouped.FOV_grid_sizes = zeros(1,tot*zn); 
+
+%%%%%%%%%%%%%%%%%%%%%%%% Loop through Conditions  %%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Start a counter
+n = 1;
+
+%Loop through all of the images 
+for z = 1:zn
+    
+    % Store information for the current image file
+    %>> File Information
+    temp_filename = CS_results.zline_images{1,z};
+    %>> Actin Filtering Information 
+    temp_nonsarc = CS_results.FOV_nonsarc{1,z}; 
+    temp_prefilt = CS_results.FOV_prefiltered{1,z}; 
+    temp_postfilt = CS_results.FOV_postfiltered{1,z}; 
+    temp_thresh = CS_results.FOV_thresholds{1,z}; 
+    temp_grid_size = CS_results.FOV_grid_sizes{1,z}; 
+    %>> CZL
+    temp_lengths = CS_results.FOV_lengths{1,z}; 
+    temp_medians = CS_results.FOV_medians{1,z}; 
+    temp_sums = CS_results.FOV_sums{1,z}; 
+    %>> OOP
+    temp_angles = CS_results.FOV_angles{1,z}; 
+    temp_OOPs = CS_results.FOV_OOPs{1,z}; 
+    
+    for g = 1:gtot
+        
+        for a = 1:attot
+            %Calculate the position 
+            p = 1 + (z-1) + zn*gtot*(a-1) + zn*(g-1); 
+            
+            %Store the current grid size 
+            
+                %Store the current grid size
+                exploration_values(p,1) = grid_sizes(g,1); 
+                %Store the current actin threshold 
+                exploration_values(p,2) = actin_thresh(f,1); 
+                %Store the current filename 
+                filenames{p,1} = strcat(file, ext); 
+                
+                %Individually calculated values
+                non_sarcs(p,1) = actin_explore.non_sarcs(f,1);
+                medians(p,1)= actin_explore.medians(f,1);
+                sums(p,1)= actin_explore.sums(f,1);
+                
+                %Get the pre_filtering (n,1) lengths
+                nonsarc_data(p,1) = length(pre_filtered);
+            
+                %Get the post_filtering (n,1) lengths
+                post_filt = actin_explore.final_skels{f,1};
+                post_filt = post_filt(:);
+                post_filt(post_filt == 0) = [];    
+                nonsarc_data(p,2) = length(post_filt);
+                
+                %Store the lengths
+                lengths{p,1} = actin_explore.lengths{f,1};
+                
+                %Increase the count 
+                n = n+1;
+        end
+    end
+end
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% CZL  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot continuous z-line lengths and median of all lengths
 
