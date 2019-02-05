@@ -128,6 +128,14 @@ end
 %Loop through and run each coverslip 
 clear k 
 for k = 1:settings.num_cs 
+    
+    %Set the image and path names equal to NaN if the user is not doing
+    %actin filtering. 
+    if ~settings.actin_filt
+        actin_path{k,1} = NaN; 
+        actin_images{k,1} = NaN; 
+    end 
+    
     % Analyze the Coverslip 
     [ CS_results ] = ...
         runDirectory( settings, zline_path{k,1}, zline_images{k,1},...

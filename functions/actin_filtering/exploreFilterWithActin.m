@@ -73,7 +73,7 @@ post_filt = zeros(tot,1);
 image_savepath = im_struct.save_path;
 
 % Save the prefiltered skeleton 
-prefilt_skel = im_struct.skel_final;
+prefilt_skel = im_struct.skelTrim;
 
 % Save the pre-filtered skeleton for calculation of the non-sarc
 % percentages
@@ -235,8 +235,8 @@ for g = 1:gtot
             post_filt(n,1) = length(temp_post); 
     
             % Calculate the non-sarcomeric alpha actinin 
-            % number of pixles eliminated / # total # of pixles positive for alpha
-            % actinin 
+            % number of pixles eliminated / # total # of pixles positive 
+            % for alpha actinin 
             non_sarcs(n,1) = (pre_filt - post_filt(n,1))./pre_filt;
 
             %Save the threshold value 

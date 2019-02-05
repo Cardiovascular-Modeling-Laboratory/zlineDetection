@@ -163,13 +163,18 @@ if ~settings.actin_filt
     im_struct.mask = ones(size(im_struct.skelTrim)); 
     
 else
-    disp('Actin Filtering...'); 
     
-    % Remove false sarcomeres by looking at the actin directors
-    [ im_struct.mask, im_struct.actin_struct, im_struct.dp ] = ...
-    filterWithActin( im_struct, filenames, settings); 
-    
-    % Remove regions wh
+    if ~settings.grid_explore && ~settings.actinthresh_explore
+        disp('Actin Filtering...'); 
+
+        % Remove false sarcomeres by looking at the actin directors
+        [ im_struct.mask, im_struct.actin_struct, im_struct.dp ] = ...
+        filterWithActin( im_struct, filenames, settings); 
+    else 
+        %Set the mask to all ones if the user is actin filtering 
+        im_struct.mask = ones(size(im_struct.skelTrim)); 
+
+    end 
     % Multiply the mask by the trimmed skeleton to get the final skeleton
     im_struct.skel_final = im_struct.mask.*im_struct.skelTrim;
 end 
