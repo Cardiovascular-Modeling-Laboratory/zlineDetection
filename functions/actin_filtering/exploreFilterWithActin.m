@@ -31,9 +31,9 @@ atstep = 1;
 %If requested, Get the range of values for the actin threshold exploration
 if settings.actinthresh_explore
     %Get the min, max, and step size 
-    atmin = settings.min_thresh; 
-    atmax = settings.max_thresh;
-    atstep = settings.thresh_step;
+    atmin = actin_explore.min_thresh; 
+    atmax = actin_explore.max_thresh;
+    atstep = actin_explore.thresh_step;
 end
 
 %Get the total and unique values for actin threshold
@@ -115,7 +115,7 @@ for g = 1:gtot
             mat2gray(im_struct.gray),spacing, color_spec) 
 
         % Save figure 
-        saveas(gcf, fullfile(im_struct.save_path, ...
+        saveas(gcf, fullfile(image_savepath, ...
             strcat( im_struct.im_name, '_zlineActinDirector_GRID', ...
             num2str(unique_grids(g)),'.tif')), 'tiffn');
     end 
@@ -143,13 +143,13 @@ for g = 1:gtot
         actin_explore.n = actin_explore.n+1; 
         
         %Store the current grid size
-        thresholds(n,1) = unique_grids(g);   
+        thresholds(n,1) = unique_thresh(a);  
 
         %Store the current actin threshold
-        grid_sizes(n,1) = unique_thresh(a);  
+        grid_sizes(n,1) = unique_grids(g);   
         
         %If there is more than one grid size, create a new folder 
-        if settings.grid_explore
+        if settings.grid_explore && a == 1 
             %Create a new path to store grid size explorations 
             new_subfolder = strcat('Exploration_Size', ...
                 num2str(unique_grids(g)));
@@ -157,22 +157,21 @@ for g = 1:gtot
             % If it does not exist, create it (or append and then create). 
             create = true; 
             new_subfolder = ...
-                addDirectory( im_struct.save_path, new_subfolder, create ); 
+                addDirectory( image_savepath, new_subfolder, create ); 
 
             %Save the new path
             actin_explore.grid_savepath = ...
-                fullfile(im_struct.save_path, new_subfolder); 
+                fullfile(image_savepath, new_subfolder); 
 
             %Change the save_path to the new directory 
             im_struct.save_path = actin_explore.grid_savepath;
             
             %Set path for the continuous z-line 
-            actin_explore.save_path = actin_explore.grid_savepath; 
-            
+            actin_explore.save_path = actin_explore.grid_savepath;             
         end 
         
         %If there is more than one actin threshold, create a new folder  
-        if settings.actinthresh_explore
+        if settings.actinthresh_explore && a == 1
             % Create a new directory to store all data
             new_subfolder = 'ActinFilteringExploration';
 
@@ -196,10 +195,10 @@ for g = 1:gtot
 
             %If dot product is closer to 1, the angles are more parallel 
             %and should be removed
-            mask(im_struct.dp >= thresh) = 0; 
+            mask(im_struct.dp >= thresholds(n,1) ) = 0; 
             %If dot product is closer to 0, the angles are more 
             %perpendicular andshould be kept
-            mask(im_struct.dp < thresh) = 1; 
+            mask(im_struct.dp < thresholds(n,1) ) = 1; 
 
             %The NaN postitions should be set equal to 1 (meaning no 
             %director for actin)
@@ -238,10 +237,10 @@ for g = 1:gtot
             % Calculate the non-sarcomeric alpha actinin 
             % number of pixles eliminated / # total # of pixles positive for alpha
             % actinin 
-            non_sarcs(n,1) = (pre_filt - post_filt)/pre_filt;
+            non_sarcs(n,1) = (pre_filt - post_filt(n,1))./pre_filt;
 
             %Save the threshold value 
-            actin_explore.actin_thresh(actin_explore.n,1) = thresh;
+            actin_explore.actin_thresh(actin_explore.n,1) = thresholds(n,1);
     
             %Close all figures
             close all; 
@@ -250,7 +249,7 @@ for g = 1:gtot
             actin_explore.orientims{actin_explore.n,1} = orientims{n,1};
             
             %For the continuous z-line lengths store the threshold values 
-            actin_explore.thresholds{actin_explore.n,1} = unique_thresh(a);
+            actin_explore.thresholds(actin_explore.n,1) = unique_thresh(a);
             
             %For the continuous z-lien lengths store the actin_explore 
             %struct inside of the im_struct

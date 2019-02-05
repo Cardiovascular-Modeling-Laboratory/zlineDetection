@@ -22,7 +22,7 @@ for g= 1:gtot
     
     %Set the values that are not equal to the current grid size equal to
     %NaN. Otherwise, set the grid size to 1 
-    exclude_grid(grid_sizes ~= unique_grids(g)) = NaN; 
+    exclude_grid(actin_explore.grid_sizes ~= unique_grids(g)) = NaN; 
     exclude_grid(~isnan(exclude_grid)) = 1; 
     
     % Get the included values 
@@ -36,6 +36,7 @@ for g= 1:gtot
     included_nonsarc(isnan(included_nonsarc)) = [];
     
     %Plot the threshold vs. the median
+    subplot(3,2,1); 
     hold on; 
     plot(included_actinthresh, included_medians, 'o', 'color', c{g}); 
     set(gca,'fontsize',12)
@@ -101,8 +102,8 @@ for g= 1:gtot
 
     xlabel('Grid Size (pixels)','FontSize',12,'FontWeight','bold');
     ylim([0 2])
-    xlim([min(summary_explore.grid_sizes(:))-1 ...
-        max(summary_explore.grid_sizes(:))+1])
+    xlim([min(actin_explore.grid_sizes(:))-1 ...
+        max(actin_explore.grid_sizes(:))+1])
     set(gca,'ytick',[])
 end
     

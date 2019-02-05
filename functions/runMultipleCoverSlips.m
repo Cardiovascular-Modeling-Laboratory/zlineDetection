@@ -126,7 +126,7 @@ for k = 1:settings.num_cs
     % Analyze the Coverslip 
     [ CS_results ] = ...
         runDirectory( settings, zline_path{k,1}, zline_images{k,1},...
-        actin_path, actin_images, name_CS ); 
+        actin_path{k,1}, actin_images{k,1}, name_CS{k,1} ); 
     
     %Store the results from analyzing each coverslip 
     MultiCS_lengths{1,k} = CS_results.CS_lengths;
