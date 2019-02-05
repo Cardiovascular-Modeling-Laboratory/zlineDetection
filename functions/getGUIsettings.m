@@ -156,6 +156,6 @@ settings.multi_cond = get(handles.multi_cond, 'Value');
 
 %%%%%%%%%%%%%%%%%%%%% Additional User Inputs  %%%%%%%%%%%%%%%%%%%
 
-settings = exploreParameters(settings);
+settings = additionalUserInput(settings);
 
 end

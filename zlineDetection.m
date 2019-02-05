@@ -333,11 +333,11 @@ function RUN_Callback(hObject, eventdata, handles)
 % settings 
 settings = getGUIsettings(handles); 
 
-% Select image files and run analysis.
-runDirectory( settings );
+% % Select image files and run analysis.
+% runDirectory( settings );
 
-% %Once completed... 
-% runMultipleCoverSlips(settings); 
+%Once completed... 
+runMultipleCoverSlips(settings); 
 
 % --- Executes on button press in tf_OOP.
 function tf_OOP_Callback(hObject, eventdata, handles)

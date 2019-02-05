@@ -75,6 +75,9 @@ for k = 1:settings.num_cs
         end 
     end 
     
+    %Add a backslash to the beginning of the path in order to use 
+    previous_path = strcat(filesep,previous_path);
+    
     potential_end = size(pathparts,2); 
     while isempty(pathparts{1,potential_end})
         potential_end = potential_end -1; 
@@ -86,7 +89,7 @@ for k = 1:settings.num_cs
     if settings.actin_filt
         [ actin_images{k,1}, actin_path{k,1}, an(k,1) ] = ...
             load_files( {'*GFP*.TIF;*GFP*.tif'}, ...
-            'Select images stained for actin...',previous_path);
+            'Select images stained for actin...',zline_path{k,1});
 
         % If the number of actin and z-line files are not equal,
         % warn the user
@@ -111,7 +114,7 @@ for k = 1:settings.num_cs
     end  
     
     %Declare conditions for the selected coverslip 
-    cond(k,1) = declareCondition(settings.cond_name, k, settings.num_cs); 
+    cond(k,1) = declareCondition(settings.cond_names, k, settings.num_cs); 
     
 end 
 
@@ -122,7 +125,7 @@ clear k
 for k = 1:settings.num_cs 
     % Analyze the Coverslip 
     [ CS_results ] = ...
-        runDirectory( settings, zline_path, zline_images,...
+        runDirectory( settings, zline_path{k,1}, zline_images{k,1},...
         actin_path, actin_images, name_CS ); 
     
     %Store the results from analyzing each coverslip 
