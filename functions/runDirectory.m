@@ -238,7 +238,7 @@ summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
 
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
-if settings.cardio_type == 1
+if settings.cardio_type == 1 && settings.num_cs > 1 
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
     
@@ -251,7 +251,7 @@ if settings.cardio_type == 1
             'CS_results')
     end 
     
-else
+elseif settings.cardio_type == 2 && settings.num_cs > 1 
     %Save the struct as Single Cell instead of Coverslip
     SC_results = CS_results;
     
