@@ -157,12 +157,14 @@ end
 for t = 1:tot
     
     %Continuous Z-line Values 
-    CS_results.CS_lengths{1,t} = concatCells( FOV_Grouped.FOV_lengths{:,t}, false );
+    CS_results.CS_lengths{1,t} = ...
+        concatCells( FOV_Grouped.FOV_lengths{:,t}, false );
     CS_results.CS_medians(1,t) = median(CS_results.CS_lengths{1,t}); 
     CS_results.CS_sums(1,t) = sum(CS_results.CS_lengths{1,t});   
     
     %Get the OOPs
-    CS_results.CS_angles{1,t} = concatCells( FOV_Grouped.FOV_angles{:,t}, true );
+    CS_results.CS_angles{1,t} = ...
+        concatCells( FOV_Grouped.FOV_angles{:,t}, true );
     temp_angles = CS_results.CS_angles{1,t}; 
     temp_angles(isnan(temp_angles)) = 0;
     [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
@@ -176,7 +178,7 @@ for t = 1:tot
     pre_filt(pre_filt == 0) = []; 
 
     %Calculate the non-sarc fraction 
-    CS_results.CS_nonsarc{1,t} = ...
+    CS_results.CS_nonsarc(1,t) = ...
         (length(pre_filt) - length(post_filt))/ length(pre_filt);
         
 end 

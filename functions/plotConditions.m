@@ -1,14 +1,13 @@
 function [ condition_values, mean_condition, std_condition,...
     median_condition ] =...
-    plotConditions(data_points, descriptors, cond_names,...
-    grid_sizes, actin_threshs, plot_names, compute_median)
+    plotConditions(data_points, cond_values, cond_names,...
+    grid_sizes, actin_threshs, plot_names)
 
 %Get the number of unique grid sizes and threshold values 
 unique_grids = unique(grid_sizes); 
 gn = length(unique_grids); 
 unique_thresh = unique(actin_threshs); 
 afn = length(unique_thresh); 
-
 
 %Save the number of condition names 
 n_cond = length(cond_names); 
@@ -71,8 +70,7 @@ for g= 1:gn
         exlude_exploration = exclude_grid+exlude_thresh; 
         
         %Loop through all of the conditions 
-        for n = 1:n_cond
-            %Set the color 
+        for n = 1:n_cond 
             %Increase color 
             if c < length(colors) && n < n_cond
                 c = c+1; 
@@ -80,51 +78,28 @@ for g= 1:gn
                 c = 1; 
             end 
             
-            
             %Get the middle value
             x0 = (2*p+1)/2; 
 
             %Compute the x-axis
             x = p:p+1; 
            
-            %Only compute the median if the user asks for it 
-            if compute_median
-                %Find the location where grid_sizes = unique(g) and actin
-                %thresh == unique(a); 
-                t = find(~isnan(exlude_exploration)); 
-                %Get a cell of only the condition (CS)values 
-                include_vals = data_points{t,n}; 
-            else 
-                %Repeat this actin and grid exploration to make it the 
-                %size of the 
-                exlude_exploration = repmat(exlude_exploration, ...
-                    [1, size(data_points,2)]); 
-        
-                %Values to exclude
-                exclude_vals = zeros(size(descriptors)); 
-                exclude_vals(descriptors ~= n) = NaN; 
-                %Transpose
-                if size(exclude_vals,1) ~=1 
-                    exclude_vals = exclude_vals';
-                end 
-                %Repeat the values to make the same size as the data matrix  
-                exclude_vals = ...
-                    repmat(exclude_vals, [size(data_points,1), 1]);
-
-                %Add exlusions 
-                exclusions = exlude_exploration + exclude_vals; 
-                %Make sure that all of values that are non NaN are 0 
-                exclusions(~isnan(exclusions)) = 0; 
-
-                %Add the values plus the points to exclude 
-                include_vals = data_points + exclusions; 
-
-                %Reshape and remove NaN values
-                include_vals = include_vals(:);
-                include_vals(isnan(include_vals)) = []; 
-            end 
+            %Get values not equal to current condition
+            exclude_cond = zeros(size(cond_values)); 
+            exclude_cond(cond_values ~= n) = NaN; 
+            %Add exlusions 
+            exclusions = exlude_exploration + exclude_cond; 
+            %Make sure that all of values that are non NaN are 0 
+            exclusions(~isnan(exclusions)) = 0; 
             
-            %Save data 
+            %Add the values plus the points to exclude 
+            include_vals = data_points + exclusions; 
+
+            %Reshape and remove NaN values
+            include_vals = include_vals(:);
+            include_vals(isnan(include_vals)) = []; 
+
+            %Save data and calculate the mean and standard deviation. 
             condition_values{k,1} =include_vals; 
             mean_condition(k,1) = mean(include_vals); 
             std_condition(k,1) = std(include_vals); 
@@ -147,15 +122,6 @@ for g= 1:gn
                 mean_condition(k,1)+std_condition(k,1), ...
                 mean_condition(k,1)+std_condition(k,1)], ...
                 colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
-            
-            %Plot the median if requested
-            if compute_median
-                %Calculate the median 
-                median_condition(k,1) = median(include_vals); 
-                %Plot the mean 
-                plot(x, median_condition(k,1)*ones(size(x)), ...
-                    '-','color','k','LineWidth',2);
-            end 
             
             %Increate the count 
             k = k+1; 
@@ -237,12 +203,8 @@ legend_cond = [1;2.5;3];
 legend_mean = mean(legend_cond); 
 legend_std = std(legend_cond);
 
-if compute_median
-    legend_median = median(legend_cond); 
-    vals = {plot_names.type,'Mean', 'St.Dev.','Median'}; 
-else
-    vals = {plot_names.type,'Mean', 'St.Dev.'}; 
-end 
+%Save labels 
+vals = {plot_names.type,'Mean', 'St.Dev.'}; 
 
 %Get legend titles 
 legend_caption = cell(length(vals)*length(cond_names),1); 
@@ -299,15 +261,6 @@ for n = 1:n_cond
     temp_name = strcat(cond_names{n}, {' '}, vals{3}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
-    
-    %Plot the median
-    if compute_median
-        plot(x, legend_median*ones(size(x)), ...
-        '-','color','k','LineWidth',2);
-        temp_name = strcat(cond_names{n}, {' '}, vals{4}); 
-        legend_caption{l,1} = temp_name{1,1}; 
-        l = l+1; 
-    end 
     
     %Increate the count 
     k = k+1; 

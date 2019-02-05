@@ -1,124 +1,305 @@
-function [] = plotCSresults( CS_explorevalues, medians,CS_median, n,...
-    names)
-%Plot CS summaries
+function [] = plotCSresults(MultiCS_lengths, cs_values,...
+    grid_sizes, actin_threshs, plot_names)
 
-% %Get the number of unique grid sizes
-% gn = unique(CS_explorevalues(:,1)); 
-% %Get the number of unique actin filter sizes 
-% afn = unique(CS_explorevalues(:,2)); 
-% 
-% %Color options 
-% colors = {[1,0.6,1], [0.2,0.6,1], [0.6275,0.6275,0.6275], 'r','g'};
-% 
-% %Get positions 
-% p = 0;
-% g = 1; 
-% 
-% %Get middle x value 
-% filter_x = zeros(size(afn,1),1);
-% f = 1; 
-% 
-% %Plot the data 
-% figure; 
-% hold on; 
-% 
-% for k = 1:length(afn)*length(gn)
-% 
-%     %Get the start and end positions of the condition 
-%     pa = 1 + (k - 1)*n; 
-%     po = k*n;
-% 
-%     %Get the middle value
-%     x0 = (2*p+1)/2; 
-% 
-%     %Compute the x-axis
-%     x = p:p+1; 
-%     if ~isempty(medians)
-%         
-%         %Calculate the median czl 
-%         median_values = medians(pa:po,1); 
-% 
-%         %Get the mean median values 
-%         mean_med = mean(median_values); 
-%         std_med = std(median_values); 
-%     
-%         %Plot all of the points 
-%         plot(x0*ones(size(median_values,1)),median_values,'.',...
-%             'MarkerSize', 8, ...
-%             'MarkerEdgeColor',colors{g},...
-%             'MarkerFaceColor',colors{g});
-% 
-%         %Plot the mean of the medians
-%         plot(x,mean_med*ones(size(x)), '-','color',colors{g},'LineWidth',2);
-% 
-%         %Plot range of orientation values 
-%         fill([p, p+1, p+1, p], ...
-%             [mean_med-std_med, mean_med-std_med, ...
-%             mean_med+std_med, mean_med+std_med], ...
-%             colors{g}, 'FaceAlpha', 0.3,'linestyle','none');
-%         
-%         %Make the color of the cs total equal to back 
-%         cs_color = 'k'; 
-%     else
-%         cs_color = colors{g}; 
-%     end 
-%    
-% 
-%     %Plot the median 
-%     y = CS_median(k,1)*ones(size(x)); 
-%     plot(x,y, '-','color',cs_color,'LineWidth',2);
-% 
-%     %Increase start and stop 
-%     p = p+1.5;
-%     if mod(k, length(gn)) == 0 
-%         p = p+1; 
-%     end 
-% 
-%     %Increate the grid value 
-%     if g == 1
-%         g = g+1;
-%     elseif g == 2
-%         filter_x(f,1) = x0; 
-%         f = f+1; 
-%         g = g+1;
-%     else
-%         g = 1; 
-%     end 
-% 
-% end 
-% 
-% if ~isempty(medians)
-%     buffer = 0.3*min(medians(:)); 
-%     if buffer < 0.1
-%         buffer = 0.1; 
-%     end 
-% 
-%     %Get the minimum and max median values 
-%     ymin = min(medians(:)) - buffer; 
-%     ymax = max(medians(:)) + buffer; 
-% else
-%    buffer = 0.3*min(CS_median(:)); 
-%     if buffer < 0.1
-%         buffer = 0.1; 
-%     end 
-%     
-%     ymin = min(CS_median(:)) - buffer; 
-%     ymax = max(CS_median(:)) + buffer; 
-% end 
-% 
-% 
-% %Change axis labels
-% ylim([ymin ymax])
-% xlim([-2 p+1])
-% set(gca,'XTick',filter_x) 
-% set(gca,'XTickLabel',num2cell(afn))
-% set(gca, 'fontsize',12,'FontWeight', 'bold');
-% xlabel(names.x,'FontSize', 14, 'FontWeight', 'bold');
-% ylabel(names.y,'FontSize',...
-%     14, 'FontWeight', 'bold');
-% title(names.title,...
-%     'FontSize', 14, 'FontWeight', 'bold')
-% 
-% saveas(gcf, fullfile(names.path, names.savename), 'pdf');
+%Get the number of unique grid sizes and threshold values 
+unique_grids = unique(grid_sizes); 
+gn = length(unique_grids); 
+unique_thresh = unique(actin_threshs); 
+afn = length(unique_thresh); 
 
+%Save the number of coverslips
+ncs = length(unique(cs_values)); 
+
+%Condition_values 
+condition_values = cell(ncs*gn*afn,1); 
+mean_condition = zeros(ncs*gn*afn,1);
+std_condition = zeros(ncs*gn*afn,1); 
+median_condition = zeros(ncs*gn*afn,1); 
+
+%Open a figure
+figure; 
+hold on; 
+
+%Get middle x value 
+filter_x = zeros(size(unique_thresh));
+f = 1; 
+
+%Colors
+colors = {[1,0.6,1], [0.2,0.6,1], [0.6275,0.6275,0.6275], 'r','g'};
+
+%Start color counts 
+c = 1; 
+
+%Start counts
+k = 1; 
+
+for g= 1:gn
+    
+    % Set up the grids to exclude 
+    exclude_grid = zeros(size(grid_sizes)); 
+    
+    %Only open suplots if there is more than one grid
+    if gn > 1
+        subplot(gn,1,g); 
+        hold on; 
+        %Set the values that are not equal to the current grid size equal to
+        %NaN. Otherwise, set the grid size to 1 
+        exclude_grid(grid_sizes ~= unique_grids(g)) = NaN;     
+    end 
+    
+    %Set position equal to 0 
+    p = 0; 
+    
+    for a = 1:afn
+        % Set up the thresholds to exclude 
+         exlude_thresh = zeros(size(actin_threshs)); 
+            
+        if afn > 1
+            %Set the values that are not equal to the current threshold
+            %size equal to NaN. Otherwise, set the grid size to 1 
+            exlude_thresh(actin_threshs ~= unique_thresh(a)) = NaN; 
+        end 
+        
+        %Add the exclusion threshold and grids
+        exlude_exploration = exclude_grid+exlude_thresh; 
+        
+        %Loop through all of the conditions 
+        for n = 1:ncs 
+            %Increase color 
+            if c < length(colors) && n < ncs
+                c = c+1; 
+            else
+                c = 1; 
+            end 
+            
+            %Get the middle value
+            x0 = (2*p+1)/2; 
+
+            %Compute the x-axis
+            x = p:p+1; 
+           
+            %Get values not equal to current condition
+            exclude_cond = zeros(size(cs_values)); 
+            exclude_cond(cs_values ~= n) = NaN; 
+            %Add exlusions 
+            exclusions = exlude_exploration + exclude_cond; 
+            
+            %Find the position where the CS & Condition is located
+            t = find(~isnan(exclusions)); 
+            
+            %Coverslip number
+            cspos = cs_values(t); 
+            
+            %position fitered
+            filtpos = t - ((cspos-1)*gn*afn + 1); 
+            
+            %temporary lengths
+            temp_CS = MultiCS_lengths{1,cspos}; 
+            temp_len = tempCS{1,filtpos}; 
+
+            %Save data and calculate the mean and standard deviation. 
+            condition_values{k,1} =temp_len; 
+            mean_condition(k,1) = mean(temp_len); 
+            std_condition(k,1) = std(temp_len); 
+            median_condition(k,1) = median(temp_len); 
+
+            %Plot all of the points 
+            plot(x0*ones(size(condition_values{k,1})),...
+                condition_values{k,1},'.',...
+                'MarkerSize', 8, ...
+                'MarkerEdgeColor',colors{c},...
+                'MarkerFaceColor',colors{c});
+
+            %Plot the mean 
+            plot(x, mean_condition(k,1)*ones(size(x)), ...
+                '-','color',colors{c},'LineWidth',2);
+
+            %Plot range of orientation values 
+            fill([p, p+1, p+1, p], ...
+                [mean_condition(k,1)-std_condition(k,1),...
+                mean_condition(k,1)-std_condition(k,1), ...
+                mean_condition(k,1)+std_condition(k,1), ...
+                mean_condition(k,1)+std_condition(k,1)], ...
+                colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
+            
+            %Plot the median 
+            plot(x, median_condition(k,1)*ones(size(x)), ...
+                '-','color',colors{c},'LineWidth',2);
+            
+            %Increate the count 
+            k = k+1; 
+            %Increase start and stop 
+            p = p+1.5;
+            
+            if g== 1 && n == round(ncs/2) 
+                filter_x(f,1) = x0; 
+                f = f+1; 
+            end 
+            
+            if n == ncs
+                p = p+1; 
+            end 
+    
+        end
+        
+    end
 end
+
+%Set the axis limits for the y axis 
+buffer = 0.3*min(MultiCS_lengths(:)); 
+if buffer < 0.1
+    buffer = 0.1; 
+end 
+
+%Get the minimum and max median values 
+ymin = min(MultiCS_lengths(:)) - buffer; 
+ymax = max(MultiCS_lengths(:)) + buffer; 
+
+for g = 1:gn 
+    %Only open suplots if there is more than one grid
+    if gn > 1
+        subplot(gn,1,g); 
+        hold on; 
+    end 
+    
+    %Change axis limits
+    ylim([ymin ymax]); 
+    xlim([-2 p+1]); 
+
+    %Change the x axis labels
+    set(gca,'XTick',filter_x) 
+    set(gca,'XTickLabel',num2cell(unique_thresh))
+
+    %Change the font size
+    set(gca, 'fontsize',12,'FontWeight', 'bold');
+
+    %Change the x and y labels 
+    xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
+    ylabel(plot_names.y,'FontSize',...
+        14, 'FontWeight', 'bold');
+    
+    if gn > 1
+        %Change the title
+        new_title = strcat(plot_names.title, {' '}, 'Grid Size:',...
+            {' '}, num2str(unique_grids(g))); 
+        title(new_title,'FontSize', 14, 'FontWeight', 'bold'); 
+    else
+        %Change the title 
+        title(plot_names.title,...
+            'FontSize', 14, 'FontWeight', 'bold'); 
+    end 
+    
+end
+
+%Save file
+saveas(gcf, fullfile(plot_names.path, plot_names.savename), 'pdf');
+
+%Make legend
+figure; 
+hold on; 
+
+%Start position tracker 
+p = 0; 
+
+% Mean points 
+legend_cond = [1;2.5;3]; 
+legend_mean = mean(legend_cond); 
+legend_std = std(legend_cond);
+legend_median = median(legend_cond); 
+
+%Save labels 
+vals = {plot_names.type,'Mean', 'St.Dev.','Median'}; 
+
+%Get legend titles 
+legend_caption = cell(length(vals)*ncs,1); 
+%Temporary titles 
+
+
+%Counter for legend
+l=1; 
+for n = 1:ncs
+    %Set the color 
+    %Increase color 
+    if c < length(colors) && n < ncs
+        c = c+1; 
+    else
+        c = 1; 
+    end 
+
+    %Get the middle value
+    x0 = (2*p+1)/2; 
+
+    %Compute the x-axis
+    x = p:p+1; 
+    
+    %Plot the medians 
+    plot(x0*ones(size(legend_cond)),...
+        legend_cond,'.',...
+        'MarkerSize', 8, ...
+        'MarkerEdgeColor',colors{c},...
+        'MarkerFaceColor',colors{c});
+    
+    %Temporary legend name 
+    temp_name = strcat(cond_names{n}, {' '}, vals{1}); 
+    legend_caption{l,1} = temp_name{1,1}; 
+    l = l+1; 
+    
+    %Plot the mean 
+    plot(x, legend_mean*ones(size(x)), ...
+        '-','color',colors{c},'LineWidth',2);
+    
+    %Temporary legend name 
+    temp_name = strcat(cond_names{n}, {' '}, vals{2}); 
+    legend_caption{l,1} = temp_name{1,1}; 
+    l = l+1; 
+    
+    %Plot standard deviation 
+    fill([p, p+1, p+1, p], ...
+        [legend_mean-legend_std,...
+        legend_mean-legend_std, ...
+        legend_mean+legend_std, ...
+        legend_mean+legend_std], ...
+        colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
+   
+    %Temporary legend name 
+    temp_name = strcat(cond_names{n}, {' '}, vals{3}); 
+    legend_caption{l,1} = temp_name{1,1}; 
+    l = l+1; 
+    
+    %Plot the median 
+    plot(x, legend_median*ones(size(x)), ...
+        '-','color','k','LineWidth',2);
+    temp_name = strcat(cond_names{n}, {' '}, vals{4}); 
+    legend_caption{l,1} = temp_name{1,1}; 
+    l = l+1; 
+        
+    %Increate the count 
+    k = k+1; 
+    %Increase start and stop 
+    p = p+1.5;
+    
+end 
+
+%Change the axis limits 
+xlim([0 p+1.5]); 
+
+%Create the legend 
+legend(legend_caption); 
+
+%Change the font size
+set(gca, 'fontsize',12,'FontWeight', 'bold');
+
+%Change the x and y labels 
+xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
+ylabel(plot_names.y,'FontSize',...
+    14, 'FontWeight', 'bold');
+%Change the title 
+title('Legend','FontSize', 14, 'FontWeight', 'bold'); 
+    
+%Save the legend 
+legend_save = strcat(plot_names.savename, '_legend'); 
+saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
+
+
+end 
+
