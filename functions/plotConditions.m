@@ -79,8 +79,7 @@ for g= 1:gn
             end 
             
             %Get the middle value
-            x0 = (2*p+1)/2; 
-
+            x0 = (2*p+1)/2;             
             %Compute the x-axis
             x = p:p+1; 
            
@@ -128,8 +127,8 @@ for g= 1:gn
             %Increase start and stop 
             p = p+1.5;
             
-            if g== 1 && n == round(n_cond/2) 
-                filter_x(f,1) = x0; 
+            if g == 1 && n == round(n_cond/2) 
+                filter_x(1,f) = x0; 
                 f = f+1; 
             end 
             
