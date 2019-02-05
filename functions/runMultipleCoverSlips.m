@@ -116,10 +116,17 @@ for k = 1:settings.num_cs
         an = NaN; 
     end  
     
+    %Display path the user selected 
+    disp(zline_path{k,1});
+    
     if settings.multi_cond
         %Declare conditions for the selected coverslip 
         cond(k,1) = ...
             declareCondition(settings.cond_names, k, settings.num_cs); 
+        
+        %Display the condition the user selected 
+        disp_message = strcat('Condition:',{' '}, num2str(cond(k,1))); 
+        disp(disp_message{1}); 
     end 
 end 
 
