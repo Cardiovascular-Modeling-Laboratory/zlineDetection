@@ -127,8 +127,14 @@ for g= 1:gn
             %Increase start and stop 
             p = p+1.5;
             
-            if g == 1 && n == round(n_cond/2) 
-                filter_x(1,f) = x0; 
+            if g == 1 && n == floor(n_cond/2) 
+                %If there is an even number of conditions, get the middle
+                %position for the x axis
+                if mod(n_cond,2) == 1
+                    filter_x(1,f) = x0; 
+                else
+                    filter_x(1,f) = (x0 + (2*p+1)/2)/2; 
+                end 
                 f = f+1; 
             end 
             
@@ -290,4 +296,3 @@ saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
 
 
 end 
-

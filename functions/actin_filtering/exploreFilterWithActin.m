@@ -278,7 +278,6 @@ end
 % Replace the value of the im_struct back to what it was 
 im_struct.save_path = image_savepath; 
 
-
 % Save all of the relevant data in the actin_explore struct 
 actin_explore.non_sarcs = non_sarcs; 
 actin_explore.medians = medians; 

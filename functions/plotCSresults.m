@@ -1,5 +1,10 @@
-function [] = plotCSresults(MultiCS_lengths, cs_values,...
-    grid_sizes, actin_threshs, plot_names)
+function [] = plotCSresults(MultiCS_lengths, MultiCS_CSN,...
+    MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names)
+
+%Get grid sizes 
+grid_sizes = MultiCS_grid_sizes{1,1}; 
+%Get thresholds 
+actin_threshs = MultiCS_actin_threshs{1,1}; 
 
 %Get the number of unique grid sizes and threshold values 
 unique_grids = unique(grid_sizes); 
@@ -8,13 +13,20 @@ unique_thresh = unique(actin_threshs);
 afn = length(unique_thresh); 
 
 %Save the number of coverslips
-ncs = length(unique(cs_values)); 
+ncs = size(MultiCS_CSN,2); 
 
+%Write CS values
+cs_values = zeros(1,ncs);
+%Get the coverslip values 
+for n = 1:ncs
+    temp = MultiCS_CSN{1,n}; 
+    cs_values(1,n) = temp(1,1); 
+end 
 %Condition_values 
-condition_values = cell(ncs*gn*afn,1); 
-mean_condition = zeros(ncs*gn*afn,1);
-std_condition = zeros(ncs*gn*afn,1); 
-median_condition = zeros(ncs*gn*afn,1); 
+condition_values = cell(gn*afn,1); 
+mean_condition = zeros(gn*afn,1);
+std_condition = zeros(gn*afn,1); 
+median_condition = zeros(gn*afn,1); 
 
 %Open a figure
 figure; 
@@ -32,6 +44,12 @@ c = 1;
 
 %Start counts
 k = 1; 
+
+%Store bounds - mins = 1, max = 2
+bnds = zeros(ncs*gn*afn,2); 
+
+
+
 
 for g= 1:gn
     
@@ -78,31 +96,20 @@ for g= 1:gn
             %Compute the x-axis
             x = p:p+1; 
            
-            %Get values not equal to current condition
-            exclude_cond = zeros(size(cs_values)); 
-            exclude_cond(cs_values ~= n) = NaN; 
-            %Add exlusions 
-            exclusions = exlude_exploration + exclude_cond; 
-            
-            %Find the position where the CS & Condition is located
-            t = find(~isnan(exclusions)); 
-            
-            %Coverslip number
-            cspos = cs_values(t); 
-            
-            %position fitered
-            filtpos = t - ((cspos-1)*gn*afn + 1); 
-            
-            %temporary lengths
-            temp_CS = MultiCS_lengths{1,cspos}; 
-            temp_len = tempCS{1,filtpos}; 
+            %Isolate the length 
+            temp_CS = MultiCS_lengths{1,n}; 
+            temp_len = temp_CS{1,~isnan(exlude_exploration)}; 
 
             %Save data and calculate the mean and standard deviation. 
             condition_values{k,1} =temp_len; 
             mean_condition(k,1) = mean(temp_len); 
             std_condition(k,1) = std(temp_len); 
             median_condition(k,1) = median(temp_len); 
-
+            
+            %Save the mins and max lengths
+            bnds(k,1) = min(temp_len); 
+            bnds(k,2) = max(temp_len); 
+            
             %Plot all of the points 
             plot(x0*ones(size(condition_values{k,1})),...
                 condition_values{k,1},'.',...
@@ -124,15 +131,15 @@ for g= 1:gn
             
             %Plot the median 
             plot(x, median_condition(k,1)*ones(size(x)), ...
-                '-','color',colors{c},'LineWidth',2);
+                '-','color','k','LineWidth',2);
             
             %Increate the count 
             k = k+1; 
             %Increase start and stop 
             p = p+1.5;
             
-            if g== 1 && n == round(ncs/2) 
-                filter_x(f,1) = x0; 
+            if g== 1 && n == floor(ncs/2) 
+                filter_x(1,f) = x0; 
                 f = f+1; 
             end 
             
@@ -146,14 +153,14 @@ for g= 1:gn
 end
 
 %Set the axis limits for the y axis 
-buffer = 0.3*min(MultiCS_lengths(:)); 
+buffer = 0.3*min(bnds(:,1)); 
 if buffer < 0.1
     buffer = 0.1; 
 end 
 
 %Get the minimum and max median values 
-ymin = min(MultiCS_lengths(:)) - buffer; 
-ymax = max(MultiCS_lengths(:)) + buffer; 
+ymin = min(bnds(:,1)) - buffer; 
+ymax = max(bnds(:,2)) + buffer; 
 
 for g = 1:gn 
     %Only open suplots if there is more than one grid
@@ -240,7 +247,7 @@ for n = 1:ncs
         'MarkerFaceColor',colors{c});
     
     %Temporary legend name 
-    temp_name = strcat(cond_names{n}, {' '}, vals{1}); 
+    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{1}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
     
@@ -249,7 +256,7 @@ for n = 1:ncs
         '-','color',colors{c},'LineWidth',2);
     
     %Temporary legend name 
-    temp_name = strcat(cond_names{n}, {' '}, vals{2}); 
+    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{2}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
     
@@ -262,14 +269,14 @@ for n = 1:ncs
         colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
    
     %Temporary legend name 
-    temp_name = strcat(cond_names{n}, {' '}, vals{3}); 
+    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{3}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
     
     %Plot the median 
     plot(x, legend_median*ones(size(x)), ...
         '-','color','k','LineWidth',2);
-    temp_name = strcat(cond_names{n}, {' '}, vals{4}); 
+    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{4}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
         

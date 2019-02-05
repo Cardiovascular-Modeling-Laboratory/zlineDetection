@@ -23,7 +23,7 @@ for g= 1:gtot
     %Set the values that are not equal to the current grid size equal to
     %NaN. Otherwise, set the grid size to 1 
     exclude_grid(actin_explore.grid_sizes ~= unique_grids(g)) = NaN; 
-    exclude_grid(~isnan(exclude_grid)) = 1; 
+    exclude_grid(~isnan(exclude_grid)) = 0; 
     
     % Get the included values 
     included_sums = actin_explore.sums + exclude_grid;

@@ -182,12 +182,14 @@ for t = 1:tot
     CS_results.CS_medians(1,t) = median(CS_results.CS_lengths{1,t}); 
     CS_results.CS_sums(1,t) = sum(CS_results.CS_lengths{1,t});   
     
-    %Get the OOPs
-    CS_results.CS_angles{1,t} = FOV_Grouped.FOV_angles{:,t};
-    temp_angles = CS_results.CS_angles{1,t}; 
-    temp_angles(isnan(temp_angles)) = 0;
-    [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
-
+    if settings.tf_OOP
+        %Get the OOPs
+        CS_results.CS_angles{1,t} = FOV_Grouped.FOV_angles{:,t};
+        temp_angles = CS_results.CS_angles{1,t}; 
+        temp_angles(isnan(temp_angles)) = 0;
+        [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
+    end 
+    
     %Calculate the non-sarc fraction 
     CS_results.CS_nonsarc(1,t) = ...
         (FOV_Grouped.FOV_prefiltered(1,t) - ...

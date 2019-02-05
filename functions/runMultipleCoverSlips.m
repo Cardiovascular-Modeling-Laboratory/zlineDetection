@@ -190,7 +190,8 @@ if settings.cardio_type == 1
 
     %Save a new struct
     MultiCond = struct(); 
-
+    %Save path 
+    plot_names.path = settings.SUMMARY_path; 
 
     %Plot the non-sarc fraction for the conditions if user actin filtered and
     %has more than one condition 
@@ -209,7 +210,8 @@ if settings.cardio_type == 1
         [ MultiCond.CondValues_NonSarc, ...
             MultiCond.CondValues_MeanNonSarc,...
             MultiCond.CondValues_StdevNonSarc ] =...
-            plotConditions(MultiCS_nonsarc, MultiCS_Cond, settings.cond_names,...
+            plotConditions(MultiCS_nonsarc, MultiCS_Cond, ...
+            settings.cond_names,...
             MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
     end
 
@@ -320,12 +322,14 @@ if settings.cardio_type == 1
             else 
                 plot_names.x = 'Actin Filtering Threshold'; 
             end 
-            plot_names.y = 'Median Continuous Z-line Lengths (\mu m)';
+            plot_names.y = 'Continuous Z-line Lengths (\mu m)';
             plot_names.title = 'Median Continuous Z-line Lengths';
             plot_names.savename = 'MultiCS_MedianSummary'; 
 
-            plotCSresults(MultiCS_lengths, MultiCS_CSN,...
-                MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
+            plotCSresults(MultiCS_Data.MultiCS_lengths, ...
+                MultiCS_Data.MultiCS_CSID,...
+                MultiCS_Data.MultiCS_grid_sizes, ...
+                MultiCS_Data.MultiCS_actin_threshs, plot_names);
 
         end
 
@@ -464,6 +468,7 @@ end
 % % Plot results fro 
 % 
 %         
+close all;
 
 end
 

@@ -103,7 +103,7 @@ for k = 1:zn
     else
         %>>> EXPLORATION
         FOV_thresholds{1,k} = settings.actin_thresh; 
-        FOV_grid_sizes{1,k} = settings.grid_size(1);  d
+        FOV_grid_sizes{1,k} = settings.grid_size(1);
         
     end 
     
@@ -163,12 +163,10 @@ for k = 1:zn
 
     % If the user wants to calculate OOP - Will need to change when I'm
     % analyzing tissues. 
-    if settings.tf_OOP 
+    if settings.tf_OOP && ~settings.exploration
         
-        if  ~settings.exploration
-            %Save this orientation matrix 
-            FOV_angles{1,k} = im_struct.orientim;
-        end 
+        %Save this orientation matrix 
+        FOV_angles{1,k} = im_struct.orientim;
         
         %Save the orientation vectors as a new vairable
         temp_angles = FOV_angles{1,k}; 
