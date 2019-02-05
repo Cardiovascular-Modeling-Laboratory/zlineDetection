@@ -24,28 +24,34 @@ if ~same_sze
         %Temporarily store the values
         temp = cell_matrix{k,1};
         
-        %Add the temporary matrix to the concatenated matrix
-        concated_matrix = [concated_matrix;temp(:)]; 
-        
-        %Clear the temporary matrix 
-        clear temp; 
+        if ~isempty(temp)
+            %Add the temporary matrix to the concatenated matrix
+            concated_matrix = [concated_matrix;temp(:)]; 
+
+            %Clear the temporary matrix 
+            clear temp; 
+        end 
     end 
 else
-    %Get size of the first entry of the matrix 
-    [m,n] = size(cell_matrix{1,1}); 
-      
-    %Initialize a matrix that is m x n x number_of_files
-    concated_matrix = zeros(m,n,stop_pos-start_pos + 1); 
-    
-    %Loop through all of the cell rows and store 
-    for k=start_pos:stop_pos
-        %Save the current value
-        concated_matrix(:,:,k) = cell_matrix{k,1}; 
+    if ~isempty(cell_matrix{1,1})
+        %Get size of the first entry of the matrix 
+        [m,n] = size(cell_matrix{1,1}); 
+
+        %Initialize a matrix that is m x n x number_of_files
+        concated_matrix = zeros(m,n,stop_pos-start_pos + 1); 
+
+        %Loop through all of the cell rows and store 
+        for k=start_pos:stop_pos
+            %Save the current value
+            concated_matrix(:,:,k) = cell_matrix{k,1}; 
+        end 
+
+        %Resize the matrix to be a 1 x (n*m*number_of_files) matrix
+        concated_matrix = reshape(concated_matrix, ...
+            [1 m*n*(stop_pos-start_pos+1)]);
+    else 
+        concated_matrix = []; 
     end 
-    
-    %Resize the matrix to be a 1 x (n*m*number_of_files) matrix
-    concated_matrix = reshape(concated_matrix, ...
-        [1 m*n*(stop_pos-start_pos+1)]);
 end 
 
 

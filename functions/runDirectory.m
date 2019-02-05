@@ -85,7 +85,8 @@ for k = 1:zn
         
         %Store Non Sarc Fraction Values 
         FOV_nonsarc{1,k} = actin_explore.non_sarcs; 
-        FOV_prefiltered{1,k} = actin_explore.pre_filt; 
+        FOV_prefiltered{1,k} = ...
+            actin_explore.pre_filt*ones(size(actin_explore.post_filt)); 
         FOV_postfiltered{1,k} = actin_explore.post_filt;  
 
         %>>> ACTIN FILTERING: Continuous z-line length 
@@ -122,8 +123,8 @@ for k = 1:zn
         temp_pre(temp_pre == 0) = []; 
         
         %Store values for the CS calculation 
-        FOV_prefiltered{1,k} = temp_pre; 
-        FOV_postfiltered{1,k} = temp_post; 
+        FOV_prefiltered{1,k} = length(temp_pre); 
+        FOV_postfiltered{1,k} = length(temp_post); 
     end 
     
     % If the user wants to calculate continuous z-line length 
@@ -162,10 +163,12 @@ for k = 1:zn
 
     % If the user wants to calculate OOP - Will need to change when I'm
     % analyzing tissues. 
-    if settings.tf_OOP && ~settings.exploration
+    if settings.tf_OOP 
         
-        %Save this orientation matrix 
-        FOV_angles{1,k} = im_struct.orientim;
+        if  ~settings.exploration
+            %Save this orientation matrix 
+            FOV_angles{1,k} = im_struct.orientim;
+        end 
         
         %Save the orientation vectors as a new vairable
         temp_angles = FOV_angles{1,k}; 
@@ -177,11 +180,12 @@ for k = 1:zn
         oop_struct = struct(); 
         
         %Calculate the OOP, director vector and director angle 
-        [ oop_struct.oop, oop_struct.directionAngle, ~, ...
+        [ oop, oop_struct.directionAngle, ~, ...
             oop_struct.director ] = calculate_OOP( temp_angles ); 
 
         %Save the values in the the FOV matrix 
-        FOV_OOPs{1,k} = oop_struct.oop; 
+        FOV_OOPs{1,k} = oop; 
+        oop_struct.oop = oop; 
         FOV_directors{1,k} = oop_struct.directionAngle; 
         
         %Append summary file with OOP 
@@ -216,7 +220,7 @@ CS_results.FOV_medians = FOV_medians;
 CS_results.FOV_sums = FOV_sums; 
 %>>> ACTIN FILTERING: OOP 
 CS_results.FOV_angles = FOV_angles;  
-CS_results.FOV_OOPs = FOV_angles; 
+CS_results.FOV_OOPs = FOV_OOPs; 
 CS_results.FOV_directors = FOV_directors; 
 %>>> EXPLORATION
 CS_results.FOV_thresholds = FOV_thresholds; 
