@@ -48,7 +48,7 @@ MultiCS_CSID = cell(1,settings.num_cs);
 MultiCS_CONDID = cell(1,settings.num_cs); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Select Files %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+close all; 
 %Have the user select the different directories for the coverslips
 for k = 1:settings.num_cs 
     
@@ -59,7 +59,7 @@ for k = 1:settings.num_cs
     
     % Prompt the user to select the images they would like to analyze. 
     [ zline_images{k,1}, zline_path{k,1}, zn(k,1) ] = ...
-        load_files( {'*w1mCherry*.TIF;*w1mCherry*.tif;*w1Cy7*.tif;*Sarc*.tif'}, ...
+        load_files( {'*w1mCherry*.TIF;*w1mCherry*.tif;*w4Cy7*.tif;*w1Cy7*.tif;*Sarc*.tif'}, ...
         'Select images stained for z-lines...', previous_path);
     
     %Temporarily store the path 
@@ -78,8 +78,11 @@ for k = 1:settings.num_cs
         end 
     end 
     
-    %Add a backslash to the beginning of the path in order to use 
-    previous_path = strcat(filesep,previous_path);
+    %Add a backslash to the beginning of the path in order to use if this
+    %is a mac, otherwise do not
+    if ~ispc
+        previous_path = strcat(filesep,previous_path);
+    end 
     
     potential_end = size(pathparts,2); 
     while isempty(pathparts{1,potential_end})
@@ -92,7 +95,7 @@ for k = 1:settings.num_cs
     if settings.actin_filt
         [ actin_images{k,1}, actin_path{k,1}, an(k,1) ] = ...
             load_files( {'*GFP*.TIF;*GFP*.tif;*Actin*.tif'}, ...
-            'Select images stained for actin...',zline_path{k,1});
+            'Select images stained for actin...',temp_path{1});
 
         % If the number of actin and z-line files are not equal,
         % warn the user
