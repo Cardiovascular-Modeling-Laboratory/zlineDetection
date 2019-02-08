@@ -1,5 +1,5 @@
 function [ condition_values, mean_condition, std_condition,...
-    median_condition ] =...
+    median_condition, id] =...
     plotConditions(data_points, cond_values, cond_names,...
     grid_sizes, actin_threshs, plot_names)
 
@@ -27,13 +27,18 @@ filter_x = zeros(size(unique_thresh));
 f = 1; 
 
 %Colors
-colors = {[1,0.6,1], [0.2,0.6,1], [0.6275,0.6275,0.6275], 'r','g'};
+colors = {[0.3686,0.0314,0.6471], [0.8000,0.0392,0.3529], ...
+    [0.0392,0.6706,0.8000],[0.0235,0.6000,0.0588]};
 
 %Start color counts 
-c = 1; 
+c = 0; 
 
 %Start counts
 k = 1; 
+
+%Create a ID store (:,1) Condition, (:,2) grid size (:,3) actin threshold 
+id = zeros(n_cond*gn*afn,3); 
+
 
 for g= 1:gn
     
@@ -72,10 +77,10 @@ for g= 1:gn
         %Loop through all of the conditions 
         for n = 1:n_cond 
             %Increase color 
-            if c < length(colors) && n < n_cond
-                c = c+1; 
-            else
+            if c > length(colors) || n == 1
                 c = 1; 
+            else
+                c = c+1; 
             end 
             
             %Get the middle value
@@ -103,6 +108,11 @@ for g= 1:gn
             mean_condition(k,1) = mean(include_vals); 
             std_condition(k,1) = std(include_vals); 
 
+            %Save the (:,1) Condition, (:,2) grid size (:,3) actin threshold 
+            id(k,1) = n; 
+            id(k,2) = unique_grids(g); 
+            id(k,3) = unique_thresh(a); 
+            
             %Plot all of the points 
             plot(x0*ones(size(condition_values{k,1})),...
                 condition_values{k,1},'.',...
@@ -215,16 +225,18 @@ vals = {plot_names.type,'Mean', 'St.Dev.'};
 legend_caption = cell(length(vals)*length(cond_names),1); 
 %Temporary titles 
 
+%Start color counter
+c = 0; 
 
 %Counter for legend
 l=1; 
 for n = 1:n_cond
     %Set the color 
     %Increase color 
-    if c < length(colors) && n < n_cond
-        c = c+1; 
+    if c > length(colors) || n == 1
+                c = 1; 
     else
-        c = 1; 
+        c = c+1; 
     end 
 
     %Get the middle value

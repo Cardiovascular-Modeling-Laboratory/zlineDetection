@@ -37,19 +37,18 @@ filter_x = zeros(size(unique_thresh));
 f = 1; 
 
 %Colors
-colors = {[1,0.6,1], [0.2,0.6,1], [0.6275,0.6275,0.6275], 'r','g'};
-
+colors = {[1,0.6,1], [0.2,0.6,1], [0.6275,0.6275,0.6275],...
+    [0.5255,0.2588,0.9569], [0.6350, 0.0780, 0.1840],...
+    [0.2549,0.9569,0.5137], [0.8500, 0.3250, 0.0980]};             
+            
 %Start color counts 
-c = 1; 
+c = 0; 
 
 %Start counts
 k = 1; 
 
 %Store bounds - mins = 1, max = 2
 bnds = zeros(ncs*gn*afn,2); 
-
-
-
 
 for g= 1:gn
     
@@ -84,12 +83,15 @@ for g= 1:gn
         %Loop through all of the conditions 
         for n = 1:ncs 
             %Increase color 
-            if c < length(colors) && n < ncs
-                c = c+1; 
-            else
+            if c > length(colors) || n == 1
                 c = 1; 
+            else
+                c = c+1; 
             end 
             
+            disp(n); 
+            disp(c); 
+            disp(colors(c)); 
             %Get the middle value
             x0 = (2*p+1)/2; 
 
@@ -157,6 +159,9 @@ buffer = 0.3*min(bnds(:,1));
 if buffer < 0.1
     buffer = 0.1; 
 end 
+
+% Start color counter
+c = 0; 
 
 %Get the minimum and max median values 
 ymin = min(bnds(:,1)) - buffer; 
@@ -227,10 +232,10 @@ l=1;
 for n = 1:ncs
     %Set the color 
     %Increase color 
-    if c < length(colors) && n < ncs
-        c = c+1; 
-    else
+    if c > length(colors) || n == 1
         c = 1; 
+    else
+        c = c+1; 
     end 
 
     %Get the middle value
@@ -288,18 +293,19 @@ for n = 1:ncs
 end 
 
 %Change the axis limits 
-xlim([0 p+1.5]); 
+xlim([0 p+5]); 
+ylim([-5,ncs+5] ); 
 
 %Create the legend 
 legend(legend_caption); 
 
 %Change the font size
-set(gca, 'fontsize',12,'FontWeight', 'bold');
+% set(gca, 'fontsize',12,'FontWeight', 'bold');
 
 %Change the x and y labels 
-xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
-ylabel(plot_names.y,'FontSize',...
-    14, 'FontWeight', 'bold');
+% xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
+% ylabel(plot_names.y,'FontSize',...
+%     14, 'FontWeight', 'bold');
 %Change the title 
 title('Legend','FontSize', 14, 'FontWeight', 'bold'); 
     
