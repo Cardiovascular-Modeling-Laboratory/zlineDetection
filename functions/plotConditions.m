@@ -1,5 +1,4 @@
-function [ condition_values, mean_condition, std_condition,...
-    median_condition, id] =...
+function [ condition_values, mean_condition, std_condition, id] =...
     plotConditions(data_points, cond_values, cond_names,...
     grid_sizes, actin_threshs, plot_names)
 
@@ -16,7 +15,6 @@ n_cond = length(cond_names);
 condition_values = cell(n_cond*gn*afn,1); 
 mean_condition = zeros(n_cond*gn*afn,1);
 std_condition = zeros(n_cond*gn*afn,1); 
-median_condition = zeros(n_cond*gn*afn,1); 
 
 %Open a figure
 figure; 
@@ -38,7 +36,6 @@ k = 1;
 
 %Create a ID store (:,1) Condition, (:,2) grid size (:,3) actin threshold 
 id = zeros(n_cond*gn*afn,3); 
-
 
 for g= 1:gn
     
@@ -157,6 +154,8 @@ for g= 1:gn
     end
 end
 
+disp('after loop'); 
+disp(id);
 %Set the axis limits for the y axis 
 buffer = 0.3*min(data_points(:)); 
 if buffer < 0.1
@@ -306,5 +305,7 @@ title('Legend','FontSize', 14, 'FontWeight', 'bold');
 legend_save = strcat(plot_names.savename, '_legend'); 
 saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
 
+disp('after legend'); 
+disp(id);
 
 end 
