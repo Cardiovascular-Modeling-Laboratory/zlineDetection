@@ -184,7 +184,9 @@ if settings.cardio_type == 1
     MultiCS_Data.MultiCS_actin_threshs=MultiCS_actin_threshs;
     MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
     MultiCS_Data.MultiCS_CSID=MultiCS_CSID;
-    MultiCS_Data.MultiCS_CONDID=MultiCS_CONDID;
+    MultiCS_Data.MultiCS_CONDID=MultiCS_CONDID;    
+    MultiCS_Data.name_CS = name_CS; 
+
     %Summary name
     summary_name = strcat(settings.SUMMARY_name,'.mat'); 
     %Save the data after making sure it is uniquely named (no overwritting)
@@ -194,7 +196,7 @@ if settings.cardio_type == 1
         'MultiCS_Data','name_CS','zline_images','zline_path',...
         'cond','settings'); 
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%% Plot & Save Data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% Plot & Save Data %%%%%%%%%%%%%%%%%%%%%%%%%%
 
     %Get all of the scalar valued IDs and values (everything but lengths
     MultiCS_medians = concatCells( MultiCS_Data.MultiCS_medians, true );
@@ -211,8 +213,8 @@ if settings.cardio_type == 1
     %Save path 
     plot_names.path = settings.SUMMARY_path; 
 
-    %Plot the non-sarc fraction for the conditions if user actin filtered and
-    %has more than one condition 
+    %Plot the non-sarc fraction for the conditions if user actin filtered 
+    %and has more than one condition 
     if settings.actin_filt && settings.multi_cond
         %>>BY CONDITION Plot the mean, standard deviation, and data points 
         %for non_sarc fraction 
@@ -227,31 +229,11 @@ if settings.cardio_type == 1
         plot_names.savename = 'MultiCond_NonSarcSummary'; 
         [ MultiCond.CondValues_NonSarc, ...
             MultiCond.CondValues_MeanNonSarc,...
-            MultiCond.CondValues_StdevNonSarc ] =...
+            MultiCond.CondValues_StdevNonSarc, MultiCond.IDs ] =...
             plotConditions(MultiCS_nonsarc, MultiCS_Cond, ...
             settings.cond_names,...
             MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
     end
-
-    % %Plot the non-sarc fraction for the conditions if user actin filtered and
-    % %has more than one coverslip 
-    % if settings.actin_filt && settings.num_cs > 1
-    %     %>>BY CONDITION Plot the mean, standard deviation, and data points 
-    %     %for non_sarc fraction 
-    %     plot_names.type = 'Non-Sarc Fraction';
-    %     if ~settings.actinthresh_explore
-    %         plot_names.x = 'Coverslips'; 
-    %     else 
-    %         plot_names.x = 'Actin Filtering Threshold'; 
-    %     end 
-    %     plot_names.y = 'Non-Sarc Fraction';
-    %     plot_names.title = 'Non-Sarc Fraction';
-    %     plot_names.savename = 'MultiCS_NonSarcSummary'; 
-    % %     [ ~, ~,~ ] =...
-    % %     plotConditions(MultiCS_nonsarc, MultiCS_CSN, settings.cond_names,...
-    % %     MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
-    % end
-
 
     %Plot the OOP for the conditions if user actin filtered and
     %has more than one condition 
@@ -269,29 +251,10 @@ if settings.cardio_type == 1
         plot_names.savename = 'MultiCond_OOPSummary'; 
         [ MultiCond.CondValues_OOP, ...
             MultiCond.CondValues_MeanOOP,...
-            MultiCond.CondValues_StdevOOP ] =...
+            MultiCond.CondValues_StdevOOP, MultiCond.IDs  ] =...
             plotConditions(MultiCS_OOP, MultiCS_Cond, settings.cond_names,...
             MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
     end
-
-    % %Plot the OOP for the conditions if user actin filtered and
-    % %has more than one coverslip 
-    % if settings.tf_OOP && settings.num_cs > 1
-    %     %>>BY CONDITION Plot the mean, standard deviation, and data points 
-    %     %for non_sarc fraction 
-    %     plot_names.type = 'OOP';
-    %     if ~settings.actinthresh_explore
-    %         plot_names.x = 'Coverslips'; 
-    %     else 
-    %         plot_names.x = 'Actin Filtering Threshold'; 
-    %     end 
-    %     plot_names.y = 'OOP';
-    %     plot_names.title = 'OOP';
-    %     plot_names.savename = 'MultiCS_OOPSummary'; 
-    % %     [ ~, ~,~ ] =...
-    % %     plotConditions(MultiCS_OOP, MultiCS_OOP, settings.cond_names,...
-    % %     MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
-    % end
 
     if settings.tf_CZL || settings.grid_explore || settings.actinthresh_explore
 
@@ -310,7 +273,7 @@ if settings.cardio_type == 1
         plot_names.savename = 'MultiCond_MedianSummary'; 
         [ MultiCond.CondValues_Medians, ...
             MultiCond.CondValues_MeanMedians,...
-            MultiCond.CondValues_StdevMedians ] =...
+            MultiCond.CondValues_StdevMedians, MultiCond.IDs  ] =...
         plotConditions(MultiCS_medians, MultiCS_Cond, settings.cond_names,...
         MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names); 
 
@@ -326,7 +289,7 @@ if settings.cardio_type == 1
         plot_names.title = 'Total Continuous Z-line Lengths';
         plot_names.savename = 'MultiCond_TotalSummary'; 
         [ MultiCond.CondValues_Sum, MultiCond.CondValues_MeanSum,...
-            MultiCond.CondValues_StdevSum ] =...
+            MultiCond.CondValues_StdevSum, MultiCond.IDs ] =...
         plotConditions(MultiCS_sums, MultiCS_Cond, settings.cond_names,...
         MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names); 
 
@@ -356,136 +319,47 @@ if settings.cardio_type == 1
     %Save the data 
     save(fullfile(settings.SUMMARY_path, new_filename),...
         'MultiCond', '-append'); 
+    
+    %Create summary excel file  
+    %Store the number and name of the condition
+    ConditionValue = MultiCS_Data.MultiCS_CONDID';  
+    ConditionName = cell(size(ConditionValue)); 
+    for k = 1:length(ConditionName) 
+        ConditionName{k,1} = settings.cond_names{ConditionValue(k,1),1}; 
+    end 
+    GridSize = MultiCS_Data.MultiCS_grid_sizes';  
+    ActinThreshold = MultiCS_Data.MultiCS_actin_threshs';  
+    MedianCZL = MultiCS_Data.MultiCS_medians';   
+    TotalCZL = MultiCS_Data.MultiCS_sums';  
+    NonZlineFraction = MultiCS_Data.MultiCS_nonsarc';  
+    OOP = MultiCS_Data.MultiCS_OOP';  
+    %Get the name of each coverslip
+    CoverslipID = MultiCS_Data.MultiCS_CSID'; 
+    CoverslipName = cell(size(CoverslipID)); 
+    for k = 1:length(CoverslipID)
+        CoverslipName{k,1} = MultiCS_Data.name_CS{CoverslipID(k,1),1}; 
+    end
+
+    %Save the data analyzed
+    DateAnalyzed_YYYYMMDD = cell(size(CoverslipID)); 
+    %Get today's date
+    date_format = 'yyyymmdd';
+    today_date = datestr(now,date_format);
+    for k = 1:length(CoverslipID)
+        DateAnalyzed_YYYYMMDD{k,1} =today_date; 
+    end 
+
+    % CoverslipName = MultiCS_Data.name_CS;  
+    T = table(ConditionValue,ConditionName,GridSize,ActinThreshold,...
+        MedianCZL,TotalCZL,NonZlineFraction,OOP,CoverslipName,...
+        DateAnalyzed_YYYYMMDD); 
+
+    %Write the sheet
+    filename = strcat(settings.SUMMARY_name, '.xlsx'); 
+    writetable(T,fullfile(settings.SUMMARY_path,filename),...
+        'Sheet',1,'Range','A1')
 end 
 
-% if settings.exploration
-%     %>>BY CONDITION Plot the mean, standard deviation, and data points for 
-%     %median 
-%     plot_names.type = 'Medians';
-%     plot_names.x = 'Actin Filtering Threshold'; 
-%     plot_names.y = 'Median Continuous Z-line Lengths (\mu m)';
-%     plot_names.title = 'Median Continuous Z-line Lengths';
-%     plot_names.savename = 'MultiCond_MedianSummary'; 
-%     [ MultiCond.CondValues_Medians, ...
-%         MultiCond.CondValues_MeanMedians,...
-%         MultiCond.CondValues_StdevMedians ] =...
-%     plotConditions(MultiCS_medians, MultiCS_Cond, settings.cond_names,...
-%     MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names); 
-%     
-%     %>>BY CONDITION Plot the mean, standard deviation, and data points 
-%     %for sums
-%     plot_names.type = 'Totals';
-%     plot_names.x = 'Actin Filtering Threshold'; 
-%     plot_names.y = 'Total Continuous Z-line Lengths (\mu m)';
-%     plot_names.title = 'Total Continuous Z-line Lengths';
-%     plot_names.savename = 'MultiCond_TotalSummary'; 
-%     [ CondValues_Sum, CondValues_MeanSum,CondValues_StdevSum ] =...
-%     plotConditions(MultiCS_sums, MultiCS_Cond, settings.cond_names,...
-%     MultiCS_grid_sizes, MultiCS_actin_threshs(:,1), plot_names); 
-%     
-% 
-%     %>>BY COVERSLIP MultiCS_lengths
-%     plot_names.type = 'Lengths';
-%     plot_names.y = 'Continuous Z-line Lengths (\mu m)';
-%     plot_names.title = 'Continuous Z-line Lengths By Coverslip';
-%     plot_names.savename = 'AllCS_MedianSummary'; 
-%     [ ~, ~,~ ] =...
-%     plotConditions(MultiCS_lengths, 1:length(name_CS), name_CS,...
-%     MultiCS_grid_sizes(:,1), MultiCS_actin_threshs(:,1), plot_names, true);
-% 
-% 
-% end
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% %If there is more than one CS calculate summary information and save 
-% if settings.num_cs > 1
-%     % If the user did an actin exploration, store the values for each
-%     % CS. 
-%     if settings.exploration 
-%         %Store the actin struct
-%         CS_actinexplore = outputs.CS_actinexplore; 
-% 
-%         %Store the medians
-%         MultiCS_medians{1,k} = CS_actinexplore.CS_median;
-%         %Store the sums 
-%         MultiCS_sums{1,k} = CS_actinexplore.CS_sum;
-%         %Store the non sarc fraction
-%         MultiCS_nonsarc{1,k} = CS_actinexplore.CS_nonsarc;
-%         %Store the grid sizes 
-%         MultiCS_grid_sizes{1,k} = ...
-%             CS_actinexplore.CS_explorevalues(:,1);
-%         %Store the actin thresholds 
-%         MultiCS_actin_threshs{1,k} = ...
-%             CS_actinexplore.CS_explorevalues(:,2);
-%         %Store the lengths 
-%         MultiCS_lengths{1,k} = CS_actinexplore.CS_lengths;
-% 
-%     else
-%         %Create a struct to store the plot names 
-%         plot_names = struct(); 
-%         %Save the path 
-%         plot_names.path = settings.SUMMARY_path; 
-%         
-%         %Save the summary filename 
-%         plot_names.savename = settings.SUMMARY_name; 
-%         
-%         %If the user did not do a parameter exploration, but did actin
-%         %filter, store the grid sizes and actin thresholds
-%         if settings.actin_filt
-%             %Store the grid sizes 
-%             MultiCS_grid_sizes{1,k} = ...
-%                 CS_actinexplore.CS_explorevalues(:,1);
-%             %Store the actin thresholds 
-%             MultiCS_actin_threshs{1,k} = ...
-%                 CS_actinexplore.CS_explorevalues(:,2);
-%         end 
-%         %If the user calculated the continuous z-line lengths, store
-%         %those values 
-%         if settings.tf_CZL
-%             %Store the medians
-%             MultiCS_medians{1,k} = CS_actinexplore.CS_median;
-%             %Store the sums 
-%             MultiCS_sums{1,k} = CS_actinexplore.CS_sum;
-%             %Store the lengths 
-%             MultiCS_lengths{1,k} = CS_actinexplore.CS_lengths;
-%         end 
-% 
-%         %If the user calculated the OOP, store those values for each
-%         %cover slip
-%         if settings.tf_OOP
-%             %Store the OOPs 
-%             MultiCS_OOP{1,k} = CS_actinexplore.CS_OOP; 
-%         end 
-%     end 
-% 
-% end 
-% %Get the parts of the last previous path 
-% pathparts = strsplit(previous_path,filesep);
-% 
-% %Set previous path 
-% save_path = pathparts{1,1}; 
-% 
-% %Go back one folder 
-% for p =2:size(pathparts,2)-1
-%     if ~isempty(pathparts{1,p+1})
-%         save_path = fullfile(save_path, pathparts{1,p}); 
-%     end 
-% end 
-% 
-%     
-% %Create a struct to store the plot names 
-% plot_names = struct(); 
-% %Save the path 
-% plot_names.path = save_path; 
-% 
-% % Plot results fro 
-% 
-%         
 close all;
 
 end
