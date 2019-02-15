@@ -33,8 +33,8 @@ end
 MultiCS_medians = cell(1,settings.num_cs); 
 %Save the totals for each coverslip 
 MultiCS_sums = cell(1,settings.num_cs); 
-%Save the non-sarc fraction for each coverslip 
-MultiCS_nonsarc = cell(1,settings.num_cs);
+%Save the non-zline fraction for each coverslip 
+MultiCS_nonzline = cell(1,settings.num_cs);
 %Save the medians for each coverslip 
 MultiCS_grid_sizes = cell(1,settings.num_cs);
 MultiCS_actin_threshs = cell(1,settings.num_cs);
@@ -156,7 +156,7 @@ for k = 1:settings.num_cs
         MultiCS_lengths{1,k} = CS_results.CS_lengths;
         MultiCS_medians{1,k} =CS_results.CS_medians;
         MultiCS_sums{1,k} = CS_results.CS_sums;
-        MultiCS_nonsarc{1,k} = CS_results.CS_nonsarc;
+        MultiCS_nonzline{1,k} = CS_results.CS_nonzline;
         MultiCS_grid_sizes{1,k} = CS_results.CS_gridsizes;
         MultiCS_actin_threshs{1,k} = CS_results.CS_thresholds;
         MultiCS_OOP{1,k} = CS_results.CS_OOPs;    
@@ -179,7 +179,7 @@ if settings.cardio_type == 1
     MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
     MultiCS_Data.MultiCS_medians=MultiCS_medians;
     MultiCS_Data.MultiCS_sums=MultiCS_sums;
-    MultiCS_Data.MultiCS_nonsarc=MultiCS_nonsarc;
+    MultiCS_Data.MultiCS_nonzline=MultiCS_nonzline;
     MultiCS_Data.MultiCS_grid_sizes=MultiCS_grid_sizes;
     MultiCS_Data.MultiCS_actin_threshs=MultiCS_actin_threshs;
     MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
@@ -201,7 +201,7 @@ if settings.cardio_type == 1
     %Get all of the scalar valued IDs and values (everything but lengths
     MultiCS_medians = concatCells( MultiCS_Data.MultiCS_medians, true );
     MultiCS_sums = concatCells( MultiCS_Data.MultiCS_sums, true );
-    MultiCS_nonsarc = concatCells( MultiCS_Data.MultiCS_nonsarc, true );
+    MultiCS_nonzline = concatCells( MultiCS_Data.MultiCS_nonzline, true );
     MultiCS_grid_sizes = concatCells( MultiCS_Data.MultiCS_grid_sizes, true );
     MultiCS_actin_threshs = concatCells( MultiCS_Data.MultiCS_actin_threshs, true );
     MultiCS_OOP = concatCells( MultiCS_Data.MultiCS_OOP, true );
@@ -213,24 +213,24 @@ if settings.cardio_type == 1
     %Save path 
     plot_names.path = settings.SUMMARY_path; 
 
-    %Plot the non-sarc fraction for the conditions if user actin filtered 
+    %Plot the non-zline fraction for the conditions if user actin filtered 
     %and has more than one condition 
     if settings.actin_filt && settings.multi_cond
         %>>BY CONDITION Plot the mean, standard deviation, and data points 
-        %for non_sarc fraction 
-        plot_names.type = 'Non-Sarc Fraction';
+        %for non_zline fraction 
+        plot_names.type = 'Non-Zline Fraction';
         if ~settings.actinthresh_explore
             plot_names.x = 'Conditions'; 
         else 
             plot_names.x = 'Actin Filtering Threshold'; 
         end 
-        plot_names.y = 'Non-Sarc Fraction';
-        plot_names.title = 'Non-Sarc Fraction';
-        plot_names.savename = 'MultiCond_NonSarcSummary'; 
-        [ MultiCond.CondValues_NonSarc, ...
-            MultiCond.CondValues_MeanNonSarc,...
-            MultiCond.CondValues_StdevNonSarc, MultiCond.IDs ] =...
-            plotConditions(MultiCS_nonsarc, MultiCS_Cond, ...
+        plot_names.y = 'Non-Zline Fraction';
+        plot_names.title = 'Non-Zline Fraction';
+        plot_names.savename = 'MultiCond_NonZlineSummary'; 
+        [ MultiCond.CondValues_NonZline, ...
+            MultiCond.CondValues_MeanNonZline,...
+            MultiCond.CondValues_StdevNonZline, MultiCond.IDs ] =...
+            plotConditions(MultiCS_nonzline, MultiCS_Cond, ...
             settings.cond_names,...
             MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
     end
@@ -239,7 +239,7 @@ if settings.cardio_type == 1
     %has more than one condition 
     if settings.tf_OOP && settings.multi_cond
         %>>BY CONDITION Plot the mean, standard deviation, and data points 
-        %for non_sarc fraction 
+        %for non_zline fraction 
         plot_names.type = 'OOP';
         if ~settings.actinthresh_explore
             plot_names.x = 'Conditions'; 
@@ -331,7 +331,7 @@ if settings.cardio_type == 1
     ActinThreshold = MultiCS_actin_threshs';  
     MedianCZL = MultiCS_medians';   
     TotalCZL = MultiCS_sums';  
-    NonZlineFraction = MultiCS_nonsarc';  
+    NonZlineFraction = MultiCS_nonzline';  
     OOP = MultiCS_OOP';  
     %Get the name of each coverslip
     CoverslipID = MultiCS_CSN'; 
