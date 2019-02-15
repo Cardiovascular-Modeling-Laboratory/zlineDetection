@@ -24,7 +24,9 @@ function [ CS_results ] = ...
 zn = length(zline_images); 
 
 %>>> ACTIN FILTERING: Non Zline Fractions (NO EXPLORATION) 
-FOV_nonzline = cell(1,zn);
+FOV_nonzlinefrac = cell(1,zn);
+FOV_zlinefrac = cell(1,zn);
+
 FOV_prefiltered = cell(1,zn); 
 FOV_postfiltered = cell(1,zn); 
 
@@ -84,7 +86,7 @@ for k = 1:zn
             exploreFilterWithActin( im_struct, settings, actin_explore);
         
         %Store Non zline Fraction Values 
-        FOV_nonzline{1,k} = actin_explore.non_zlines; 
+        FOV_nonzlinefrac{1,k} = actin_explore.non_zlines; 
         FOV_prefiltered{1,k} = ...
             actin_explore.pre_filt*ones(size(actin_explore.post_filt)); 
         FOV_postfiltered{1,k} = actin_explore.post_filt;  
@@ -110,7 +112,8 @@ for k = 1:zn
     %If the user wants to filter with actin, save the non_zline fraction
     if settings.actin_filt && ~settings.exploration
         %Fraction for each FOV 
-        FOV_nonzline{1,k} = im_struct.non_zline; 
+        FOV_nonzlinefrac{1,k} = im_struct.nonzlinefrac; 
+        FOV_zlinefrac{1,k} = im_struct.zlinefrac; 
         
         %Get the post-filtered skeleton - used for CS calculation 
         temp_post = im_struct.skel_final;
@@ -209,7 +212,8 @@ CS_results.zline_path = zline_path;
 CS_results.zline_images = zline_images; 
 
 %>>> ACTIN FILTERING: Non zline Fractions
-CS_results.FOV_nonzline = FOV_nonzline;
+CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
+CS_results.FOV_zlinefrac = FOV_zlinefrac;
 CS_results.FOV_prefiltered = FOV_prefiltered;
 CS_results.FOV_postfiltered = FOV_postfiltered;
 %>>> ACTIN FILTERING: Continuous z-line length

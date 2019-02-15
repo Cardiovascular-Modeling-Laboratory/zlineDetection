@@ -7,7 +7,10 @@ function [CS_results] = combineFOV( settings, CS_results )
 FOV_Grouped = struct; 
 
 %>>> ACTIN FILTERING: Non Sarc Fractions (NO EXPLORATION) 
-FOV_Grouped.FOV_nonzline = concatCells( CS_results.FOV_nonzline, true ); 
+FOV_Grouped.FOV_nonzlinefrac = ...
+    concatCells( CS_results.FOV_nonzlinefrac, true ); 
+FOV_Grouped.FOV_zlinefrac = ...
+    concatCells( CS_results.FOV_zlinefrac, true ); 
 
 %>>> ACTIN FILTERING: Continuous z-line length (NO EXPLORATION) 
 FOV_Grouped.FOV_medians = concatCells( CS_results.FOV_medians, true ); 
@@ -51,9 +54,11 @@ CS_results.CS_sums = zeros(1,tot);
 CS_results.FOVstats_medians = zeros(2,tot); %1: mean 2: stdev 
 CS_results.FOVstats_sums = zeros(2,tot);  %1: mean 2: stdev 
 
-%>>> Non Sarc Fractions 
-CS_results.CS_nonzline = zeros(1,tot);
-CS_results.FOVstats_nonzline = zeros(2,tot);%1: mean 2: stdev 
+%>>> Non Zline & Zline Fractions 
+CS_results.CS_nonzlinefrac = zeros(1,tot);
+CS_results.FOVstats_nonzlinefrac = zeros(2,tot);%1: mean 2: stdev 
+CS_results.CS_zlinefrac = zeros(1,tot);
+CS_results.FOVstats_zlinefrac = zeros(2,tot);%1: mean 2: stdev 
 
 %>>> OOP 
 CS_results.CS_angles = cell(1,tot); 
@@ -134,7 +139,8 @@ for z = 1:zn
                 %Store the median, sums, nonzline and OOPs that are included
                 include_medians = FOV_Grouped.FOV_medians;
                 include_sums = FOV_Grouped.FOV_sums;
-                include_nonzline = FOV_Grouped.FOV_nonzline;
+                include_nonzlinefrac = FOV_Grouped.FOV_nonzlinefrac;
+                include_zlinefrac = FOV_Grouped.FOV_zlinefrac;
                 include_OOP = FOV_Grouped.FOV_OOPs;
                 
                 
@@ -149,10 +155,15 @@ for z = 1:zn
                         + exlude_grids + exlude_thresh;  
                     include_sums(isnan(include_sums)) = []; 
                 end 
-                if ~isempty(FOV_Grouped.FOV_nonzline)
-                    include_nonzline = include_nonzline ...
+                if ~isempty(FOV_Grouped.FOV_nonzlinefrac)
+                    include_nonzlinefrac = include_nonzlinefrac ...
                         + exlude_grids + exlude_thresh; 
-                    include_nonzline(isnan(include_nonzline)) = []; 
+                    include_nonzlinefrac(isnan(include_nonzlinefrac)) = []; 
+                end
+                if ~isempty(FOV_Grouped.FOV_zlinefrac)
+                    include_zlinefrac = include_zlinefrac ...
+                        + exlude_grids + exlude_thresh; 
+                    include_zlinefrac(isnan(include_zlinefrac)) = []; 
                 end
                 if ~isempty(FOV_Grouped.FOV_OOPs)
                     include_OOP = include_OOP ...
@@ -165,8 +176,14 @@ for z = 1:zn
                 CS_results.FOVstats_medians(2,n) = std(include_medians);
                 CS_results.FOVstats_sums(1,n) = mean(include_sums); 
                 CS_results.FOVstats_sums(2,n) = std(include_sums); 
-                CS_results.FOVstats_nonzline(1,n) = mean(include_nonzline);
-                CS_results.FOVstats_nonzline(2,n) = std(include_nonzline); 
+                CS_results.FOVstats_nonzlinefrac(1,n) = ...
+                    mean(include_nonzlinefrac);
+                CS_results.FOVstats_nonzlinefrac(2,n) = ...
+                    std(include_nonzlinefrac);
+                CS_results.FOVstats_zlinefrac(1,n) = ...
+                    mean(include_zlinefrac);
+                CS_results.FOVstats_zlinefrac(2,n) = ...
+                    std(include_zlinefrac); 
                 CS_results.FOVstats_OOPs(1,n) = mean(include_OOP); 
                 CS_results.FOVstats_OOPs(2,n) = std(include_OOP); 
             end              
@@ -215,10 +232,11 @@ for t = 1:tot
     [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
     
     %Calculate the non-zline fraction 
-    CS_results.CS_nonzline(1,t) = ...
+    CS_results.CS_nonzlinefrac(1,t) = ...
         (FOV_Grouped.FOV_prefiltered(1,t) - ...
         FOV_Grouped.FOV_postfiltered(1,t))/ ...
         FOV_Grouped.FOV_prefiltered(1,t);
+    CS_results.CS_zlinefrac(1,t) = 1 - CS_results.CS_nonzlinefrac(1,t); 
         
 end 
 

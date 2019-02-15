@@ -34,7 +34,9 @@ MultiCS_medians = cell(1,settings.num_cs);
 %Save the totals for each coverslip 
 MultiCS_sums = cell(1,settings.num_cs); 
 %Save the non-zline fraction for each coverslip 
-MultiCS_nonzline = cell(1,settings.num_cs);
+MultiCS_nonzlinefrac = cell(1,settings.num_cs);
+MultiCS_zlinefrac = cell(1,settings.num_cs);
+
 %Save the medians for each coverslip 
 MultiCS_grid_sizes = cell(1,settings.num_cs);
 MultiCS_actin_threshs = cell(1,settings.num_cs);
@@ -156,7 +158,8 @@ for k = 1:settings.num_cs
         MultiCS_lengths{1,k} = CS_results.CS_lengths;
         MultiCS_medians{1,k} =CS_results.CS_medians;
         MultiCS_sums{1,k} = CS_results.CS_sums;
-        MultiCS_nonzline{1,k} = CS_results.CS_nonzline;
+        MultiCS_nonzlinefrac{1,k} = CS_results.CS_nonzlinefrac;
+        MultiCS_zlinefrac{1,k} = CS_results.CS_nonzlinefrac;
         MultiCS_grid_sizes{1,k} = CS_results.CS_gridsizes;
         MultiCS_actin_threshs{1,k} = CS_results.CS_thresholds;
         MultiCS_OOP{1,k} = CS_results.CS_OOPs;    
@@ -179,7 +182,7 @@ if settings.cardio_type == 1
     MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
     MultiCS_Data.MultiCS_medians=MultiCS_medians;
     MultiCS_Data.MultiCS_sums=MultiCS_sums;
-    MultiCS_Data.MultiCS_nonzline=MultiCS_nonzline;
+    MultiCS_Data.MultiCS_nonzlinefrac=MultiCS_nonzlinefrac;
     MultiCS_Data.MultiCS_grid_sizes=MultiCS_grid_sizes;
     MultiCS_Data.MultiCS_actin_threshs=MultiCS_actin_threshs;
     MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
@@ -201,7 +204,8 @@ if settings.cardio_type == 1
     %Get all of the scalar valued IDs and values (everything but lengths
     MultiCS_medians = concatCells( MultiCS_Data.MultiCS_medians, true );
     MultiCS_sums = concatCells( MultiCS_Data.MultiCS_sums, true );
-    MultiCS_nonzline = concatCells( MultiCS_Data.MultiCS_nonzline, true );
+    MultiCS_nonzlinefrac = concatCells( MultiCS_Data.MultiCS_nonzlinefrac, true );
+    MultiCS_zlinefrac = concatCells( MultiCS_Data.MultiCS_zlinefrac, true );
     MultiCS_grid_sizes = concatCells( MultiCS_Data.MultiCS_grid_sizes, true );
     MultiCS_actin_threshs = concatCells( MultiCS_Data.MultiCS_actin_threshs, true );
     MultiCS_OOP = concatCells( MultiCS_Data.MultiCS_OOP, true );
@@ -230,9 +234,26 @@ if settings.cardio_type == 1
         [ MultiCond.CondValues_NonZline, ...
             MultiCond.CondValues_MeanNonZline,...
             MultiCond.CondValues_StdevNonZline, MultiCond.IDs ] =...
-            plotConditions(MultiCS_nonzline, MultiCS_Cond, ...
+            plotConditions(MultiCS_nonzlinefrac, MultiCS_Cond, ...
             settings.cond_names,...
             MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
+        
+        plot_names.type = 'Zline Fraction';
+        if ~settings.actinthresh_explore
+            plot_names.x = 'Conditions'; 
+        else 
+            plot_names.x = 'Actin Filtering Threshold'; 
+        end 
+        plot_names.y = 'Zline Fraction';
+        plot_names.title = 'Zline Fraction';
+        plot_names.savename = 'MultiCond_ZlineSummary'; 
+        [ MultiCond.CondValues_NonZline, ...
+            MultiCond.CondValues_MeanNonZline,...
+            MultiCond.CondValues_StdevNonZline, MultiCond.IDs ] =...
+            plotConditions(MultiCS_zlinefrac, MultiCS_Cond, ...
+            settings.cond_names,...
+            MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
+        
     end
 
     %Plot the OOP for the conditions if user actin filtered and
@@ -331,7 +352,8 @@ if settings.cardio_type == 1
     ActinThreshold = MultiCS_actin_threshs';  
     MedianCZL = MultiCS_medians';   
     TotalCZL = MultiCS_sums';  
-    NonZlineFraction = MultiCS_nonzline';  
+    NonZlineFraction = MultiCS_nonzlinefrac';  
+    ZlineFraction = MultiCS_zlinefrac';  
     OOP = MultiCS_OOP';  
     %Get the name of each coverslip
     CoverslipID = MultiCS_CSN'; 
@@ -351,8 +373,8 @@ if settings.cardio_type == 1
 
     % CoverslipName = MultiCS_Data.name_CS;  
     T = table(ConditionValue,ConditionName,GridSize,ActinThreshold,...
-        MedianCZL,TotalCZL,NonZlineFraction,OOP,CoverslipName,...
-        DateAnalyzed_YYYYMMDD); 
+        MedianCZL,TotalCZL,NonZlineFraction,ZlineFraction,OOP,...
+        CoverslipName,DateAnalyzed_YYYYMMDD); 
 %     T = table(ConditionValue);%,ConditionName,GridSize,ActinThreshold,...
 % %         MedianCZL,TotalCZL,NonZlineFraction,OOP,CoverslipName,...
 % %         DateAnalyzed_YYYYMMDD); 
