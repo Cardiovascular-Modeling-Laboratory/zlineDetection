@@ -23,8 +23,8 @@ function [ CS_results ] = ...
 %%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 zn = length(zline_images); 
 
-%>>> ACTIN FILTERING: Non Sarc Fractions (NO EXPLORATION) 
-FOV_nonsarc = cell(1,zn);
+%>>> ACTIN FILTERING: Non Zline Fractions (NO EXPLORATION) 
+FOV_nonzline = cell(1,zn);
 FOV_prefiltered = cell(1,zn); 
 FOV_postfiltered = cell(1,zn); 
 
@@ -79,12 +79,12 @@ for k = 1:zn
         actin_explore = settings.actin_explore; 
         
         %Loop through the range and save the skeleton, continuous 
-        %z-line length and the non sarc amount. 
+        %z-line length and the non zline amount. 
         actin_explore = ...
             exploreFilterWithActin( im_struct, settings, actin_explore);
         
-        %Store Non Sarc Fraction Values 
-        FOV_nonsarc{1,k} = actin_explore.non_sarcs; 
+        %Store Non zline Fraction Values 
+        FOV_nonzline{1,k} = actin_explore.non_zlines; 
         FOV_prefiltered{1,k} = ...
             actin_explore.pre_filt*ones(size(actin_explore.post_filt)); 
         FOV_postfiltered{1,k} = actin_explore.post_filt;  
@@ -107,10 +107,10 @@ for k = 1:zn
         
     end 
     
-    %If the user wants to filter with actin, save the non_sarc fraction
+    %If the user wants to filter with actin, save the non_zline fraction
     if settings.actin_filt && ~settings.exploration
         %Fraction for each FOV 
-        FOV_nonsarc{1,k} = im_struct.non_sarc; 
+        FOV_nonzline{1,k} = im_struct.non_zline; 
         
         %Get the post-filtered skeleton - used for CS calculation 
         temp_post = im_struct.skel_final;
@@ -208,8 +208,8 @@ CS_results = struct();
 CS_results.zline_path = zline_path;
 CS_results.zline_images = zline_images; 
 
-%>>> ACTIN FILTERING: Non Sarc Fractions
-CS_results.FOV_nonsarc = FOV_nonsarc;
+%>>> ACTIN FILTERING: Non zline Fractions
+CS_results.FOV_nonzline = FOV_nonzline;
 CS_results.FOV_prefiltered = FOV_prefiltered;
 CS_results.FOV_postfiltered = FOV_postfiltered;
 %>>> ACTIN FILTERING: Continuous z-line length

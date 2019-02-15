@@ -197,7 +197,7 @@ pre_filt(pre_filt == 0) = [];
 % Calculate the non-sarcomeric alpha actinin 
 % number of pixles eliminated / # total # of pixles positive for alpha
 % actinin 
-im_struct.non_sarc = (length(pre_filt) - length(post_filt))/ length(pre_filt);
+im_struct.non_zline = (length(pre_filt) - length(post_filt))/ length(pre_filt);
 
 % Display that you're saving the data
 disp('Saving Data...'); 
