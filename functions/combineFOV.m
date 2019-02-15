@@ -7,7 +7,7 @@ function [CS_results] = combineFOV( settings, CS_results )
 FOV_Grouped = struct; 
 
 %>>> ACTIN FILTERING: Non Sarc Fractions (NO EXPLORATION) 
-FOV_Grouped.FOV_nonsarc = concatCells( CS_results.FOV_nonsarc, true ); 
+FOV_Grouped.FOV_nonzline = concatCells( CS_results.FOV_nonzline, true ); 
 
 %>>> ACTIN FILTERING: Continuous z-line length (NO EXPLORATION) 
 FOV_Grouped.FOV_medians = concatCells( CS_results.FOV_medians, true ); 
@@ -52,8 +52,8 @@ CS_results.FOVstats_medians = zeros(2,tot); %1: mean 2: stdev
 CS_results.FOVstats_sums = zeros(2,tot);  %1: mean 2: stdev 
 
 %>>> Non Sarc Fractions 
-CS_results.CS_nonsarc = zeros(1,tot);
-CS_results.FOVstats_nonsarc = zeros(2,tot);%1: mean 2: stdev 
+CS_results.CS_nonzline = zeros(1,tot);
+CS_results.FOVstats_nonzline = zeros(2,tot);%1: mean 2: stdev 
 
 %>>> OOP 
 CS_results.CS_angles = cell(1,tot); 
@@ -104,11 +104,14 @@ for z = 1:zn
             include = include_thresh + include_grid; 
             
             %Find the position where include is not NaN 
-            p = find(~isnan(include)); 
-
+            p = find(~isnan(include));
+%>>> LENGTH & ANGLES             
+            
             %Store the values at the current grids 
             FOV_Grouped.FOV_lengths{z,n} = current_lengths{p,1};
             FOV_Grouped.FOV_angles{z,n} = current_angles{p,1};
+            
+%>>> LENGTH & ANGLES             
             
             %Add the pre and post filtered number of pixels 
             FOV_Grouped.FOV_prefiltered(1,n) = ...
@@ -128,10 +131,10 @@ for z = 1:zn
                 CS_results.CS_gridsizes(1,n) = unique_grids(g); 
                 CS_results.CS_thresholds(1,n) = unique_thresh(a);
                 
-                %Store the median, sums, nonsarc and OOPs that are included
+                %Store the median, sums, nonzline and OOPs that are included
                 include_medians = FOV_Grouped.FOV_medians;
                 include_sums = FOV_Grouped.FOV_sums;
-                include_nonsarc = FOV_Grouped.FOV_nonsarc;
+                include_nonzline = FOV_Grouped.FOV_nonzline;
                 include_OOP = FOV_Grouped.FOV_OOPs;
                 
                 
@@ -146,10 +149,10 @@ for z = 1:zn
                         + exlude_grids + exlude_thresh;  
                     include_sums(isnan(include_sums)) = []; 
                 end 
-                if ~isempty(FOV_Grouped.FOV_nonsarc)
-                    include_nonsarc = include_nonsarc ...
+                if ~isempty(FOV_Grouped.FOV_nonzline)
+                    include_nonzline = include_nonzline ...
                         + exlude_grids + exlude_thresh; 
-                    include_nonsarc(isnan(include_nonsarc)) = []; 
+                    include_nonzline(isnan(include_nonzline)) = []; 
                 end
                 if ~isempty(FOV_Grouped.FOV_OOPs)
                     include_OOP = include_OOP ...
@@ -162,8 +165,8 @@ for z = 1:zn
                 CS_results.FOVstats_medians(2,n) = std(include_medians);
                 CS_results.FOVstats_sums(1,n) = mean(include_sums); 
                 CS_results.FOVstats_sums(2,n) = std(include_sums); 
-                CS_results.FOVstats_nonsarc(1,n) = mean(include_nonsarc);
-                CS_results.FOVstats_nonsarc(2,n) = std(include_nonsarc); 
+                CS_results.FOVstats_nonzline(1,n) = mean(include_nonzline);
+                CS_results.FOVstats_nonzline(2,n) = std(include_nonzline); 
                 CS_results.FOVstats_OOPs(1,n) = mean(include_OOP); 
                 CS_results.FOVstats_OOPs(2,n) = std(include_OOP); 
             end              
@@ -177,21 +180,42 @@ end
 %Loop through and calculate the values for all of the different combination  
 for t = 1:tot
     
-    %Continuous Z-line Values 
-    CS_results.CS_lengths{1,t} = FOV_Grouped.FOV_lengths{:,t};
+    %Create arrays to store the angles and lengths temporarily 
+    grouped_lengths = [];
+    grouped_angles = []; 
+    
+    % Loop through all of the FOV 
+    for z = 1:zn 
+        %CZL: Store the current FOV in an array and convert to be n x 1
+        current_length = FOV_Grouped.FOV_lengths{z,t}; 
+        current_length = current_length(:); 
+        
+        %ANGLES: Store the current FOV in an array and convert to be n x 1
+        current_angles = FOV_Grouped.FOV_angles{z,t}; 
+        current_angles = current_angles(:); 
+        
+        %CZL: Save in the temp vector. 
+        grouped_lengths = [grouped_lengths;current_length]; 
+        
+        %CZL: Save in the temp vector. 
+        grouped_angles = [grouped_angles;current_angles]; 
+
+    end 
+    
+    %Save all of the lengths, calculate the median and sum 
+    CS_results.CS_lengths{1,t} = grouped_lengths;
     CS_results.CS_medians(1,t) = median(CS_results.CS_lengths{1,t}); 
     CS_results.CS_sums(1,t) = sum(CS_results.CS_lengths{1,t});   
     
-    if settings.tf_OOP
-        %Get the OOPs
-        CS_results.CS_angles{1,t} = FOV_Grouped.FOV_angles{:,t};
-        temp_angles = CS_results.CS_angles{1,t}; 
-        temp_angles(isnan(temp_angles)) = 0;
-        [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
-    end 
     
-    %Calculate the non-sarc fraction 
-    CS_results.CS_nonsarc(1,t) = ...
+    %Save all of the angles and calculate the OOPs 
+    CS_results.CS_angles{1,t} = grouped_angles;
+    temp_angles = CS_results.CS_angles{1,t}; 
+    temp_angles(isnan(temp_angles)) = 0;
+    [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
+    
+    %Calculate the non-zline fraction 
+    CS_results.CS_nonzline(1,t) = ...
         (FOV_Grouped.FOV_prefiltered(1,t) - ...
         FOV_Grouped.FOV_postfiltered(1,t))/ ...
         FOV_Grouped.FOV_prefiltered(1,t);
