@@ -322,19 +322,19 @@ if settings.cardio_type == 1
     
     %Create summary excel file  
     %Store the number and name of the condition
-    ConditionValue = MultiCS_Data.MultiCS_CONDID';  
-    ConditionName = cell(size(ConditionValue)); 
+    ConditionValue = MultiCS_Cond'; 
+    ConditionName = cell(size(MultiCS_Cond,2),size(MultiCS_Cond,1)); 
     for k = 1:length(ConditionName) 
-        ConditionName{k,1} = settings.cond_names{ConditionValue(k,1),1}; 
+        ConditionName{k,1} = settings.cond_names{MultiCS_Cond(1,k),1}; 
     end 
-    GridSize = MultiCS_Data.MultiCS_grid_sizes';  
-    ActinThreshold = MultiCS_Data.MultiCS_actin_threshs';  
-    MedianCZL = MultiCS_Data.MultiCS_medians';   
-    TotalCZL = MultiCS_Data.MultiCS_sums';  
-    NonZlineFraction = MultiCS_Data.MultiCS_nonsarc';  
-    OOP = MultiCS_Data.MultiCS_OOP';  
+    GridSize = MultiCS_grid_sizes';  
+    ActinThreshold = MultiCS_actin_threshs';  
+    MedianCZL = MultiCS_medians';   
+    TotalCZL = MultiCS_sums';  
+    NonZlineFraction = MultiCS_nonsarc';  
+    OOP = MultiCS_OOP';  
     %Get the name of each coverslip
-    CoverslipID = MultiCS_Data.MultiCS_CSID'; 
+    CoverslipID = MultiCS_CSN'; 
     CoverslipName = cell(size(CoverslipID)); 
     for k = 1:length(CoverslipID)
         CoverslipName{k,1} = MultiCS_Data.name_CS{CoverslipID(k,1),1}; 
@@ -353,11 +353,13 @@ if settings.cardio_type == 1
     T = table(ConditionValue,ConditionName,GridSize,ActinThreshold,...
         MedianCZL,TotalCZL,NonZlineFraction,OOP,CoverslipName,...
         DateAnalyzed_YYYYMMDD); 
-
+%     T = table(ConditionValue);%,ConditionName,GridSize,ActinThreshold,...
+% %         MedianCZL,TotalCZL,NonZlineFraction,OOP,CoverslipName,...
+% %         DateAnalyzed_YYYYMMDD); 
     %Write the sheet
-    filename = strcat(settings.SUMMARY_name, '.xlsx'); 
+    filename = strcat(settings.SUMMARY_name{1}, '.xlsx'); 
     writetable(T,fullfile(settings.SUMMARY_path,filename),...
-        'Sheet',1,'Range','A1')
+        'Sheet',1,'Range','A1'); 
 end 
 
 close all;
