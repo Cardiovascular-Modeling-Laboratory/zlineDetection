@@ -86,7 +86,8 @@ for k = 1:zn
             exploreFilterWithActin( im_struct, settings, actin_explore);
         
         %Store Non zline Fraction Values 
-        FOV_nonzlinefrac{1,k} = actin_explore.non_zlines; 
+        FOV_nonzlinefrac{1,k} = actin_explore.non_zlinefracs; 
+        FOV_zlinefrac{1,k} = actin_explore.zlinefracs; 
         FOV_prefiltered{1,k} = ...
             actin_explore.pre_filt*ones(size(actin_explore.post_filt)); 
         FOV_postfiltered{1,k} = actin_explore.post_filt;  

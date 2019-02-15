@@ -6,7 +6,7 @@ function [ actin_explore ] = ...
 % Set values for the grid exploration 
 gmin = settings.grid_size(1); 
 gmax = gmin; 
-gstep = 1; 
+gstep = 1;
 
 %If requested, Get the range of values for the grid exploration 
 if settings.grid_explore
@@ -47,7 +47,8 @@ attot = length(unique_thresh);
 tot = attot*gtot; 
 
 %>> ALL EXPLORE: Create a matrix to store all of the non-sarc fractions 
-non_sarcs = zeros(tot, 1); 
+non_zlinefracs = zeros(tot, 1); 
+zlinefracs = zeros(tot, 1); 
 %>> ALL EXPLORE: Create a matrix to store all of the medians 
 medians = zeros(tot, 1); 
 %>> ALL EXPLORE: Create a matrix to store all of the sums 
@@ -75,7 +76,7 @@ image_savepath = im_struct.save_path;
 % Save the prefiltered skeleton 
 prefilt_skel = im_struct.skelTrim;
 
-% Save the pre-filtered skeleton for calculation of the non-sarc
+% Save the pre-filtered skeleton for calculation of the non-zlinefrac
 % percentages
 pre_filt = prefilt_skel(:); 
 pre_filt(pre_filt == 0) = []; 
@@ -237,8 +238,9 @@ for g = 1:gtot
             % Calculate the non-sarcomeric alpha actinin 
             % number of pixles eliminated / # total # of pixles positive 
             % for alpha actinin 
-            non_sarcs(n,1) = (pre_filt - post_filt(n,1))./pre_filt;
-
+            non_zlinefracs(n,1) = (pre_filt - post_filt(n,1))./pre_filt;
+            zlinefracs(n,1) = 1 - non_zlinefracs(n,1); 
+            
             %Save the threshold value 
             actin_explore.actin_thresh(actin_explore.n,1) = thresholds(n,1);
     
@@ -279,7 +281,8 @@ end
 im_struct.save_path = image_savepath; 
 
 % Save all of the relevant data in the actin_explore struct 
-actin_explore.non_sarcs = non_sarcs; 
+actin_explore.non_zlinefracs = non_zlinefracs; 
+actin_explore.zlinefracs = zlinefracs; 
 actin_explore.medians = medians; 
 actin_explore.sums = sums;
 actin_explore.thresholds = thresholds;   
