@@ -83,15 +83,12 @@ for g= 1:gn
         %Loop through all of the conditions 
         for n = 1:ncs 
             %Increase color 
-            if c > length(colors) || n == 1
+            if c > length(colors)-1 || n == 1
                 c = 1; 
             else
                 c = c+1; 
             end 
-            
-            disp(n); 
-            disp(c); 
-            disp(colors(c)); 
+ 
             %Get the middle value
             x0 = (2*p+1)/2; 
 
@@ -232,7 +229,7 @@ l=1;
 for n = 1:ncs
     %Set the color 
     %Increase color 
-    if c > length(colors) || n == 1
+    if c > length(colors)-1 || n == 1
         c = 1; 
     else
         c = c+1; 

@@ -74,7 +74,7 @@ for g= 1:gn
         %Loop through all of the conditions 
         for n = 1:n_cond 
             %Increase color 
-            if c > length(colors) || n == 1
+            if c > length(colors)-1 || n == 1
                 c = 1; 
             else
                 c = c+1; 
@@ -154,8 +154,6 @@ for g= 1:gn
     end
 end
 
-disp('after loop'); 
-disp(id);
 %Set the axis limits for the y axis 
 buffer = 0.3*min(data_points(:)); 
 if buffer < 0.1
@@ -232,7 +230,7 @@ l=1;
 for n = 1:n_cond
     %Set the color 
     %Increase color 
-    if c > length(colors) || n == 1
+    if c > length(colors)-1 || n == 1
                 c = 1; 
     else
         c = c+1; 
@@ -304,8 +302,5 @@ title('Legend','FontSize', 14, 'FontWeight', 'bold');
 %Save the legend 
 legend_save = strcat(plot_names.savename, '_legend'); 
 saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
-
-disp('after legend'); 
-disp(id);
 
 end 
