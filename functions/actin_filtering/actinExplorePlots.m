@@ -32,8 +32,10 @@ for g= 1:gtot
     included_medians(isnan(included_medians)) = [];
     included_actinthresh = actin_explore.thresholds + exclude_grid;
     included_actinthresh(isnan(included_actinthresh)) = [];
-    included_nonsarc = actin_explore.non_sarcs + exclude_grid; 
-    included_nonsarc(isnan(included_nonsarc)) = [];
+    included_nonzlinefrac = actin_explore.non_zlinefracs + exclude_grid; 
+    included_nonzlinefrac(isnan(included_nonzlinefrac)) = [];
+    included_zlinefrac = actin_explore.zlinefracs + exclude_grid; 
+    included_zlinefrac(isnan(included_zlinefrac)) = [];
     
     %Plot the threshold vs. the median
     subplot(3,2,1); 
@@ -60,7 +62,7 @@ for g= 1:gtot
     %Plot the non-zline fraction vs. actin trheshold 
     subplot(3,2,3); 
     hold on; 
-    plot(included_actinthresh, included_nonsarc,'o', 'color', c{g}); 
+    plot(included_actinthresh, included_nonzlinefrac,'o', 'color', c{g}); 
     set(gca,'fontsize',12)
     title( strcat('Non Z-line Fraction vs Actin Threshold'),...
         'FontSize',12,'FontWeight','bold');
@@ -71,7 +73,7 @@ for g= 1:gtot
     %Plot the median vs non zline 
     subplot(3,2,4); 
     hold on; 
-    plot(included_nonsarc, included_medians,'o', 'color', c{g}); 
+    plot(included_nonzlinefrac, included_medians,'o', 'color', c{g}); 
     set(gca,'fontsize',12)
     title( strcat('Median (\mu m) vs Non Z-line Fraction'),...
         'FontSize',12,'FontWeight','bold');
@@ -82,15 +84,14 @@ for g= 1:gtot
     %Plot the sum vs non zline 
     subplot(3,2,5); 
     hold on; 
-    plot(included_nonsarc, included_sums,'o', 'color', c{g}); 
+    plot(included_nonzlinefrac, included_sums,'o', 'color', c{g}); 
     set(gca,'fontsize',12)
     title( strcat('Sum (\mu m) vs Non Z-line Fraction'),...
         'FontSize',12,'FontWeight','bold');
     ylabel('Total CZL (\mu m)','FontSize',12,...
         'FontWeight','bold');
     xlabel('Non Z-line Fraction','FontSize',12,'FontWeight','bold');
-        
-        
+    
     %Plot the grid sizes in the correct color
     subplot(3,2,6); 
     hold on; 
