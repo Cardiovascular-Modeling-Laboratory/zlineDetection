@@ -116,9 +116,10 @@ for k = 1:settings.num_cs
         actin_images{k,1} = sort(actin_images{k,1}); 
     
     else
-        actin_images = NaN; 
-        actin_path = NaN; 
-        an = NaN; 
+        %Set the actin image to NaN 
+        actin_images{k,1} = NaN; 
+        actin_path{k,1} = NaN; 
+        an(k,1) = NaN; 
     end  
     
     %Display path the user selected 
@@ -140,13 +141,6 @@ end
 %Loop through and run each coverslip 
 clear k 
 for k = 1:settings.num_cs 
-    
-    %Set the image and path names equal to NaN if the user is not doing
-    %actin filtering. 
-    if ~settings.actin_filt
-        actin_path{k,1} = NaN; 
-        actin_images{k,1} = NaN; 
-    end 
     
     % Analyze the Coverslip 
     [ CS_results ] = ...
