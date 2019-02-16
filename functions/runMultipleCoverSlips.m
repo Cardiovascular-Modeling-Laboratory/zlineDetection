@@ -183,6 +183,7 @@ if settings.cardio_type == 1
     MultiCS_Data.MultiCS_medians=MultiCS_medians;
     MultiCS_Data.MultiCS_sums=MultiCS_sums;
     MultiCS_Data.MultiCS_nonzlinefrac=MultiCS_nonzlinefrac;
+    MultiCS_Data.MultiCS_zlinefrac=MultiCS_zlinefrac; 
     MultiCS_Data.MultiCS_grid_sizes=MultiCS_grid_sizes;
     MultiCS_Data.MultiCS_actin_threshs=MultiCS_actin_threshs;
     MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
@@ -329,7 +330,7 @@ if settings.cardio_type == 1
             plot_names.savename = 'MultiCS_MedianSummary'; 
 
             plotCSresults(MultiCS_Data.MultiCS_lengths, ...
-                MultiCS_Data.MultiCS_CSID,...
+                MultiCS_Data.MultiCS_CSID, MultiCS_Data.name_CS,...
                 MultiCS_Data.MultiCS_grid_sizes, ...
                 MultiCS_Data.MultiCS_actin_threshs, plot_names);
 

@@ -1,5 +1,5 @@
 function [] = plotCSresults(MultiCS_lengths, MultiCS_CSN,...
-    MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names)
+    name_CS, MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names)
 
 %Get grid sizes 
 grid_sizes = MultiCS_grid_sizes{1,1}; 
@@ -249,7 +249,7 @@ for n = 1:ncs
         'MarkerFaceColor',colors{c});
     
     %Temporary legend name 
-    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{1}); 
+    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{1}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
     
@@ -258,7 +258,7 @@ for n = 1:ncs
         '-','color',colors{c},'LineWidth',2);
     
     %Temporary legend name 
-    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{2}); 
+    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{2}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
     
@@ -271,14 +271,14 @@ for n = 1:ncs
         colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
    
     %Temporary legend name 
-    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{3}); 
+    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{3}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
     
     %Plot the median 
     plot(x, legend_median*ones(size(x)), ...
         '-','color','k','LineWidth',2);
-    temp_name = strcat('CS ',{' '}, num2str(cs_values(1,n)), {' '}, vals{4}); 
+    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{4}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
         

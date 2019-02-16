@@ -110,13 +110,18 @@ for z = 1:zn
             
             %Find the position where include is not NaN 
             p = find(~isnan(include));
-%>>> LENGTH & ANGLES             
             
-            %Store the values at the current grids 
-            FOV_Grouped.FOV_lengths{z,n} = current_lengths{p,1};
+            %Save the CZL if the user did a parameter exploration or
+            %requested to see the continuous z-line length
+            if settings.exploration || settings.tf_CZL
+                %Store the values at the current grids 
+                FOV_Grouped.FOV_lengths{z,n} = current_lengths{p,1};
+            else 
+                FOV_Grouped.FOV_lengths{z,n} = []; 
+            end   
+            
+            %Store the current angles 
             FOV_Grouped.FOV_angles{z,n} = current_angles{p,1};
-            
-%>>> LENGTH & ANGLES             
             
             %Add the pre and post filtered number of pixels 
             FOV_Grouped.FOV_prefiltered(1,n) = ...
@@ -203,20 +208,26 @@ for t = 1:tot
     
     % Loop through all of the FOV 
     for z = 1:zn 
-        %CZL: Store the current FOV in an array and convert to be n x 1
-        current_length = FOV_Grouped.FOV_lengths{z,t}; 
-        current_length = current_length(:); 
         
-        %ANGLES: Store the current FOV in an array and convert to be n x 1
-        current_angles = FOV_Grouped.FOV_angles{z,t}; 
-        current_angles = current_angles(:); 
+        if settings.exploration || settings.tf_CZL
+            %CZL: Store the current FOV in an array and convert to be n x 1
+            current_length = FOV_Grouped.FOV_lengths{z,t}; 
+            current_length = current_length(:); 
+            
+            %CZL: Save in the temp vector. 
+            grouped_lengths = [grouped_lengths;current_length]; 
+       
+        end 
         
-        %CZL: Save in the temp vector. 
-        grouped_lengths = [grouped_lengths;current_length]; 
+        if settings.exploration || settings.tf_OOP
+            %ANGLES: Store the current FOV in an array and convert to be 
+            %n x 1
+            current_angles = FOV_Grouped.FOV_angles{z,t}; 
+            current_angles = current_angles(:); 
         
-        %CZL: Save in the temp vector. 
-        grouped_angles = [grouped_angles;current_angles]; 
-
+            %ANGLES: Save in the temp vector. 
+            grouped_angles = [grouped_angles;current_angles]; 
+        end 
     end 
     
     %Save all of the lengths, calculate the median and sum 
@@ -224,13 +235,15 @@ for t = 1:tot
     CS_results.CS_medians(1,t) = median(CS_results.CS_lengths{1,t}); 
     CS_results.CS_sums(1,t) = sum(CS_results.CS_lengths{1,t});   
     
-    
     %Save all of the angles and calculate the OOPs 
     CS_results.CS_angles{1,t} = grouped_angles;
-    temp_angles = CS_results.CS_angles{1,t}; 
-    temp_angles(isnan(temp_angles)) = 0;
-    [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
-    
+    if settings.exploration || settings.tf_OOP 
+        temp_angles = CS_results.CS_angles{1,t}; 
+        temp_angles(isnan(temp_angles)) = 0;
+        [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
+    else 
+        CS_results.CS_OOPs(1,t) = NaN; 
+    end 
     %Calculate the non-zline fraction 
     CS_results.CS_nonzlinefrac(1,t) = ...
         (FOV_Grouped.FOV_prefiltered(1,t) - ...
