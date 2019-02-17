@@ -63,6 +63,10 @@ Options.eigenmode = 0;
 % smoothing Weickert equation
 Options.C = 1E-10;
 
+% PRESET VALUE. Show information about the filtering. This should be turned
+% off. Options are 'none', 'iter' (default) , 'full'
+Options.verbose = 'n'; 
+
 % Save the Options in the settings struct. 
 settings.Options = Options;
 
