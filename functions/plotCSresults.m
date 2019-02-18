@@ -1,5 +1,6 @@
 function [extra_medians] = plotCSresults(MultiCS_lengths, MultiCS_CSN,...
-    name_CS, MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names)
+    name_CS, MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names,...
+    cond)
 
 %Get grid sizes 
 grid_sizes = MultiCS_grid_sizes{1,1}; 
@@ -31,19 +32,29 @@ median_condition = zeros(gn*afn,1);
 %Get the upper (:,1) and lower (:,2) medians 
 extra_medians = zeros(gn*afn,2);
 
+if gn > 1 
+    %Open a figure
+    figure; 
+    hold on; 
+    %Get middle x value 
+    filter_x = zeros(size(unique_thresh));
+else
+    %Save the CS number 
+    filter_x = zeros(1,ncs); 
+end 
 
-%Open a figure
-figure; 
-hold on; 
-
-%Get middle x value 
-filter_x = zeros(size(unique_thresh));
+%Axis counter 
 f = 1; 
 
 %Colors
-colors = {[1,0.6,1], [0.2,0.6,1], [0.6275,0.6275,0.6275],...
-    [0.5255,0.2588,0.9569], [0.6350, 0.0780, 0.1840],...
-    [0.2549,0.9569,0.5137], [0.8500, 0.3250, 0.0980]};             
+if gn > 1 
+    colors = {[1,0.6,1], [0.2,0.6,1], [0.6275,0.6275,0.6275],...
+        [0.5255,0.2588,0.9569], [0.6350, 0.0780, 0.1840],...
+        [0.2549,0.9569,0.5137], [0.8500, 0.3250, 0.0980]};      
+else
+    colors = {[0.3686,0.0314,0.6471], [0.8000,0.0392,0.3529], ...
+    [0.0392,0.6706,0.8000],[0.0235,0.6000,0.0588]};
+end 
             
 %Start color counts 
 c = 0; 
@@ -65,13 +76,29 @@ for g= 1:gn
         hold on; 
         %Set the values that are not equal to the current grid size equal to
         %NaN. Otherwise, set the grid size to 1 
-        exclude_grid(grid_sizes ~= unique_grids(g)) = NaN;     
+        exclude_grid(grid_sizes ~= unique_grids(g)) = NaN;    
+        
+        %Set position equal to 0 
+        p = 0; 
+    
     end 
     
-    %Set position equal to 0 
-    p = 0; 
     
     for a = 1:afn
+        
+        if gn == 1 
+            %Restart the counter
+            p = 0; 
+            
+            %Restart x axis counter
+            f = 1; 
+
+            %Open a figure and hold on 
+            figure; 
+            hold on; 
+                   
+        end 
+        
         % Set up the thresholds to exclude 
          exlude_thresh = zeros(size(actin_threshs)); 
             
@@ -86,13 +113,15 @@ for g= 1:gn
         
         %Loop through all of the conditions 
         for n = 1:ncs 
-            %Increase color 
-            if c > length(colors)-1 || n == 1
-                c = 1; 
-            else
-                c = c+1; 
+            
+            if gn > 1 
+                %Increase color 
+                if c > length(colors)-1 || n == 1
+                    c = 1; 
+                else
+                    c = c+1; 
+                end 
             end 
- 
             %Get the middle value
             x0 = (2*p+1)/2; 
            
@@ -123,6 +152,9 @@ for g= 1:gn
             
             %Normal kernel density 
             pf = pf/max(pf)*0.3; 
+            
+            %Set the color 
+            c = cond(n); 
             
             %Plot the violin fill 
             fill([pf'+x0;flipud(x0-pf')],[u';flipud(u')],...
@@ -160,78 +192,120 @@ for g= 1:gn
             %Increase start and stop 
             p = p+1.5;
             
-            if g== 1 && n == floor(ncs/2) 
-                %Put axis in the middle of all the CS if there is an odd
-                %number 
-                if mod(ncs,2) == 0 
-                    filter_x(1,f) = x0 + (1.5/2);
-                else 
-                    filter_x(1,f) = x0; 
-                end 
-                f = f+1; 
-            end 
+%             if g== 1 && n == floor(ncs/2) 
+%                 %Put axis in the middle of all the CS if there is an odd
+%                 %number 
+%                 if mod(ncs,2) == 0 
+%                     filter_x(1,f) = x0 + (1.5/2);
+%                 else 
+%                     filter_x(1,f) = x0; 
+%                 end 
+%                 f = f+1; 
+%             end 
             
             if n == ncs
                 p = p+1; 
             end 
+            
+            if gn == 1
+                filter_x(1,f) = x0; 
+                f = f+1; 
+            end 
     
         end
         
+        %Save individual thresholds. 
+        if gn == 1
+            
+            %Set y lim 
+            ylim([0 15]);
+            %Set the x-lim 
+            xlim([-2 p+1]); 
+            
+            %Change the x axis labels
+            set(gca,'XTick',filter_x) 
+            temp_x = strrep(name_CS, '_', '\_'); 
+            set(gca,'XTickLabel',temp_x)
+            set(gca,'XTickLabelRotation',90); 
+
+            %Change the font size
+            set(gca, 'fontsize',12,'FontWeight', 'bold');
+
+            %Change the x and y labels 
+%             xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
+            ylabel(plot_names.y,'FontSize',...
+                14, 'FontWeight', 'bold');
+    
+
+            %Change the title 
+            temp_title = strcat(plot_names.title, {' '}, ...
+                'Actin Filtering:',{' '}, num2str(unique_thresh(a))); 
+            title(temp_title,...
+                'FontSize', 14, 'FontWeight', 'bold'); 
+                   
+            %Save file
+            saveas(gcf, fullfile(plot_names.path, ...
+                strcat(plot_names.savename,'_',num2str(a))), 'pdf');
+    
+        end
+
     end
 end
 
-%Set the axis limits for the y axis 
-buffer = 0.3*min(bnds(:,1)); 
-if buffer < 0.1
-    buffer = 0.1; 
+%Save plots if there is more than one grid
+if gn > 1 
+    %Set the axis limits for the y axis 
+    buffer = 0.3*min(bnds(:,1)); 
+    if buffer < 0.1
+        buffer = 0.1; 
+    end 
+
+    % Start color counter
+    c = 0; 
+
+    %Get the minimum and max median values 
+    ymin = min(bnds(:,1)) - buffer; 
+    ymax = max(bnds(:,2)) + buffer; 
+
+    for g = 1:gn 
+        %Only open suplots if there is more than one grid
+        if gn > 1
+            subplot(gn,1,g); 
+            hold on; 
+        end 
+
+        %Change axis limits
+        ylim([ymin ymax]); 
+        xlim([-2 p+1]); 
+
+        %Change the x axis labels
+        set(gca,'XTick',filter_x) 
+        set(gca,'XTickLabel',num2cell(unique_thresh))
+
+        %Change the font size
+        set(gca, 'fontsize',12,'FontWeight', 'bold');
+
+        %Change the x and y labels 
+        xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
+        ylabel(plot_names.y,'FontSize',...
+            14, 'FontWeight', 'bold');
+
+        if gn > 1
+            %Change the title
+            new_title = strcat(plot_names.title, {' '}, 'Grid Size:',...
+                {' '}, num2str(unique_grids(g))); 
+            title(new_title,'FontSize', 14, 'FontWeight', 'bold'); 
+        else
+            %Change the title 
+            title(plot_names.title,...
+                'FontSize', 14, 'FontWeight', 'bold'); 
+        end 
+
+    end
+
+    %Save file
+    saveas(gcf, fullfile(plot_names.path, plot_names.savename), 'pdf');
 end 
-
-% Start color counter
-c = 0; 
-
-%Get the minimum and max median values 
-ymin = min(bnds(:,1)) - buffer; 
-ymax = max(bnds(:,2)) + buffer; 
-
-for g = 1:gn 
-    %Only open suplots if there is more than one grid
-    if gn > 1
-        subplot(gn,1,g); 
-        hold on; 
-    end 
-    
-    %Change axis limits
-    ylim([ymin ymax]); 
-    xlim([-2 p+1]); 
-
-    %Change the x axis labels
-    set(gca,'XTick',filter_x) 
-    set(gca,'XTickLabel',num2cell(unique_thresh))
-
-    %Change the font size
-    set(gca, 'fontsize',12,'FontWeight', 'bold');
-
-    %Change the x and y labels 
-    xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
-    ylabel(plot_names.y,'FontSize',...
-        14, 'FontWeight', 'bold');
-    
-    if gn > 1
-        %Change the title
-        new_title = strcat(plot_names.title, {' '}, 'Grid Size:',...
-            {' '}, num2str(unique_grids(g))); 
-        title(new_title,'FontSize', 14, 'FontWeight', 'bold'); 
-    else
-        %Change the title 
-        title(plot_names.title,...
-            'FontSize', 14, 'FontWeight', 'bold'); 
-    end 
-    
-end
-
-%Save file
-saveas(gcf, fullfile(plot_names.path, plot_names.savename), 'pdf');
-
 %Make legend
 figure; 
 hold on; 
@@ -244,13 +318,16 @@ legend_cond = [1;2.5;3];
 legend_mean = mean(legend_cond); 
 legend_std = std(legend_cond);
 legend_median = median(legend_cond); 
-len = round(length(legend_cond)/2); 
-legend_topmed = median(legend_cond(len+1:end)); 
-legend_bottommed = median(legend_cond(1:len)); 
+% len = round(length(legend_cond)/2); 
+% legend_topmed = median(legend_cond(len+1:end)); 
+% legend_bottommed = median(legend_cond(1:len)); 
 
 %Save labels 
-vals = {plot_names.type,'Mean', 'Violin','Median',...
-    'Top 50% Median','Bottom 50% Median'}; 
+% vals = {plot_names.type,'Mean', 'Violin','Median',...
+%     'Top 50% Median','Bottom 50% Median'}; 
+
+vals = {plot_names.type,'Mean', 'Violin','Median'}; 
+
 
 %Get legend titles 
 legend_caption = cell(length(vals)*ncs,1); 
@@ -315,18 +392,18 @@ for n = 1:ncs
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
     
-    %Plot the top 50% median 
-    plot(x, legend_topmed*ones(size(x)), ...
-        ':','color','k','LineWidth',2);
-    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{5}); 
-    legend_caption{l,1} = temp_name{1,1}; 
-    l = l+1; 
-    %Plot the bottom 50% median 
-    plot(x, legend_bottommed*ones(size(x)), ...
-        ':','color','k','LineWidth',2);
-    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{6}); 
-    legend_caption{l,1} = temp_name{1,1}; 
-    l = l+1; 
+%     %Plot the top 50% median 
+%     plot(x, legend_topmed*ones(size(x)), ...
+%         ':','color','k','LineWidth',2);
+%     temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{5}); 
+%     legend_caption{l,1} = temp_name{1,1}; 
+%     l = l+1; 
+%     %Plot the bottom 50% median 
+%     plot(x, legend_bottommed*ones(size(x)), ...
+%         ':','color','k','LineWidth',2);
+%     temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{6}); 
+%     legend_caption{l,1} = temp_name{1,1}; 
+%     l = l+1; 
     
     %Increate the count 
     k = k+1; 
