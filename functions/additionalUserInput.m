@@ -143,5 +143,17 @@ if settings.num_cs > 1 && settings.analysis
         sumname_dims,sumname_definput);
 end 
 
+%Get the base location of the coverslips if there is more than one
+%coverslip 
+if settings.num_cs > 1 && ~settings.analysis
+    %Display message to select path 
+    disp('Select folder containg multiple coverslips'); 
+    %Ask the user for the location of the summary file 
+    settings.SUMMARY_path = uigetdir(pwd,...
+        'Location of coverslips'); 
+    
+end 
+
+
 end
 

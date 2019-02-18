@@ -147,7 +147,7 @@ for k = 1:settings.num_cs
         runDirectory( settings, zline_path{k,1}, zline_images{k,1},...
         actin_path{k,1}, actin_images{k,1}, name_CS{k,1} ); 
     
-    if settings.cardio_type == 1
+    if settings.cardio_type == 1 && settings.analysis
         %Store the results from analyzing each coverslip 
         MultiCS_lengths{1,k} = CS_results.CS_lengths;
         MultiCS_medians{1,k} =CS_results.CS_medians;
@@ -162,7 +162,7 @@ for k = 1:settings.num_cs
         MultiCS_CSID{1,k} = k*ones(size(CS_results.CS_OOPs)); 
     end
     
-    if settings.multi_cond && settings.cardio_type == 1
+    if settings.multi_cond && settings.cardio_type == 1 && settings.analysis
         %Save the condition ID 
         MultiCS_CONDID{1,k} = ...
             cond(k,1)*ones(size(CS_results.CS_gridsizes));
