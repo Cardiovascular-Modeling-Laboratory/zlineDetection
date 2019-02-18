@@ -1,6 +1,6 @@
 function [ condition_values, mean_condition, std_condition, id] =...
     plotConditions(data_points, cond_values, cond_names,...
-    grid_sizes, actin_threshs, plot_names)
+    grid_sizes, actin_threshs, plot_names, extra_medians)
 
 %Get the number of unique grid sizes and threshold values 
 unique_grids = unique(grid_sizes); 
@@ -8,13 +8,20 @@ gn = length(unique_grids);
 unique_thresh = unique(actin_threshs); 
 afn = length(unique_thresh); 
 
+%If the user is comparing the median to the 
+if nargin > 6
+    v = size(extra_medians,2); 
+else 
+    v = 1; 
+end 
+
 %Save the number of condition names 
 n_cond = length(cond_names); 
 
 %Condition_values 
-condition_values = cell(n_cond*gn*afn,1); 
-mean_condition = zeros(n_cond*gn*afn,1);
-std_condition = zeros(n_cond*gn*afn,1); 
+condition_values = cell(n_cond*gn*afn,v);
+mean_condition = zeros(n_cond*gn*afn,v);
+std_condition = zeros(n_cond*gn*afn,v); 
 
 %Open a figure
 figure; 
@@ -36,6 +43,10 @@ k = 1;
 
 %Create a ID store (:,1) Condition, (:,2) grid size (:,3) actin threshold 
 id = zeros(n_cond*gn*afn,3); 
+
+%Get bounds for the ymin and ymax
+ymin = 0; 
+ymax = 0; 
 
 for g= 1:gn
     
@@ -84,7 +95,12 @@ for g= 1:gn
             x0 = (2*p+1)/2;             
             %Compute the x-axis
             x = p:p+1; 
-           
+            
+            %Save the (:,1) Condition, (:,2) grid size (:,3) actin threshold 
+            id(k,1) = n; 
+            id(k,2) = unique_grids(g); 
+            id(k,3) = unique_thresh(a); 
+            
             %Get values not equal to current condition
             exclude_cond = zeros(size(cond_values)); 
             exclude_cond(cond_values ~= n) = NaN; 
@@ -99,35 +115,60 @@ for g= 1:gn
             %Reshape and remove NaN values
             include_vals = include_vals(:);
             include_vals(isnan(include_vals)) = []; 
-
-            %Save data and calculate the mean and standard deviation. 
-            condition_values{k,1} =include_vals; 
-            mean_condition(k,1) = mean(include_vals); 
-            std_condition(k,1) = std(include_vals); 
-
-            %Save the (:,1) Condition, (:,2) grid size (:,3) actin threshold 
-            id(k,1) = n; 
-            id(k,2) = unique_grids(g); 
-            id(k,3) = unique_thresh(a); 
             
-            %Plot all of the points 
-            plot(x0*ones(size(condition_values{k,1})),...
-                condition_values{k,1},'.',...
-                'MarkerSize', 8, ...
-                'MarkerEdgeColor',colors{c},...
-                'MarkerFaceColor',colors{c});
+            %Loop through all of the top and bottom medians 
+            for h = 1:v
+                
+                %Calculate the differences between the top / bottom
+                %percentages if applicable 
+                if v > 1 
+                    %Get the additional median values to includes. 
+                    additional_vals = extra_medians(:,h)' + exclusions; 
 
-            %Plot the mean 
-            plot(x, mean_condition(k,1)*ones(size(x)), ...
-                '-','color',colors{c},'LineWidth',2);
+                    %Reshape and remove NaN values
+                    additional_vals = additional_vals(:);
+                    additional_vals(isnan(additional_vals)) = []; 
 
-            %Plot range of orientation values 
-            fill([p, p+1, p+1, p], ...
-                [mean_condition(k,1)-std_condition(k,1),...
-                mean_condition(k,1)-std_condition(k,1), ...
-                mean_condition(k,1)+std_condition(k,1), ...
-                mean_condition(k,1)+std_condition(k,1)], ...
-                colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
+                    %Take the difference 
+                    condition_values{k,h} = additional_vals - include_vals; 
+                    mean_condition(k,h) = mean(condition_values{k,h}); 
+                    std_condition(k,h) = std(condition_values{k,h}); 
+                    
+                    %Check the bounds of the plot 
+                    if mean_condition(k,h) + std_condition(k,h) > ymax
+                        ymax = mean_condition(k,h) + std_condition(k,h); 
+                    end 
+                    if mean_condition(k,h) - std_condition(k,h) < ymin
+                        ymin = mean_condition(k,h) - std_condition(k,h); 
+                    end 
+                    
+                else
+                    %Save data and calculate the mean and standard
+                    %deviation. 
+                    condition_values{k,1} =include_vals; 
+                    mean_condition(k,1) = mean(include_vals); 
+                    std_condition(k,1) = std(include_vals);
+                end 
+
+                %Plot all of the points 
+                plot(x0*ones(size(condition_values{k,h})),...
+                    condition_values{k,h},'.',...
+                    'MarkerSize', 8, ...
+                    'MarkerEdgeColor',colors{c},...
+                    'MarkerFaceColor',colors{c});
+                
+                %Plot the mean 
+                plot(x, mean_condition(k,h)*ones(size(x)), ...
+                    '-','color',colors{c},'LineWidth',2);
+
+                %Plot range of orientation values 
+                fill([p, p+1, p+1, p], ...
+                    [mean_condition(k,h)-std_condition(k,h),...
+                    mean_condition(k,h)-std_condition(k,h), ...
+                    mean_condition(k,h)+std_condition(k,h), ...
+                    mean_condition(k,h)+std_condition(k,h)], ...
+                    colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
+            end 
             
             %Increate the count 
             k = k+1; 
@@ -160,9 +201,14 @@ if buffer < 0.1
     buffer = 0.1; 
 end 
 
-%Get the minimum and max median values 
-ymin = min(data_points(:)) - buffer; 
-ymax = max(data_points(:)) + buffer; 
+if v ==1 
+    %Get the minimum and max median values 
+    ymin = min(data_points(:)); 
+    ymax = max(data_points(:)); 
+end
+
+ymin = ymin - buffer; 
+ymax = ymax + buffer; 
 
 for g = 1:gn 
     %Only open suplots if there is more than one grid

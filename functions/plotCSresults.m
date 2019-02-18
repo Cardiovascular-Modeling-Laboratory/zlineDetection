@@ -1,4 +1,4 @@
-function [] = plotCSresults(MultiCS_lengths, MultiCS_CSN,...
+function [extra_medians] = plotCSresults(MultiCS_lengths, MultiCS_CSN,...
     name_CS, MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names)
 
 %Get grid sizes 
@@ -95,9 +95,6 @@ for g= 1:gn
  
             %Get the middle value
             x0 = (2*p+1)/2; 
-
-            %Compute the x-axis
-            x = p:p+1; 
            
             %Isolate the length 
             temp_CS = MultiCS_lengths{1,n}; 
@@ -167,7 +164,7 @@ for g= 1:gn
                 %Put axis in the middle of all the CS if there is an odd
                 %number 
                 if mod(ncs,2) == 0 
-                    filter_x(1,f) = x0 + 1/2;
+                    filter_x(1,f) = x0 + (1.5/2);
                 else 
                     filter_x(1,f) = x0; 
                 end 
@@ -351,7 +348,5 @@ title('Legend','FontSize', 14, 'FontWeight', 'bold');
 %Save the legend 
 legend_save = strcat(plot_names.savename, '_legend'); 
 saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
-
-
 end 
 

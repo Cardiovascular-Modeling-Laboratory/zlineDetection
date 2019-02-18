@@ -183,8 +183,8 @@ if settings.cardio_type == 1 && settings.analysis
     MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
     MultiCS_Data.MultiCS_CSID=MultiCS_CSID;
     MultiCS_Data.MultiCS_CONDID=MultiCS_CONDID;    
-    MultiCS_Data.name_CS = name_CS; 
-
+    MultiCS_Data.name_CS = name_CS;
+    
     %Summary name
     summary_name = strcat(settings.SUMMARY_name,'.mat'); 
     %Save the data after making sure it is uniquely named (no overwritting)
@@ -253,7 +253,7 @@ if settings.cardio_type == 1 && settings.analysis
 
     %Plot the OOP for the conditions if user actin filtered and
     %has more than one condition 
-    if settings.tf_OOP && settings.multi_cond
+    if (settings.tf_OOP || settings.exploration) && settings.multi_cond
         %>>BY CONDITION Plot the mean, standard deviation, and data points 
         %for non_zline fraction 
         plot_names.type = 'OOP';
@@ -319,14 +319,30 @@ if settings.cardio_type == 1 && settings.analysis
             else 
                 plot_names.x = 'Actin Filtering Threshold'; 
             end 
-            plot_names.y = 'Continuous Z-line Lengths (\mu m)';
+            plot_names.y = 'Median Continuous Z-line Lengths (\mu m)';
             plot_names.title = 'Median Continuous Z-line Lengths';
             plot_names.savename = 'MultiCS_MedianSummary'; 
 
-            plotCSresults(MultiCS_Data.MultiCS_lengths, ...
+            [MultiCS_Data.additionalMedians] = ...
+                plotCSresults(MultiCS_Data.MultiCS_lengths, ...
                 MultiCS_Data.MultiCS_CSID, MultiCS_Data.name_CS,...
                 MultiCS_Data.MultiCS_grid_sizes, ...
                 MultiCS_Data.MultiCS_actin_threshs, plot_names);
+            
+            
+            plot_names.y = 'Difference in Median Cont. Z-line Lengths (\mu m)';
+            plot_names.title = 'Distance Between True Medians and \pm 50% Medians';
+            plot_names.savename = 'MultiCSandCOND_MedianSummary'; 
+            
+            %Plot the differences for each condition 
+            [ MultiCS_Data.additionalMedianCond, ...
+                MultiCS_Data.additionalMedianCondMean, ...
+                MultiCS_Data.additionalMedianCondStdev, ~] =...
+                plotConditions(MultiCS_medians, MultiCS_Cond, ...
+                settings.cond_names, MultiCS_grid_sizes, ...
+                MultiCS_actin_threshs, plot_names, ...
+                MultiCS_Data.additionalMedians); 
+
 
         end
 
@@ -370,6 +386,10 @@ if settings.cardio_type == 1 && settings.analysis
     T = table(ConditionValue,ConditionName,GridSize,ActinThreshold,...
         MedianCZL,TotalCZL,NonZlineFraction,ZlineFraction,OOP,...
         CoverslipName,DateAnalyzed_YYYYMMDD); 
+    
+    %Update the CS 
+    save(fullfile(settings.SUMMARY_path, new_filename),...
+        'MultiCS_Data','-append'); 
     
     %Write the sheet
     filename = strcat(settings.SUMMARY_name{1}, '.xlsx'); 
