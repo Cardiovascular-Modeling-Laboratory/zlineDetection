@@ -153,7 +153,7 @@ for k = 1:settings.num_cs
         MultiCS_medians{1,k} =CS_results.CS_medians;
         MultiCS_sums{1,k} = CS_results.CS_sums;
         MultiCS_nonzlinefrac{1,k} = CS_results.CS_nonzlinefrac;
-        MultiCS_zlinefrac{1,k} = CS_results.CS_nonzlinefrac;
+        MultiCS_zlinefrac{1,k} = CS_results.CS_zlinefrac;
         MultiCS_grid_sizes{1,k} = CS_results.CS_gridsizes;
         MultiCS_actin_threshs{1,k} = CS_results.CS_thresholds;
         MultiCS_OOP{1,k} = CS_results.CS_OOPs;    
@@ -209,9 +209,16 @@ if settings.cardio_type == 1 && settings.analysis
 
     %Save a new struct
     MultiCond = struct(); 
+   
+    %Create folder to store all of the summary plots 
+    temp = strcat(settings.SUMMARY_name, '_RESULTS'); 
+    [ new_subfolder_name ] = ...
+        addDirectory( settings.SUMMARY_path, temp, true ); 
+    
     %Save path 
-    plot_names.path = settings.SUMMARY_path; 
+    plot_names.path = fullfile(settings.SUMMARY_path,new_subfolder_name); 
 
+    
     %Plot the non-zline fraction for the conditions if user actin filtered 
     %and has more than one condition 
     if settings.actin_filt && settings.multi_cond
