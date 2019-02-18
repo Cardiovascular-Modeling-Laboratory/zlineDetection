@@ -102,8 +102,9 @@ if settings.multi_cond
         type_dims);
 end
 
-%Get the name and location of summary file 
-if settings.num_cs > 1
+%Get the name and location of summary file if there is more than one
+%coverslip and the user wants to do any kind of analysis 
+if settings.num_cs > 1 && settings.analysis
     %Display message to select path 
     disp('Select a location to save summary analysis for all Coverslips'); 
     %Ask the user for the location of the summary file 

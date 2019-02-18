@@ -158,6 +158,16 @@ settings.cardio_type = get(handles.cardio_type, 'Value');
 % Settings
 settings.multi_cond = get(handles.multi_cond, 'Value'); 
 
+%%%%%%%%%%%%%%%%%% Check if the User Wants Any Analysis %%%%%%%%%%%%%%%%%%%
+
+%If the user doesn't want to filter with actin, calcualte continuous 
+%z-line length, calculate OOP there is nothing to compare between
+%conditions. Therefore do not create summary files 
+settings.analysis = true; 
+if ~settings.tf_CZL && ~settings.tf_OOP && ~settings.actin_filt
+    settings.analysis = false; 
+end 
+
 %%%%%%%%%%%%%%%%%%%%% Additional User Inputs  %%%%%%%%%%%%%%%%%%%
 
 settings = additionalUserInput(settings);

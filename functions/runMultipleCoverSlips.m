@@ -170,7 +170,7 @@ for k = 1:settings.num_cs
     
 end 
 
-if settings.cardio_type == 1
+if settings.cardio_type == 1 && settings.analysis
     %Store in struct
     MultiCS_Data = struct(); 
     MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
@@ -370,9 +370,7 @@ if settings.cardio_type == 1
     T = table(ConditionValue,ConditionName,GridSize,ActinThreshold,...
         MedianCZL,TotalCZL,NonZlineFraction,ZlineFraction,OOP,...
         CoverslipName,DateAnalyzed_YYYYMMDD); 
-%     T = table(ConditionValue);%,ConditionName,GridSize,ActinThreshold,...
-% %         MedianCZL,TotalCZL,NonZlineFraction,OOP,CoverslipName,...
-% %         DateAnalyzed_YYYYMMDD); 
+    
     %Write the sheet
     filename = strcat(settings.SUMMARY_name{1}, '.xlsx'); 
     writetable(T,fullfile(settings.SUMMARY_path,filename),...
