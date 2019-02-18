@@ -154,41 +154,9 @@ for g= 1:gn
                 ':','color','k','LineWidth',2);
             end 
             
-            
-            
-%             f=f/max(f)*0.3; %normalize
-%             F(:,i)=f;
-%             U(:,i)=u;
-%             MED(:,i)=nanmedian(Y{i});
-%             MX(:,i)=nanmean(Y{i});
-%             bw(:,i)=bb;
-            
             %Save the mins and max lengths
             bnds(k,1) = min(temp_len); 
             bnds(k,2) = max(temp_len); 
-            
-%             %Plot all of the points 
-%             plot(x0*ones(size(condition_values{k,1})),...
-%                 condition_values{k,1},'.',...
-%                 'MarkerSize', 8, ...
-%                 'MarkerEdgeColor',colors{c},...
-%                 'MarkerFaceColor',colors{c});
-% 
-%             %Plot the mean 
-%             plot(x, mean_condition(k,1)*ones(size(x)), ...
-%                 '-','color',colors{c},'LineWidth',2);
-% 
-%             %Plot range of orientation values 
-%             fill([p, p+1, p+1, p], ...
-%                 [mean_condition(k,1)-std_condition(k,1),...
-%                 mean_condition(k,1)-std_condition(k,1), ...
-%                 mean_condition(k,1)+std_condition(k,1), ...
-%                 mean_condition(k,1)+std_condition(k,1)], ...
-%                 colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
-%             
-%             %Plot the median 
-%             plot(x, median_condition(k,1)*ones(size(x)), ...
-%                 '-','color','k','LineWidth',2);
             
             %Increate the count 
             k = k+1; 
@@ -196,7 +164,13 @@ for g= 1:gn
             p = p+1.5;
             
             if g== 1 && n == floor(ncs/2) 
-                filter_x(1,f) = x0; 
+                %Put axis in the middle of all the CS if there is an odd
+                %number 
+                if mod(ncs,2) == 0 
+                    filter_x(1,f) = x0 + 1/2;
+                else 
+                    filter_x(1,f) = x0; 
+                end 
                 f = f+1; 
             end 
             
@@ -273,9 +247,13 @@ legend_cond = [1;2.5;3];
 legend_mean = mean(legend_cond); 
 legend_std = std(legend_cond);
 legend_median = median(legend_cond); 
+len = round(length(legend_cond)/2); 
+legend_topmed = median(legend_cond(len+1:end)); 
+legend_bottommed = median(legend_cond(1:len)); 
 
 %Save labels 
-vals = {plot_names.type,'Mean', 'St.Dev.','Median'}; 
+vals = {plot_names.type,'Mean', 'Violin','Median',...
+    'Top 50% Median','Bottom 50% Median'}; 
 
 %Get legend titles 
 legend_caption = cell(length(vals)*ncs,1); 
@@ -339,7 +317,20 @@ for n = 1:ncs
     temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{4}); 
     legend_caption{l,1} = temp_name{1,1}; 
     l = l+1; 
-        
+    
+    %Plot the top 50% median 
+    plot(x, legend_topmed*ones(size(x)), ...
+        ':','color','k','LineWidth',2);
+    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{5}); 
+    legend_caption{l,1} = temp_name{1,1}; 
+    l = l+1; 
+    %Plot the bottom 50% median 
+    plot(x, legend_bottommed*ones(size(x)), ...
+        ':','color','k','LineWidth',2);
+    temp_name = strcat('CS ',{' '}, name_CS(n,1), {' '}, vals{6}); 
+    legend_caption{l,1} = temp_name{1,1}; 
+    l = l+1; 
+    
     %Increate the count 
     k = k+1; 
     %Increase start and stop 
@@ -354,13 +345,6 @@ ylim([-5,ncs+5] );
 %Create the legend 
 legend(legend_caption); 
 
-%Change the font size
-% set(gca, 'fontsize',12,'FontWeight', 'bold');
-
-%Change the x and y labels 
-% xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
-% ylabel(plot_names.y,'FontSize',...
-%     14, 'FontWeight', 'bold');
 %Change the title 
 title('Legend','FontSize', 14, 'FontWeight', 'bold'); 
     
