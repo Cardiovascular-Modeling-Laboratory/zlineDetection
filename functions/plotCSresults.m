@@ -26,7 +26,11 @@ end
 condition_values = cell(gn*afn,1); 
 mean_condition = zeros(gn*afn,1);
 std_condition = zeros(gn*afn,1); 
-median_condition = zeros(gn*afn,1); 
+median_condition = zeros(gn*afn,1);
+
+%Get the upper (:,1) and lower (:,2) medians 
+extra_medians = zeros(gn*afn,2);
+
 
 %Open a figure
 figure; 
@@ -103,34 +107,88 @@ for g= 1:gn
             condition_values{k,1} =temp_len; 
             mean_condition(k,1) = mean(temp_len); 
             std_condition(k,1) = std(temp_len); 
-            median_condition(k,1) = median(temp_len); 
+            median_condition(k,1) = median(temp_len);
+            
+            %Get the median of the lower and upper halves of the data. This
+            %will sort from smallest to largest
+            temp_len = sort(temp_len(:)); 
+            len = round(length(temp_len)/2); 
+            extra_medians(k,1) = median(temp_len(len+1:end)); 
+            extra_medians(k,2) = median(temp_len(1:len)); 
+            
+            % >> VIOLIN PLOTS 
+            % Hoffmann H, 2015: violin.m - Simple violin plot using matlab
+            % default kernel density estimation. 
+            % INRES (University of Bonn), Katzenburgweg 5, 53115 Germany.
+            % hhoffmann@uni-bonn.de
+            % Calculate the kernel density 
+            [pf, u] = ksdensity(temp_len); 
+            
+            %Normal kernel density 
+            pf = pf/max(pf)*0.3; 
+            
+            %Plot the violin fill 
+            fill([pf'+x0;flipud(x0-pf')],[u';flipud(u')],...
+                colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
+            
+            %Plot the mean 
+            plot([interp1(u', pf'+x0, mean_condition(k,1)), ...
+                interp1(flipud(u'), flipud(x0-pf'), ...
+                mean_condition(k,1)) ],...
+                [mean_condition(k,1) mean_condition(k,1)],...
+                '-','color',colors{c},'LineWidth',2);
+
+            %Plot the median 
+            plot([interp1(u', pf'+x0, median_condition(k,1)), ...
+                interp1(flipud(u'), flipud(x0-pf'), ...
+                median_condition(k,1)) ],...
+                [median_condition(k,1) median_condition(k,1)],...
+                '-','color','k','LineWidth',2);
+
+            %Plot upper and lower median 
+            for s=1:2
+                plot([interp1(u', pf'+x0, extra_medians(k,s)), ...
+                interp1(flipud(u'), flipud(x0-pf'), ...
+                extra_medians(k,s)) ],...
+                [extra_medians(k,s) extra_medians(k,s)],...
+                ':','color','k','LineWidth',2);
+            end 
+            
+            
+            
+%             f=f/max(f)*0.3; %normalize
+%             F(:,i)=f;
+%             U(:,i)=u;
+%             MED(:,i)=nanmedian(Y{i});
+%             MX(:,i)=nanmean(Y{i});
+%             bw(:,i)=bb;
             
             %Save the mins and max lengths
             bnds(k,1) = min(temp_len); 
             bnds(k,2) = max(temp_len); 
             
-            %Plot all of the points 
-            plot(x0*ones(size(condition_values{k,1})),...
-                condition_values{k,1},'.',...
-                'MarkerSize', 8, ...
-                'MarkerEdgeColor',colors{c},...
-                'MarkerFaceColor',colors{c});
-
-            %Plot the mean 
-            plot(x, mean_condition(k,1)*ones(size(x)), ...
-                '-','color',colors{c},'LineWidth',2);
-
-            %Plot range of orientation values 
-            fill([p, p+1, p+1, p], ...
-                [mean_condition(k,1)-std_condition(k,1),...
-                mean_condition(k,1)-std_condition(k,1), ...
-                mean_condition(k,1)+std_condition(k,1), ...
-                mean_condition(k,1)+std_condition(k,1)], ...
-                colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
-            
-            %Plot the median 
-            plot(x, median_condition(k,1)*ones(size(x)), ...
-                '-','color','k','LineWidth',2);
+%             %Plot all of the points 
+%             plot(x0*ones(size(condition_values{k,1})),...
+%                 condition_values{k,1},'.',...
+%                 'MarkerSize', 8, ...
+%                 'MarkerEdgeColor',colors{c},...
+%                 'MarkerFaceColor',colors{c});
+% 
+%             %Plot the mean 
+%             plot(x, mean_condition(k,1)*ones(size(x)), ...
+%                 '-','color',colors{c},'LineWidth',2);
+% 
+%             %Plot range of orientation values 
+%             fill([p, p+1, p+1, p], ...
+%                 [mean_condition(k,1)-std_condition(k,1),...
+%                 mean_condition(k,1)-std_condition(k,1), ...
+%                 mean_condition(k,1)+std_condition(k,1), ...
+%                 mean_condition(k,1)+std_condition(k,1)], ...
+%                 colors{c}, 'FaceAlpha', 0.3,'linestyle','none');
+%             
+%             %Plot the median 
+%             plot(x, median_condition(k,1)*ones(size(x)), ...
+%                 '-','color','k','LineWidth',2);
             
             %Increate the count 
             k = k+1; 
