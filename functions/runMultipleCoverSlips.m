@@ -137,6 +137,9 @@ for k = 1:settings.num_cs
 end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Analyze all CS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if settings.num_cs > 1 
+
+
 
 %Loop through and run each coverslip 
 clear k 
@@ -405,6 +408,7 @@ if settings.cardio_type == 1 && settings.analysis
 end 
 
 close all;
+end 
 
 end
 
