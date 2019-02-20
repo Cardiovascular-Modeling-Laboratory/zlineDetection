@@ -1,7 +1,7 @@
 function [] = runMultipleCoverSlips(settings)
 %This function will be used to run multiple coverslips and obtain a summary
 %file
-
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Create a cell to hold the coverslip name 
 name_CS = cell(settings.num_cs,1);
