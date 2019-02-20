@@ -235,7 +235,8 @@ CS_results.FOV_directors = FOV_directors;
 %>>> EXPLORATION
 CS_results.FOV_thresholds = FOV_thresholds; 
 CS_results.FOV_grid_sizes = FOV_grid_sizes; 
-
+%>>> ACTIN FILTERING: ACTIN ANGLES / OOP
+CS_results.ACTINFOV_angles = ACTINFOV_angles; 
 
 % Get today's date in string form.
 date_format = 'yyyymmdd';

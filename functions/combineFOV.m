@@ -45,6 +45,7 @@ FOV_Grouped.FOV_angles = cell(zn,tot);
 FOV_Grouped.FOV_prefiltered = zeros(1,tot);
 FOV_Grouped.FOV_postfiltered = zeros(1,tot);
 
+FOV_Grouped.ACTINFOV_angles = cell(zn,tot);
 %%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %>>> Continuous Z-line Length
 CS_results.CS_lengths = cell(1,tot); 
@@ -64,6 +65,13 @@ CS_results.FOVstats_zlinefrac = zeros(2,tot);%1: mean 2: stdev
 CS_results.CS_angles = cell(1,tot); 
 CS_results.CS_OOPs = zeros(1,tot);
 CS_results.FOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
+CS_results.angle_count = zeros(1,tot); 
+
+%>>> ACTIN OOP 
+CS_results.ACTINCS_angles = cell(1,tot); 
+CS_results.ACTINCS_OOPs = zeros(1,tot);
+CS_results.ACTINFOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
+CS_results.ACTINangle_count = zeros(1,tot); 
 
 %>>> EXPLORATION
 CS_results.CS_thresholds = zeros(1,tot);
@@ -77,8 +85,10 @@ for z = 1:zn
     current_lengths = CS_results.FOV_lengths{1,z};
     current_angles = CS_results.FOV_angles{1,z};
     current_grids = CS_results.FOV_grid_sizes{1,z};
-    current_threshs = CS_results.FOV_thresholds{1,z}; 
-        
+    current_threshs = CS_results.FOV_thresholds{1,z};  
+    ACTINcurrent_angles = CS_results.ACTINFOV_angles{1,z};
+    
+    
     %Start a counter 
     n = 1;
 
@@ -122,6 +132,9 @@ for z = 1:zn
             
             %Store the current angles 
             FOV_Grouped.FOV_angles{z,n} = current_angles{p,1};
+            
+            %Store the current ACTIN angles 
+            FOV_Grouped.ACTINFOV_angles{z,n} = ACTINcurrent_angles{p,1};
             
             %Add the pre and post filtered number of pixels 
             FOV_Grouped.FOV_prefiltered(1,n) = ...
@@ -205,7 +218,7 @@ for t = 1:tot
     %Create arrays to store the angles and lengths temporarily 
     grouped_lengths = [];
     grouped_angles = []; 
-    
+    ACTINgrouped_angles = []; 
     % Loop through all of the FOV 
     for z = 1:zn 
         
@@ -228,6 +241,17 @@ for t = 1:tot
             %ANGLES: Save in the temp vector. 
             grouped_angles = [grouped_angles;current_angles]; 
         end 
+        
+        if settings.actin_filt
+            %ANGLES: Store the current FOV in an array and convert to be 
+            %n x 1
+            ACTINcurrent_angles = FOV_Grouped.ACTINFOV_angles{z,t}; 
+            ACTINcurrent_angles = ACTINcurrent_angles(:); 
+        
+            %ANGLES: Save in the temp vector. 
+            ACTINgrouped_angles = [ACTINgrouped_angles;ACTINcurrent_angles]; 
+        end 
+        
     end 
     
     %Save all of the lengths, calculate the median and sum 
@@ -241,9 +265,28 @@ for t = 1:tot
         temp_angles = CS_results.CS_angles{1,t}; 
         temp_angles(isnan(temp_angles)) = 0;
         [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
+        %Calculate the number of nonzero angles
+        temp_angles(temp_angles == 0) = []; 
+        CS_results.angle_count(1,t) = length(temp_angles); 
     else 
         CS_results.CS_OOPs(1,t) = NaN; 
     end 
+    
+    %Save all of the ACTIN angles and calculate the OOPs 
+    CS_results.ACTINCS_angles{1,t} = ACTINgrouped_angles;
+    if settings.actin_filt
+        ACTINtemp_angles = CS_results.ACTINCS_angles{1,t}; 
+        ACTINtemp_angles(isnan(ACTINtemp_angles)) = 0;
+        [CS_results.ACTINCS_OOPs(1,t), ~, ~, ~ ] = ...
+            calculate_OOP( ACTINtemp_angles ); 
+        %Calculate the number of nonzero angles
+        ACTINtemp_angles(ACTINtemp_angles == 0) = []; 
+        CS_results.ACTINangle_count(1,t) = length(ACTINtemp_angles); 
+    else 
+        CS_results.ACTINCS_OOPs(1,t) = NaN; 
+        CS_results.ACTINangle_count(1,t) = NaN; 
+    end 
+    
     %Calculate the non-zline fraction 
     CS_results.CS_nonzlinefrac(1,t) = ...
         (FOV_Grouped.FOV_prefiltered(1,t) - ...
