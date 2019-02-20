@@ -10,7 +10,7 @@ afn = length(unique_thresh);
 
 %If the user is comparing the median to the 
 if nargin > 6
-    v = size(extra_medians,2); 
+    v = size(extra_medians,2)+1; 
 else 
     v = 1; 
 end 
@@ -28,7 +28,12 @@ figure;
 hold on; 
 
 %Get middle x value 
-filter_x = zeros(size(unique_thresh));
+if afn > 1 
+    filter_x = zeros(size(unique_thresh));
+else
+    %Save the CS number 
+    filter_x = zeros(1,n_cond);
+end 
 f = 1; 
 
 %Colors
@@ -121,25 +126,33 @@ for g= 1:gn
                 
                 %Calculate the differences between the top / bottom
                 %percentages if applicable 
-                if v > 1 
-                    %Get the additional median values to includes. 
-                    additional_vals = extra_medians(:,h)' + exclusions; 
+                if v > 1                     
+                    %Plot true median 
+                    if h > size(extra_medians,2)
+                        %Take the difference 
+                        condition_values{k,h} = include_vals; 
+                        mean_condition(k,h) = mean(condition_values{k,h}); 
+                        std_condition(k,h) = std(condition_values{k,h}); 
+                    else 
+                        %Get the additional median values to includes. 
+                        additional_vals = extra_medians(:,h)' + exclusions; 
 
-                    %Reshape and remove NaN values
-                    additional_vals = additional_vals(:);
-                    additional_vals(isnan(additional_vals)) = []; 
+                        %Reshape and remove NaN values
+                        additional_vals = additional_vals(:);
+                        additional_vals(isnan(additional_vals)) = []; 
 
-                    %Take the difference 
-                    condition_values{k,h} = additional_vals - include_vals; 
-                    mean_condition(k,h) = mean(condition_values{k,h}); 
-                    std_condition(k,h) = std(condition_values{k,h}); 
-                    
-                    %Check the bounds of the plot 
-                    if mean_condition(k,h) + std_condition(k,h) > ymax
-                        ymax = mean_condition(k,h) + std_condition(k,h); 
-                    end 
-                    if mean_condition(k,h) - std_condition(k,h) < ymin
-                        ymin = mean_condition(k,h) - std_condition(k,h); 
+                        %Take the difference 
+                        condition_values{k,h} = additional_vals; 
+                        mean_condition(k,h) = mean(condition_values{k,h}); 
+                        std_condition(k,h) = std(condition_values{k,h}); 
+
+                        %Check the bounds of the plot 
+                        if mean_condition(k,h) + std_condition(k,h) > ymax
+                            ymax = mean_condition(k,h) + std_condition(k,h); 
+                        end 
+                        if mean_condition(k,h) - std_condition(k,h) < ymin
+                            ymin = mean_condition(k,h) - std_condition(k,h); 
+                        end 
                     end 
                     
                 else
@@ -175,17 +188,23 @@ for g= 1:gn
             %Increase start and stop 
             p = p+1.5;
             
-            if g == 1 && n == floor(n_cond/2) 
-                %If there is an even number of conditions, get the middle
-                %position for the x axis
-                if mod(n_cond,2) == 1
-                    filter_x(1,f) = x0; 
-                else
-                    filter_x(1,f) = (x0 + (2*p+1)/2)/2; 
-                end 
+            %Save the axis if there is only one filter
+            if afn == 1
+                filter_x(1,f) = x0; 
                 f = f+1; 
-            end 
+            else 
             
+                if g == 1 && n == floor(n_cond/2) 
+                    %If there is an even number of conditions, get the middle
+                    %position for the x axis
+                    if mod(n_cond,2) == 1
+                        filter_x(1,f) = x0; 
+                    else
+                        filter_x(1,f) = (x0 + (2*p+1)/2)/2; 
+                    end 
+                    f = f+1; 
+                end 
+            end 
             if n == n_cond
                 p = p+1; 
             end 
@@ -195,20 +214,26 @@ for g= 1:gn
     end
 end
 
-%Set the axis limits for the y axis 
-buffer = 0.3*min(data_points(:)); 
-if buffer < 0.1
-    buffer = 0.1; 
+%Change the bounds if the condition is OOP 
+if ~strcmp(plot_names.type,'OOP')
+    %Set the axis limits for the y axis 
+    buffer = 0.3*min(data_points(:)); 
+    if buffer < 0.1
+        buffer = 0.1; 
+    end 
+
+    if v ==1 
+        %Get the minimum and max median values 
+        ymin = min(data_points(:)); 
+        ymax = max(data_points(:)); 
+    end
+
+    ymin = ymin - buffer; 
+    ymax = ymax + buffer; 
+else
+    ymin = 0; 
+    ymax = 1; 
 end 
-
-if v ==1 
-    %Get the minimum and max median values 
-    ymin = min(data_points(:)); 
-    ymax = max(data_points(:)); 
-end
-
-ymin = ymin - buffer; 
-ymax = ymax + buffer; 
 
 for g = 1:gn 
     %Only open suplots if there is more than one grid
@@ -223,8 +248,11 @@ for g = 1:gn
 
     %Change the x axis labels
     set(gca,'XTick',filter_x) 
-    set(gca,'XTickLabel',num2cell(unique_thresh))
-
+    if afn > 1
+        set(gca,'XTickLabel',num2cell(unique_thresh))
+    else
+        set(gca,'XTickLabel',cond_names); 
+    end 
     %Change the font size
     set(gca, 'fontsize',12,'FontWeight', 'bold');
 

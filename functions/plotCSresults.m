@@ -237,15 +237,27 @@ for g= 1:gn
                 14, 'FontWeight', 'bold');
     
 
-            %Change the title 
-            temp_title = strcat(plot_names.title, {' '}, ...
-                'Actin Filtering:',{' '}, num2str(unique_thresh(a))); 
-            title(temp_title,...
+            %Change the title (add threshold if necessary. 
+            if afn == 1 
+                temp_title = plot_names.title; 
+                title(temp_title,...
                 'FontSize', 14, 'FontWeight', 'bold'); 
-                   
-            %Save file
-            saveas(gcf, fullfile(plot_names.path, ...
-                strcat(plot_names.savename,'_',num2str(a))), 'pdf');
+                %Save file
+                saveas(gcf, fullfile(plot_names.path, ...
+                    strcat(plot_names.savename)), 'pdf');
+            else 
+                temp_title = strcat(plot_names.title, {' '}, ...
+                    'Actin Filtering:',{' '}, num2str(unique_thresh(a)));
+                title(temp_title,...
+                'FontSize', 14, 'FontWeight', 'bold'); 
+                %Save file
+                saveas(gcf, fullfile(plot_names.path, ...
+                    strcat(plot_names.savename,'_',num2str(a))), 'pdf');
+            
+            end    
+            
+            
+            
     
         end
 
@@ -306,6 +318,8 @@ if gn > 1
     %Save file
     saveas(gcf, fullfile(plot_names.path, plot_names.savename), 'pdf');
 end 
+
+
 %Make legend
 figure; 
 hold on; 
@@ -338,12 +352,13 @@ legend_caption = cell(length(vals)*ncs,1);
 l=1; 
 for n = 1:ncs
     %Set the color 
-    %Increase color 
-    if c > length(colors)-1 || n == 1
-        c = 1; 
-    else
-        c = c+1; 
-    end 
+    c = cond(n); 
+%     %Increase color 
+%     if c > length(colors)-1 || n == 1
+%         c = 1; 
+%     else
+%         c = c+1; 
+%     end 
 
     %Get the middle value
     x0 = (2*p+1)/2; 
