@@ -173,7 +173,7 @@ for k = 1:settings.num_cs
     
     %Store the actin OOP for each coverslip and the number of orientation
     %vectors 
-    if settings.cardio_type == 1 && settings.filt_actin 
+    if settings.cardio_type == 1 && settings.actin_filt 
         MultiCS_ACTINOOP{1,k} = CS_results.ACTINCS_OOPs; 
         MultiCS_ACTINanglecount(1,k) = sum(CS_results.ACTINangle_count);
     else
@@ -236,7 +236,7 @@ if settings.cardio_type == 1 && settings.analysis
     MultiCond = struct(); 
    
     %Create folder to store all of the summary plots 
-    temp = strcat(settings.SUMMARY_name, '_RESULTS'); 
+    temp = strcat(settings.SUMMARY_name{1}, '_RESULTS'); 
     [ new_subfolder_name ] = ...
         addDirectory( settings.SUMMARY_path, temp, true ); 
     
