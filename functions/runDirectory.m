@@ -36,7 +36,6 @@ FOV_medians = cell(1,zn);
 FOV_sums = cell(1,zn);  
 
 %>>> ACTIN FILTERING: OOP (NO EXPLORATION) 
-
 FOV_angles = cell(1,zn);  
 FOV_OOPs = cell(1,zn); 
 FOV_directors = cell(1,zn); 
@@ -45,6 +44,8 @@ FOV_directors = cell(1,zn);
 FOV_thresholds = cell(1,zn); 
 FOV_grid_sizes = cell(1,zn); 
 
+%>>>SAVE THE ACTIN VECTORS 
+ACTINFOV_angles = cell(1,zn);  
 
 %%%%%%%%%%%%%%%%%%%%%% Loop through & Analyze Each FOV  %%%%%%%%%%%%%%%%%%%
 
@@ -73,6 +74,12 @@ for k = 1:zn
     
     % Perform the analysis including saving the image 
     im_struct = analyzeImage( filenames, settings ); 
+    
+    %If the user is filtering with actin, save the actin orientation
+    %vectors 
+    if settings.actin_filt
+        ACTINFOV_angles{1,k} = im_struct.actin_struct.actin_orientim;  
+    end 
     
     % If the user wants to perform a parameter exploration for actin
     % filtering
@@ -140,12 +147,12 @@ for k = 1:zn
         
         %Calculate the continuous z-line length 
         FOV_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
-        
+
         %Compute the median
         FOV_medians{1,k} = median( FOV_lengths{1,k} ); 
         
         %Compute the sum 
-        FOV_sums{1,k} = sum(FOV_lengths{1,k}); 
+        FOV_sums{1,k} = sum( FOV_lengths{1,k} ); 
         
         %Create a histogram of the distances
         figure; histogram(FOV_lengths{1,k});
@@ -228,7 +235,8 @@ CS_results.FOV_directors = FOV_directors;
 %>>> EXPLORATION
 CS_results.FOV_thresholds = FOV_thresholds; 
 CS_results.FOV_grid_sizes = FOV_grid_sizes; 
-
+%>>> ACTIN FILTERING: ACTIN ANGLES / OOP
+CS_results.ACTINFOV_angles = ACTINFOV_angles; 
 
 % Get today's date in string form.
 date_format = 'yyyymmdd';
