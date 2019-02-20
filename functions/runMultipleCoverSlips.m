@@ -313,7 +313,7 @@ if settings.cardio_type == 1 && settings.analysis
             plot_names.x = 'Actin Filtering Threshold'; 
         end 
         plot_names.y = 'Z-line OOP';
-        plot_names.title = 'Z=line OOP';
+        plot_names.title = 'Z-line OOP';
         plot_names.savename = 'MultiCond_OOPSummary'; 
         [ MultiCond.CondValues_OOP, ...
             MultiCond.CondValues_MeanOOP,...
@@ -363,15 +363,15 @@ if settings.cardio_type == 1 && settings.analysis
 
         %Plot the lengths for each coverslips 
         if settings.num_cs > 1
-             plot_names.type = 'Medians';
+            plot_names.type = 'Lengths';
             if ~settings.actinthresh_explore
                 plot_names.x = 'Coverslips'; 
             else 
                 plot_names.x = 'Actin Filtering Threshold'; 
             end 
             plot_names.y = 'Median Continuous Z-line Lengths (\mu m)';
-            plot_names.title = 'Median Continuous Z-line Lengths';
-            plot_names.savename = 'MultiCS_MedianSummary'; 
+            plot_names.title = 'Median Continuous Z-line Lengths (\mu m)';
+            plot_names.savename = 'MultiCS_LengthShape'; 
 
             [MultiCS_Data.additionalMedians] = ...
                 plotCSresults(MultiCS_Data.MultiCS_lengths, ...
@@ -379,10 +379,11 @@ if settings.cardio_type == 1 && settings.analysis
                 MultiCS_Data.MultiCS_grid_sizes, ...
                 MultiCS_Data.MultiCS_actin_threshs, plot_names,cond);
             
-            
-            plot_names.y = 'Difference in Median Cont. Z-line Lengths (\mu m)';
-            plot_names.title = 'Distance Between True Medians and \pm 50% Medians';
-            plot_names.savename = 'MultiCSandCOND_MedianSummary'; 
+            plot_names.type = 'Medians';
+            plot_names.y = ...
+                'Median Continuous Z-line Lengths (\mu m)';
+            plot_names.title = 'True Medians and \pm 50% Medians';
+            plot_names.savename = 'MultiCSMultiMedianSummary'; 
             
             %Plot the differences for each condition 
             [ MultiCS_Data.additionalMedianCond, ...
@@ -439,7 +440,7 @@ if settings.cardio_type == 1 && settings.analysis
     % CoverslipName = MultiCS_Data.name_CS;  
     T = table(ConditionValue,ConditionName,CoverslipName,...
         DateAnalyzed_YYYYMMDD,OOPzline,OOPactin,...
-        NonZlineFraction,ZlineFraction,TotalZline, ...
+        ZlineFraction,NonZlineFraction,TotalZline, ...
         TotalActin, MedianCZL,...
         TotalCZL,GridSize,ActinThreshold); 
     
