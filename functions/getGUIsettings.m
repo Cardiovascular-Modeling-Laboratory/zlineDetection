@@ -63,6 +63,10 @@ Options.eigenmode = 0;
 % smoothing Weickert equation
 Options.C = 1E-10;
 
+% PRESET VALUE. Show information about the filtering. This should be turned
+% off. Options are 'none', 'iter' (default) , 'full'
+Options.verbose = 'n'; 
+
 % Save the Options in the settings struct. 
 settings.Options = Options;
 
@@ -82,6 +86,10 @@ settings.tophat_size = round( settings.bio_tophat_size.*pix2um );
 settings.bio_noise_area = str2double(get(handles.bio_noise_area, 'String')); 
 % Convert user input into pixels and then save in the structure array
 settings.noise_area= round( settings.bio_noise_area.*(pix2um.^2) ); 
+
+%Reliability threshold 
+settings.reliability_thresh = ...
+    str2double(get(handles.reliability_thresh, 'String')); 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -107,6 +115,29 @@ settings.disp_nonoise = get(handles.disp_nonoise, 'Value');
 % Display Skeletonization 
 settings.disp_skel = get(handles.disp_skel, 'Value'); 
 
+%%%%%%%%%%%%%%%%%%%%%%% Actin Filtering Options %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Option to filter with actin
+settings.actin_filt = get(handles.actin_filt, 'Value');
+
+% Display actin filtering
+settings.disp_actin = get(handles.disp_actin, 'Value');
+
+% Save the grid sizes for the rows and columns in an array 
+grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
+grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
+
+% Store the grid sizes
+settings.grid_size = grid_size; 
+
+% Store the threshold for actin filtering
+settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
+
+% Store settings for actin threshold exploration 
+settings.grid_explore = get(handles.grid_explore, 'Value'); 
+% Store settings for actin grid size exploration 
+settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Get option to calculate continuous z-line length 
@@ -118,7 +149,27 @@ settings.dp_threshold = str2double(get(handles.dp_threshold, 'String'));
 % Get option to calculate OOP 
 settings.tf_OOP = get(handles.tf_OOP, 'Value');
 
+% Number of coverslips
+settings.num_cs = str2double(get(handles.num_cs, 'String'));
+
 % Save type of image (single cell vs. tissue)
 settings.cardio_type = get(handles.cardio_type, 'Value'); 
+
+% Settings
+settings.multi_cond = get(handles.multi_cond, 'Value'); 
+
+%%%%%%%%%%%%%%%%%% Check if the User Wants Any Analysis %%%%%%%%%%%%%%%%%%%
+
+%If the user doesn't want to filter with actin, calcualte continuous 
+%z-line length, calculate OOP there is nothing to compare between
+%conditions. Therefore do not create summary files 
+settings.analysis = true; 
+if ~settings.tf_CZL && ~settings.tf_OOP && ~settings.actin_filt
+    settings.analysis = false; 
+end 
+
+%%%%%%%%%%%%%%%%%%%%% Additional User Inputs  %%%%%%%%%%%%%%%%%%%
+
+settings = additionalUserInput(settings);
 
 end

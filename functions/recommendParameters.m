@@ -1,17 +1,21 @@
 % RECOMMENDPARAMETERS - Recommend parameters for images of cardiomyocytes
 
 function [ settings ] = recommendParameters()
+%%%%%%%%%%%%%%%%%%% Actin Filtering Parameteres %%%%%%%%%%%%%%%%%%%%%%%%
+settings.grid1 = 10; 
+settings.grid2 = 10; 
+settings.actin_thresh = 0.7; 
 
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set the sigma of gaussian smoothing before calculation of the image 
 % Hessian.
-settings.bio_sigma = 0.08;
+settings.bio_sigma = 0.1608;
 
 % Set the sigma of the Gaussian smoothing of the Hessian.
-settings.bio_rho = 0.1; 
+settings.bio_rho = 0.4823; 
 
 % Total Diffusion Time 
-settings.diffusion_time = 1; 
+settings.diffusion_time = 8; 
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -19,10 +23,14 @@ settings.diffusion_time = 1;
 % filter
 settings.bio_tophat_size = 0.5; 
 
-%%%%%%%%%%%%%%%%%%% Threshold and Clean Pagrameters %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
 settings.bio_noise_area = 0.2; 
+
+% Remove non-reliable orientations from the orientation matrix based on the
+% actin orientation
+settings.reliability_thresh = 0.5;
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 

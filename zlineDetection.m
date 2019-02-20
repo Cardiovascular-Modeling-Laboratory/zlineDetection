@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 01-Oct-2018 09:56:49
+% Last Modified by GUIDE v2.5 31-Jan-2019 16:21:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -59,6 +59,7 @@ handles.output = hObject;
 addpath('functions');
 addpath('functions/coherencefilter_version5b');
 addpath('functions/continuous_zline_detection');
+addpath('functions/actin_filtering');
 
 
 % Update handles structure
@@ -322,9 +323,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in RUN_dir.
-function RUN_dir_Callback(hObject, eventdata, handles)
-% hObject    handle to RUN_dir (see GCBO)
+% --- Executes on button press in RUN.
+function RUN_Callback(hObject, eventdata, handles)
+% hObject    handle to RUN (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -332,8 +333,11 @@ function RUN_dir_Callback(hObject, eventdata, handles)
 % settings 
 settings = getGUIsettings(handles); 
 
-% Select image files and run analysis.
-runDirectory( settings );
+% % Select image files and run analysis.
+% runDirectory( settings );
+
+%Once completed... 
+runMultipleCoverSlips(settings); 
 
 % --- Executes on button press in tf_OOP.
 function tf_OOP_Callback(hObject, eventdata, handles)
@@ -395,9 +399,20 @@ set( handles.bio_tophat_size, 'String', ...
 %>> Threshold and Clean Parameters
 set( handles.bio_noise_area, 'String', ...
     num2str( settings.bio_noise_area ) ); 
+set( handles.reliability_thresh, 'String', ...
+    num2str( settings.reliability_thresh ) ); 
 %>> Skeletonization Parameters (biological)
 set( handles.bio_branch_size, 'String', ...
-    num2str( settings.bio_branch_size ) ); 
+    num2str( settings.bio_branch_size ) );
+%>> Set actin filtering to be true
+set(handles.actin_filt,'Value',1);
+%>> Actin filtering parameters
+set( handles.grid1, 'String', ...
+    num2str( settings.grid1 ) );
+set( handles.grid2, 'String', ...
+    num2str( settings.grid2 ) );
+set( handles.actin_thresh, 'String', ...
+    num2str( settings.actin_thresh ) );
 
 guidata(hObject, handles);
 
@@ -567,3 +582,163 @@ set( handles.tophat_size, 'String', num2str( settings.tophat_size ) );
 set( handles.noise_area, 'String', num2str( settings.noise_area ) ); 
 %>> Skeletonization Parameters
 set( handles.branch_size, 'String', num2str( settings.branch_size ) ); 
+
+
+
+function grid1_Callback(hObject, eventdata, handles)
+% hObject    handle to grid1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of grid1 as text
+%        str2double(get(hObject,'String')) returns contents of grid1 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function grid1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to grid1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function grid2_Callback(hObject, eventdata, handles)
+% hObject    handle to grid2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of grid2 as text
+%        str2double(get(hObject,'String')) returns contents of grid2 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function grid2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to grid2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function actin_thresh_Callback(hObject, eventdata, handles)
+% hObject    handle to actin_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of actin_thresh as text
+%        str2double(get(hObject,'String')) returns contents of actin_thresh as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function actin_thresh_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to actin_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in disp_actin.
+function disp_actin_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_actin (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of disp_actin
+
+
+% --- Executes on button press in actin_filt.
+function actin_filt_Callback(hObject, eventdata, handles)
+% hObject    handle to actin_filt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of actin_filt
+
+
+
+function reliability_thresh_Callback(hObject, eventdata, handles)
+% hObject    handle to reliability_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of reliability_thresh as text
+%        str2double(get(hObject,'String')) returns contents of reliability_thresh as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function reliability_thresh_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to reliability_thresh (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function num_cs_Callback(hObject, eventdata, handles)
+% hObject    handle to num_cs (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of num_cs as text
+%        str2double(get(hObject,'String')) returns contents of num_cs as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function num_cs_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to num_cs (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in grid_explore.
+function grid_explore_Callback(hObject, eventdata, handles)
+% hObject    handle to grid_explore (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of grid_explore
+
+
+% --- Executes on button press in actinthresh_explore.
+function actinthresh_explore_Callback(hObject, eventdata, handles)
+% hObject    handle to actinthresh_explore (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of actinthresh_explore
+
+
+% --- Executes on button press in multi_cond.
+function multi_cond_Callback(hObject, eventdata, handles)
+% hObject    handle to multi_cond (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of multi_cond
