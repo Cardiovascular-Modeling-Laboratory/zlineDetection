@@ -161,7 +161,6 @@ for z = 1:zn
                 include_zlinefrac = FOV_Grouped.FOV_zlinefrac;
                 include_OOP = FOV_Grouped.FOV_OOPs;
                 
-                
                 if ~isempty(FOV_Grouped.FOV_medians)
                     include_medians = include_medians ...
                         + exlude_grids + exlude_thresh;
