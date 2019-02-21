@@ -37,8 +37,12 @@ end
 f = 1; 
 
 %Colors
-colors = {[0.3686,0.0314,0.6471], [0.8000,0.0392,0.3529], ...
-    [0.0392,0.6706,0.8000],[0.0235,0.6000,0.0588]};
+colors = {[0.3686,0.0314,0.6471],[0.0745,0.9686,0.6863],...
+    [0.8000,0.0392,0.3529],[0.0392,0.6706,0.8000],...
+    [0.9569,0.6784,0.2588],[0.0235,0.6000,0.0588],...
+    [0.6275,0.6275,0.6275],[1,0.6,1],[0.2789,0.4479,0.6535],...
+    [0.9569,0.9059,0.3529],[0.0824,0.4000,0.9490],...
+    [0.9882,0.2980,0.2353]};
 
 %Start color counts 
 c = 0; 
@@ -247,14 +251,18 @@ for g = 1:gn
     xlim([-2 p+1]); 
 
     %Change the x axis labels
-    set(gca,'XTick',filter_x) 
-    if afn > 1
-        set(gca,'XTickLabel',num2cell(unique_thresh))
-    else
-        set(gca,'XTickLabel',cond_names); 
-    end 
+    set(gca,'XTick',filter_x)
     %Change the font size
     set(gca, 'fontsize',12,'FontWeight', 'bold');
+    if afn > 1
+        set(gca,'XTickLabel',num2cell(unique_thresh),'fontsize',12,...
+            'FontWeight', 'bold'); 
+    else
+        set(gca,'XTickLabel',cond_names,'fontsize',10,...
+            'FontWeight', 'bold'); 
+        set(gca,'XTickLabelRotation',90); 
+    end 
+    
 
     %Change the x and y labels 
     xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
@@ -275,7 +283,9 @@ for g = 1:gn
 end
 
 %Save file
-saveas(gcf, fullfile(plot_names.path, plot_names.savename), 'pdf');
+new_filename = appendFilename( plot_names.path, ...
+    strcat(plot_names.savename,'.pdf')); 
+saveas(gcf, fullfile(plot_names.path, new_filename), 'pdf');
 
 %Make legend
 figure; 
@@ -305,7 +315,7 @@ for n = 1:n_cond
     %Set the color 
     %Increase color 
     if c > length(colors)-1 || n == 1
-                c = 1; 
+        c = 1; 
     else
         c = c+1; 
     end 
@@ -375,6 +385,8 @@ title('Legend','FontSize', 14, 'FontWeight', 'bold');
     
 %Save the legend 
 legend_save = strcat(plot_names.savename, '_legend'); 
-saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
+new_filename = appendFilename( plot_names.path, ...
+    strcat(legend_save,'.pdf')); 
+saveas(gcf, fullfile(plot_names.path, new_filename), 'pdf');
 
 end 

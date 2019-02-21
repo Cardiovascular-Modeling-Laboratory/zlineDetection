@@ -137,7 +137,9 @@ for k = 1:settings.num_cs
             declareCondition(settings.cond_names, k, settings.num_cs); 
         
         %Display the condition the user selected 
-        disp_message = strcat('Condition:',{' '}, num2str(cond(k,1))); 
+        disp_message = strcat('For Coverslip:',{' '},name_CS{k,1},...
+            ', Condition Selected:',{' '}, ...
+            settings.cond_names{cond(k,1),1}); 
         disp(disp_message{1}); 
     end 
 end 
