@@ -233,12 +233,16 @@ for g= 1:gn
             
             %Change the x axis labels
             set(gca,'XTick',filter_x) 
+            %Set the fontt size 
+            set(gca, 'fontsize',12,'FontWeight', 'bold');
+            
             temp_x = strrep(name_CS, '_', '\_'); 
-            set(gca,'XTickLabel',temp_x)
+            set(gca,'XTickLabel',temp_x,'fontsize',10,...
+            'FontWeight', 'bold'); 
             set(gca,'XTickLabelRotation',90); 
 
             %Change the font size
-            set(gca, 'fontsize',12,'FontWeight', 'bold');
+            
 
             %Change the x and y labels 
 %             xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');

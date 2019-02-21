@@ -251,14 +251,18 @@ for g = 1:gn
     xlim([-2 p+1]); 
 
     %Change the x axis labels
-    set(gca,'XTick',filter_x) 
-    if afn > 1
-        set(gca,'XTickLabel',num2cell(unique_thresh))
-    else
-        set(gca,'XTickLabel',cond_names); 
-    end 
+    set(gca,'XTick',filter_x)
     %Change the font size
     set(gca, 'fontsize',12,'FontWeight', 'bold');
+    if afn > 1
+        set(gca,'XTickLabel',num2cell(unique_thresh),'fontsize',12,...
+            'FontWeight', 'bold'); 
+    else
+        set(gca,'XTickLabel',cond_names,'fontsize',10,...
+            'FontWeight', 'bold'); 
+        set(gca,'XTickLabelRotation',90); 
+    end 
+    
 
     %Change the x and y labels 
     xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
