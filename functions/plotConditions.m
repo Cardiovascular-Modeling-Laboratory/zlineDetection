@@ -305,7 +305,7 @@ for n = 1:n_cond
     %Set the color 
     %Increase color 
     if c > length(colors)-1 || n == 1
-                c = 1; 
+        c = 1; 
     else
         c = c+1; 
     end 

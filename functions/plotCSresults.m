@@ -155,6 +155,11 @@ for g= 1:gn
             
             %Set the color 
             c = cond(n); 
+            %If the value of c is greater than the length of the color
+            %array, restart the colors at 1. 
+            while c > length(colors)
+                c = c - length(colors); 
+            end 
             
             %Plot the violin fill 
             fill([pf'+x0;flipud(x0-pf')],[u';flipud(u')],...
