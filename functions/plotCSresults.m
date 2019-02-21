@@ -251,17 +251,23 @@ for g= 1:gn
                 temp_title = plot_names.title; 
                 title(temp_title,...
                 'FontSize', 14, 'FontWeight', 'bold'); 
+                new_filename = appendFilename( plot_names.path, ...
+                    strcat(plot_names.savename,'.pdf'));
                 %Save file
                 saveas(gcf, fullfile(plot_names.path, ...
-                    strcat(plot_names.savename)), 'pdf');
+                    new_filename), 'pdf');
             else 
                 temp_title = strcat(plot_names.title, {' '}, ...
                     'Actin Filtering:',{' '}, num2str(unique_thresh(a)));
                 title(temp_title,...
                 'FontSize', 14, 'FontWeight', 'bold'); 
                 %Save file
+                new_filename = appendFilename( plot_names.path, ...
+                    strcat(plot_names.savename,'_',num2str(a),'.pdf'));
+                %Save file
                 saveas(gcf, fullfile(plot_names.path, ...
-                    strcat(plot_names.savename,'_',num2str(a))), 'pdf');
+                    new_filename), 'pdf');
+                
             
             end    
             
@@ -322,7 +328,9 @@ if gn > 1
     end
 
     %Save file
-    saveas(gcf, fullfile(plot_names.path, plot_names.savename), 'pdf');
+    new_filename = appendFilename( plot_names.path, ...
+    strcat(plot_names.savename,'.pdf')); 
+    saveas(gcf, fullfile(plot_names.path, new_filename), 'pdf');
 end 
 
 
@@ -444,6 +452,8 @@ title('Legend','FontSize', 14, 'FontWeight', 'bold');
     
 %Save the legend 
 legend_save = strcat(plot_names.savename, '_legend'); 
-saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
+new_filename = appendFilename( plot_names.path, ...
+    strcat(legend_save,'.pdf')); 
+saveas(gcf, fullfile(plot_names.path, new_filename), 'pdf');
 end 
 

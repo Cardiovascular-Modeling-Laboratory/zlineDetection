@@ -30,6 +30,8 @@ MultiCS_OOP = concatCells( MultiCS_Data.MultiCS_OOP, true );
 MultiCS_CSN = concatCells( MultiCS_Data.MultiCS_CSID, true );
 MultiCS_Cond = concatCells( MultiCS_Data.MultiCS_CONDID, true );
 MultiCS_ACTINOOP = concatCells( MultiCS_Data.MultiCS_ACTINOOP, true );
+MultiCS_anglecount = MultiCS_Data.MultiCS_anglecount; 
+MultiCS_ACTINanglecount = MultiCS_Data.MultiCS_ACTINanglecount;
 
 %Store the number and name of the condition
 ConditionValue = MultiCS_Cond'; 
@@ -245,7 +247,8 @@ if settings.tf_CZL || settings.grid_explore || settings.actinthresh_explore
 end
 
 %Update the CS 
-save(fullfile(settings.SUMMARY_path, new_filename),...
+save(fullfile(settings.SUMMARY_path, ...
+    strcat(settings.SUMMARY_name{1},'.mat')),...
     'MultiCS_Data','-append');  
 
 close all;
