@@ -277,9 +277,6 @@ if gn > 1
         buffer = 0.1; 
     end 
 
-    % Start color counter
-    c = 0; 
-
     %Get the minimum and max median values 
     ymin = min(bnds(:,1)) - buffer; 
     ymax = max(bnds(:,2)) + buffer; 
@@ -358,12 +355,11 @@ l=1;
 for n = 1:ncs
     %Set the color 
     c = cond(n); 
-%     %Increase color 
-%     if c > length(colors)-1 || n == 1
-%         c = 1; 
-%     else
-%         c = c+1; 
-%     end 
+    %If the value of c is greater than the length of the color
+    %array, restart the colors at 1. 
+    while c > length(colors)
+        c = c - length(colors); 
+    end 
 
     %Get the middle value
     x0 = (2*p+1)/2; 
