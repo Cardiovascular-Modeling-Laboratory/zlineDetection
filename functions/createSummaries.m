@@ -66,6 +66,13 @@ for k = 1:length(CoverslipID)
     DateAnalyzed_YYYYMMDD{k,1} =today_date; 
 end 
 
+%Save the path of each coverslip
+CoverslipPath = cell(size(CoverslipID)); 
+for k = 1:length(CoverslipID)
+    temp = zline_path{k,1}; 
+    CoverslipPath{k,1} = temp{1}; 
+end 
+
 % CoverslipName = MultiCS_Data.name_CS;  
 T = table(ConditionValue,ConditionName,CoverslipName,...
     DateAnalyzed_YYYYMMDD,OOPzline,OOPactin,...
@@ -121,9 +128,9 @@ if settings.actin_filt && settings.multi_cond
     plot_names.y = 'Zline Fraction';
     plot_names.title = 'Zline Fraction';
     plot_names.savename = 'MultiCond_ZlineSummary'; 
-    [ MultiCond.CondValues_NonZline, ...
-        MultiCond.CondValues_MeanNonZline,...
-        MultiCond.CondValues_StdevNonZline, MultiCond.IDs ] =...
+    [ MultiCond.CondValues_Zline, ...
+        MultiCond.CondValues_MeanZline,...
+        MultiCond.CondValues_StdevZline, MultiCond.IDs ] =...
         plotConditions(MultiCS_zlinefrac, MultiCS_Cond, ...
         settings.cond_names,...
         MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
@@ -249,9 +256,42 @@ end
 %Update the CS 
 save(fullfile(settings.SUMMARY_path, ...
     strcat(settings.SUMMARY_name{1},'.mat')),...
-    'MultiCS_Data','-append');  
+    'MultiCS_Data','MultiCond','-append');  
 
 close all;
+
+% Add statistics to excel file 
+ConditionValue = MultiCond.IDs(:,1);
+ConditionName = cell(size(ConditionValue)); 
+NumberCoverSlips = zeros(size(ConditionValue)); 
+for k = 1:length(ConditionName) 
+    ConditionName{k,1} = settings.cond_names{ConditionValue(k,1),1}; 
+    NumberCoverSlips(k,1) = size(MultiCond.CondValues_NonZline{k,1},1); 
+end 
+OOPzline_mean = MultiCond.CondValues_MeanOOP; 
+OOPzline_stdev = MultiCond.CondValues_StdevOOP; 
+OOPactin_mean = MultiCond.CondValues_ACTINMeanOOP;
+OOPactin_stdev = MultiCond.CondValues_ACTINStdevOOP;
+ZlineFraction_mean = MultiCond.CondValues_MeanZline; 
+ZlineFraction_stdev = MultiCond.CondValues_StdevZline; 
+NonZlineFraction_mean = MultiCond.CondValues_MeanNonZline; 
+NonZlineFraction_stdev = MultiCond.CondValues_StdevNonZline;
+MedianCZL_mean = MultiCond.CondValues_MeanMedians;
+MedianCZL_stdev = MultiCond.CondValues_StdevMedians;
+TotalCZL_mean = MultiCond.CondValues_MeanSum; 
+TotalCZL_stdev = MultiCond.CondValues_StdevSum; 
+
+% CoverslipName = MultiCS_Data.name_CS;  
+T = table(ConditionValue,ConditionName,NumberCoverSlips,...
+    OOPzline_mean,OOPzline_stdev,OOPactin_mean,...
+    OOPactin_stdev,ZlineFraction_mean,ZlineFraction_stdev, ...
+    NonZlineFraction_mean, NonZlineFraction_stdev,...
+    MedianCZL_mean,MedianCZL_stdev,TotalCZL_mean,TotalCZL_stdev); 
+
+%Write the sheet
+filename = strcat(settings.SUMMARY_name{1}, '.xlsx'); 
+writetable(T,fullfile(settings.SUMMARY_path,filename),...
+    'Sheet',2,'Range','A1'); 
 
 end
 
