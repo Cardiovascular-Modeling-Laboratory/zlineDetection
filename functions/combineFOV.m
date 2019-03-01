@@ -143,10 +143,11 @@ if settings.actinthresh_explore || settings.grid_explore
 
                 %Store the current angles 
                 FOV_Grouped.FOV_angles{z,n} = current_angles{p,1};
-
+                
                 %Store the current ACTIN angles 
-                FOV_Grouped.ACTINFOV_angles{z,n} = ACTINcurrent_angles{p,1};
-
+%                 FOV_Grouped.ACTINFOV_angles{z,n} = ACTINcurrent_angles{p,1};
+                FOV_Grouped.ACTINFOV_angles{z,n} = ACTINcurrent_angles;
+                
                 %Add the pre and post filtered number of pixels 
                 FOV_Grouped.FOV_prefiltered(1,n) = ...
                    FOV_Grouped.FOV_prefiltered(1,n) + current_prefilt(p,1);

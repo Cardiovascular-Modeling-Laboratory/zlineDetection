@@ -264,7 +264,7 @@ if settings.cardio_type == 1 && settings.analysis
             'CS_results')
     end 
     
-elseif settings.cardio_type == 2 && settings.num_cs > 1 && settings.analysis
+elseif settings.cardio_type == 2 && settings.analysis
     %Save the struct as Single Cell instead of Coverslip
     SC_results = CS_results;
     
