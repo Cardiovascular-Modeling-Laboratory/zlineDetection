@@ -251,7 +251,7 @@ summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
 
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
-if settings.cardio_type == 1 && settings.num_cs > 1 && settings.analysis
+if settings.cardio_type == 1 && settings.analysis
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
     
