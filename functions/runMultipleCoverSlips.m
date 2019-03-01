@@ -214,7 +214,7 @@ if settings.cardio_type == 1 && settings.analysis
     MultiCond = struct(); 
    
     %Create folder to store all of the summary plots 
-    temp = strcat(settings.SUMMARY_name, '_RESULTS'); 
+    temp = strcat(settings.SUMMARY_name{1}, '_RESULTS'); 
     [ new_subfolder_name ] = ...
         addDirectory( settings.SUMMARY_path, temp, true ); 
     
