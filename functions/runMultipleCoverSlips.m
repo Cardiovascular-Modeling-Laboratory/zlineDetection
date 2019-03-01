@@ -1,7 +1,7 @@
 function [] = runMultipleCoverSlips(settings)
 %This function will be used to run multiple coverslips and obtain a summary
 %file
-%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Create a cell to hold the coverslip name 
 name_CS = cell(settings.num_cs,1);
@@ -44,6 +44,12 @@ MultiCS_actin_threshs = cell(1,settings.num_cs);
 MultiCS_lengths = cell(1,settings.num_cs);
 %Save the OOP for each coverslip 
 MultiCS_OOP = cell(1,settings.num_cs);
+%Save the number of orientation vectors of each CS 
+MultiCS_anglecount = zeros(1,settings.num_cs); 
+%Save the ACTIN OOP for each coverslip 
+MultiCS_ACTINOOP = cell(1,settings.num_cs);
+%Save the number of actin orientation vectors of each CS 
+MultiCS_ACTINanglecount = zeros(1,settings.num_cs); 
 
 %IDs for the different coverslips and conditions 
 MultiCS_CSID = cell(1,settings.num_cs); 
@@ -131,7 +137,9 @@ for k = 1:settings.num_cs
             declareCondition(settings.cond_names, k, settings.num_cs); 
         
         %Display the condition the user selected 
-        disp_message = strcat('Condition:',{' '}, num2str(cond(k,1))); 
+        disp_message = strcat('For Coverslip:',{' '},name_CS{k,1},...
+            ', Condition Selected:',{' '}, ...
+            settings.cond_names{cond(k,1),1}); 
         disp(disp_message{1}); 
     end 
 end 
@@ -160,15 +168,27 @@ for k = 1:settings.num_cs
         MultiCS_grid_sizes{1,k} = CS_results.CS_gridsizes;
         MultiCS_actin_threshs{1,k} = CS_results.CS_thresholds;
         MultiCS_OOP{1,k} = CS_results.CS_OOPs;    
-
+        MultiCS_anglecount(1,k) = sum(CS_results.angle_count); 
         %Save coverslip number 
         MultiCS_CSID{1,k} = k*ones(size(CS_results.CS_OOPs)); 
     end
+    
+    %Store the actin OOP for each coverslip and the number of orientation
+    %vectors 
+    if settings.cardio_type == 1 && settings.actin_filt 
+        MultiCS_ACTINOOP{1,k} = CS_results.ACTINCS_OOPs; 
+        MultiCS_ACTINanglecount(1,k) = sum(CS_results.ACTINangle_count);
+    else
+        MultiCS_ACTINOOP{1,k} = NaN; 
+        MultiCS_ACTINanglecount(1,k) = NaN; 
+    end 
     
     if settings.multi_cond && settings.cardio_type == 1 && settings.analysis
         %Save the condition ID 
         MultiCS_CONDID{1,k} = ...
             cond(k,1)*ones(size(CS_results.CS_gridsizes));
+    else
+        MultiCS_CONDID{1,k} = NaN; 
     end
     
 end 
@@ -187,6 +207,9 @@ if settings.cardio_type == 1 && settings.analysis
     MultiCS_Data.MultiCS_CSID=MultiCS_CSID;
     MultiCS_Data.MultiCS_CONDID=MultiCS_CONDID;    
     MultiCS_Data.name_CS = name_CS;
+    MultiCS_Data.MultiCS_ACTINOOP = MultiCS_ACTINOOP; 
+    MultiCS_Data.MultiCS_anglecount = MultiCS_anglecount; 
+    MultiCS_Data.MultiCS_ACTINanglecount = MultiCS_ACTINanglecount; 
     
     %Summary name
     summary_name = strcat(settings.SUMMARY_name,'.mat'); 
@@ -209,6 +232,7 @@ if settings.cardio_type == 1 && settings.analysis
     MultiCS_OOP = concatCells( MultiCS_Data.MultiCS_OOP, true );
     MultiCS_CSN = concatCells( MultiCS_Data.MultiCS_CSID, true );
     MultiCS_Cond = concatCells( MultiCS_Data.MultiCS_CONDID, true );
+    MultiCS_ACTINOOP = concatCells( MultiCS_Data.MultiCS_ACTINOOP, true );
 
     %Save a new struct
     MultiCond = struct(); 
@@ -259,6 +283,24 @@ if settings.cardio_type == 1 && settings.analysis
             settings.cond_names,...
             MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
         
+        
+        %Plot the actin OOP 
+        plot_names.type = 'OOP';
+        if ~settings.actinthresh_explore
+            plot_names.x = 'Conditions'; 
+        else 
+            plot_names.x = 'Actin Filtering Threshold'; 
+        end 
+        plot_names.y = 'Actin OOP';
+        plot_names.title = 'Actin OOP';
+        plot_names.savename = 'MultiCond_ACTINOOPSummary'; 
+        [ MultiCond.CondValues_ACTINOOP, ...
+            MultiCond.CondValues_ACTINMeanOOP,...
+            MultiCond.CondValues_ACTINStdevOOP, MultiCond.IDs  ] =...
+            plotConditions(MultiCS_ACTINOOP, MultiCS_Cond, settings.cond_names,...
+            MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names);
+        
+        
     end
 
     %Plot the OOP for the conditions if user actin filtered and
@@ -272,8 +314,8 @@ if settings.cardio_type == 1 && settings.analysis
         else 
             plot_names.x = 'Actin Filtering Threshold'; 
         end 
-        plot_names.y = 'OOP';
-        plot_names.title = 'OOP';
+        plot_names.y = 'Z-line OOP';
+        plot_names.title = 'Z-line OOP';
         plot_names.savename = 'MultiCond_OOPSummary'; 
         [ MultiCond.CondValues_OOP, ...
             MultiCond.CondValues_MeanOOP,...
@@ -323,15 +365,15 @@ if settings.cardio_type == 1 && settings.analysis
 
         %Plot the lengths for each coverslips 
         if settings.num_cs > 1
-             plot_names.type = 'Medians';
+            plot_names.type = 'Lengths';
             if ~settings.actinthresh_explore
                 plot_names.x = 'Coverslips'; 
             else 
                 plot_names.x = 'Actin Filtering Threshold'; 
             end 
             plot_names.y = 'Median Continuous Z-line Lengths (\mu m)';
-            plot_names.title = 'Median Continuous Z-line Lengths';
-            plot_names.savename = 'MultiCS_MedianSummary'; 
+            plot_names.title = 'Median Continuous Z-line Lengths (\mu m)';
+            plot_names.savename = 'MultiCS_LengthShape'; 
 
             [MultiCS_Data.additionalMedians] = ...
                 plotCSresults(MultiCS_Data.MultiCS_lengths, ...
@@ -339,10 +381,11 @@ if settings.cardio_type == 1 && settings.analysis
                 MultiCS_Data.MultiCS_grid_sizes, ...
                 MultiCS_Data.MultiCS_actin_threshs, plot_names,cond);
             
-            
-            plot_names.y = 'Difference in Median Cont. Z-line Lengths (\mu m)';
-            plot_names.title = 'Distance Between True Medians and \pm 50% Medians';
-            plot_names.savename = 'MultiCSandCOND_MedianSummary'; 
+            plot_names.type = 'Medians';
+            plot_names.y = ...
+                'Median Continuous Z-line Lengths (\mu m)';
+            plot_names.title = 'True Medians and \pm 50% Medians';
+            plot_names.savename = 'MultiCSMultiMedianSummary'; 
             
             %Plot the differences for each condition 
             [ MultiCS_Data.additionalMedianCond, ...
@@ -375,7 +418,11 @@ if settings.cardio_type == 1 && settings.analysis
     TotalCZL = MultiCS_sums';  
     NonZlineFraction = MultiCS_nonzlinefrac';  
     ZlineFraction = MultiCS_zlinefrac';  
-    OOP = MultiCS_OOP';  
+    OOPzline = MultiCS_OOP';  
+    OOPactin = MultiCS_ACTINOOP'; 
+    TotalZline = MultiCS_anglecount'; 
+    TotalActin = MultiCS_ACTINanglecount'; 
+
     %Get the name of each coverslip
     CoverslipID = MultiCS_CSN'; 
     CoverslipName = cell(size(CoverslipID)); 
@@ -393,9 +440,11 @@ if settings.cardio_type == 1 && settings.analysis
     end 
 
     % CoverslipName = MultiCS_Data.name_CS;  
-    T = table(ConditionValue,ConditionName,GridSize,ActinThreshold,...
-        MedianCZL,TotalCZL,NonZlineFraction,ZlineFraction,OOP,...
-        CoverslipName,DateAnalyzed_YYYYMMDD); 
+    T = table(ConditionValue,ConditionName,CoverslipName,...
+        DateAnalyzed_YYYYMMDD,OOPzline,OOPactin,...
+        ZlineFraction,NonZlineFraction,TotalZline, ...
+        TotalActin, MedianCZL,...
+        TotalCZL,GridSize,ActinThreshold); 
     
     %Update the CS 
     save(fullfile(settings.SUMMARY_path, new_filename),...

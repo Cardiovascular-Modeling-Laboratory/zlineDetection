@@ -52,8 +52,12 @@ if gn > 1
         [0.5255,0.2588,0.9569], [0.6350, 0.0780, 0.1840],...
         [0.2549,0.9569,0.5137], [0.8500, 0.3250, 0.0980]};      
 else
-    colors = {[0.3686,0.0314,0.6471], [0.8000,0.0392,0.3529], ...
-    [0.0392,0.6706,0.8000],[0.0235,0.6000,0.0588]};
+    colors = {[0.3686,0.0314,0.6471],[0.0745,0.9686,0.6863],...
+        [0.8000,0.0392,0.3529],[0.0392,0.6706,0.8000],...
+        [0.9569,0.6784,0.2588],[0.0235,0.6000,0.0588],...
+        [0.6275,0.6275,0.6275],[1,0.6,1],[0.2789,0.4479,0.6535],...
+        [0.9569,0.9059,0.3529],[0.0824,0.4000,0.9490],...
+        [0.9882,0.2980,0.2353]};
 end 
             
 %Start color counts 
@@ -155,6 +159,11 @@ for g= 1:gn
             
             %Set the color 
             c = cond(n); 
+            %If the value of c is greater than the length of the color
+            %array, restart the colors at 1. 
+            while c > length(colors)
+                c = c - length(colors); 
+            end 
             
             %Plot the violin fill 
             fill([pf'+x0;flipud(x0-pf')],[u';flipud(u')],...
@@ -224,12 +233,16 @@ for g= 1:gn
             
             %Change the x axis labels
             set(gca,'XTick',filter_x) 
+            %Set the fontt size 
+            set(gca, 'fontsize',12,'FontWeight', 'bold');
+            
             temp_x = strrep(name_CS, '_', '\_'); 
-            set(gca,'XTickLabel',temp_x)
+            set(gca,'XTickLabel',temp_x,'fontsize',10,...
+            'FontWeight', 'bold'); 
             set(gca,'XTickLabelRotation',90); 
 
             %Change the font size
-            set(gca, 'fontsize',12,'FontWeight', 'bold');
+            
 
             %Change the x and y labels 
 %             xlabel(plot_names.x,'FontSize', 14, 'FontWeight', 'bold');
@@ -237,15 +250,33 @@ for g= 1:gn
                 14, 'FontWeight', 'bold');
     
 
-            %Change the title 
-            temp_title = strcat(plot_names.title, {' '}, ...
-                'Actin Filtering:',{' '}, num2str(unique_thresh(a))); 
-            title(temp_title,...
+            %Change the title (add threshold if necessary. 
+            if afn == 1 
+                temp_title = plot_names.title; 
+                title(temp_title,...
                 'FontSize', 14, 'FontWeight', 'bold'); 
-                   
-            %Save file
-            saveas(gcf, fullfile(plot_names.path, ...
-                strcat(plot_names.savename,'_',num2str(a))), 'pdf');
+                new_filename = appendFilename( plot_names.path, ...
+                    strcat(plot_names.savename,'.pdf'));
+                %Save file
+                saveas(gcf, fullfile(plot_names.path, ...
+                    new_filename), 'pdf');
+            else 
+                temp_title = strcat(plot_names.title, {' '}, ...
+                    'Actin Filtering:',{' '}, num2str(unique_thresh(a)));
+                title(temp_title,...
+                'FontSize', 14, 'FontWeight', 'bold'); 
+                %Save file
+                new_filename = appendFilename( plot_names.path, ...
+                    strcat(plot_names.savename,'_',num2str(a),'.pdf'));
+                %Save file
+                saveas(gcf, fullfile(plot_names.path, ...
+                    new_filename), 'pdf');
+                
+            
+            end    
+            
+            
+            
     
         end
 
@@ -259,9 +290,6 @@ if gn > 1
     if buffer < 0.1
         buffer = 0.1; 
     end 
-
-    % Start color counter
-    c = 0; 
 
     %Get the minimum and max median values 
     ymin = min(bnds(:,1)) - buffer; 
@@ -304,8 +332,12 @@ if gn > 1
     end
 
     %Save file
-    saveas(gcf, fullfile(plot_names.path, plot_names.savename), 'pdf');
+    new_filename = appendFilename( plot_names.path, ...
+    strcat(plot_names.savename,'.pdf')); 
+    saveas(gcf, fullfile(plot_names.path, new_filename), 'pdf');
 end 
+
+
 %Make legend
 figure; 
 hold on; 
@@ -338,11 +370,11 @@ legend_caption = cell(length(vals)*ncs,1);
 l=1; 
 for n = 1:ncs
     %Set the color 
-    %Increase color 
-    if c > length(colors)-1 || n == 1
-        c = 1; 
-    else
-        c = c+1; 
+    c = cond(n); 
+    %If the value of c is greater than the length of the color
+    %array, restart the colors at 1. 
+    while c > length(colors)
+        c = c - length(colors); 
     end 
 
     %Get the middle value
@@ -424,6 +456,8 @@ title('Legend','FontSize', 14, 'FontWeight', 'bold');
     
 %Save the legend 
 legend_save = strcat(plot_names.savename, '_legend'); 
-saveas(gcf, fullfile(plot_names.path, legend_save), 'pdf');
+new_filename = appendFilename( plot_names.path, ...
+    strcat(legend_save,'.pdf')); 
+saveas(gcf, fullfile(plot_names.path, new_filename), 'pdf');
 end 
 
