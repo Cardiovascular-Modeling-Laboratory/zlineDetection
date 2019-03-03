@@ -40,10 +40,10 @@ im_struct.im_name = file;
 im_struct.im_path = path; 
 
 %Load the image
-[ img, map ] = imread( filename );
+[ im, map ] = imread( filename );
 
 %Store the indexed image (img) 
-im_struct.img = img; 
+im_struct.im = im; 
 
 %Store the indexed image's associated colormap (c_map) 
 im_struct.c_map = map;
