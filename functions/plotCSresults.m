@@ -1,4 +1,4 @@
-function [extra_medians] = plotCSresults(MultiCS_lengths, MultiCS_CSN,...
+function [extra_medians, id, true_medians] = plotCSresults(MultiCS_lengths, MultiCS_CSN,...
     name_CS, MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names,...
     cond)
 
@@ -24,13 +24,17 @@ for n = 1:ncs
     cs_values(1,n) = temp(1,1); 
 end 
 %Condition_values 
-condition_values = cell(gn*afn,1); 
-mean_condition = zeros(gn*afn,1);
-std_condition = zeros(gn*afn,1); 
-median_condition = zeros(gn*afn,1);
+condition_values = cell(ncs*gn*afn,1); 
+mean_condition = zeros(ncs*gn*afn,1);
+std_condition = zeros(ncs*gn*afn,1); 
+median_condition = zeros(ncs*gn*afn,1);
 
 %Get the upper (:,1) and lower (:,2) medians 
-extra_medians = zeros(gn*afn,2);
+extra_medians = zeros(ncs*gn*afn,2);
+true_medians = zeros(ncs*gn*afn,1);
+%Create a ID store (:,1) Condition, (:,2) grid size (:,3) actin threshold 
+%(:,4) condition 
+id = zeros(ncs*gn*afn,4); 
 
 if gn > 1 
     %Open a figure
@@ -63,12 +67,11 @@ end
 %Start color counts 
 c = 0; 
 
-%Start counts
-k = 1; 
-
 %Store bounds - mins = 1, max = 2
 bnds = zeros(ncs*gn*afn,2); 
 
+%Start a counter 
+k = 1; 
 for g= 1:gn
     
     % Set up the grids to exclude 
@@ -113,7 +116,7 @@ for g= 1:gn
         end 
         
         %Add the exclusion threshold and grids
-        exlude_exploration = exclude_grid+exlude_thresh; 
+        exclude_exploration = exclude_grid+exlude_thresh; 
         
         %Loop through all of the conditions 
         for n = 1:ncs 
@@ -131,8 +134,8 @@ for g= 1:gn
            
             %Isolate the length 
             temp_CS = MultiCS_lengths{1,n}; 
-            temp_len = temp_CS{1,~isnan(exlude_exploration)}; 
-
+            temp_len = temp_CS{1,~isnan(exclude_exploration)}; 
+            
             %Save data and calculate the mean and standard deviation. 
             condition_values{k,1} =temp_len; 
             mean_condition(k,1) = mean(temp_len); 
@@ -145,6 +148,13 @@ for g= 1:gn
             len = round(length(temp_len)/2); 
             extra_medians(k,1) = median(temp_len(len+1:end)); 
             extra_medians(k,2) = median(temp_len(1:len)); 
+            true_medians(k,1) = median(temp_len); 
+            
+            %Save the (:,1) Condition, (:,2) grid size (:,3) actin threshold 
+            id(k,1) = n; 
+            id(k,2) = unique_grids(g); 
+            id(k,3) = unique_thresh(a);
+            id(k,4) = cond(n); 
             
             % >> VIOLIN PLOTS 
             % Hoffmann H, 2015: violin.m - Simple violin plot using matlab
@@ -196,8 +206,9 @@ for g= 1:gn
             bnds(k,1) = min(temp_len); 
             bnds(k,2) = max(temp_len); 
             
-            %Increate the count 
-            k = k+1; 
+            %Increase counter 
+            k = k + 1; 
+            
             %Increase start and stop 
             p = p+1.5;
             
