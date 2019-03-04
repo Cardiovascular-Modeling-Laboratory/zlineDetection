@@ -218,5 +218,10 @@ if settings.cardio_type == 1 && settings.num_cs > 1
     
 end 
 
+%Clear command line and display finished time 
+disp('zlineDetection Complete.'); 
+t = datetime('now'); 
+disp(t); 
+
 end
 
