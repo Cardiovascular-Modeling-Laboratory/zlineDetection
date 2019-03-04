@@ -149,11 +149,12 @@ end
 clear k 
 for k = 1:settings.num_cs 
     
-    % Analyze the Coverslip 
+    % Analyze each coverslip 
     [ CS_results ] = ...
         runDirectory( settings, zline_path{k,1}, zline_images{k,1},...
         actin_path{k,1}, actin_images{k,1}, name_CS{k,1} ); 
     
+    %Store the results from each coverslip if these are not single cells 
     if settings.cardio_type == 1 && settings.analysis
         %Store the results from analyzing each coverslip 
         MultiCS_lengths{1,k} = CS_results.CS_lengths;
@@ -174,20 +175,48 @@ for k = 1:settings.num_cs
     if settings.cardio_type == 1 && settings.actin_filt 
         MultiCS_ACTINOOP{1,k} = CS_results.ACTINCS_OOPs; 
         MultiCS_ACTINanglecount(1,k) = sum(CS_results.ACTINangle_count);
-    else
-        MultiCS_ACTINOOP{1,k} = NaN; 
-        MultiCS_ACTINanglecount(1,k) = NaN; 
     end 
     
-    if settings.multi_cond && settings.cardio_type == 1 && settings.analysis
+    %Store the condition ID 
+    if settings.cardio_type == 1 && settings.multi_cond && settings.analysis
         %Save the condition ID 
         MultiCS_CONDID{1,k} = ...
             cond(k,1)*ones(size(CS_results.CS_gridsizes));
-    else
-        MultiCS_CONDID{1,k} = NaN; 
     end
     
 end 
+
+%%%%%%%%%%%%%%%%%%%%%%%% Summarize Coverslips %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Store all of the Multi CS data in a struct if these are not single cells
+if cardio_type == 1
+    
+    %Store results in struct 
+    MultiCS_Data = struct(); 
+    
+    MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
+    MultiCS_Data.MultiCS_medians=MultiCS_medians;
+    MultiCS_Data.MultiCS_sums=MultiCS_sums;
+    MultiCS_Data.MultiCS_nonzlinefrac=MultiCS_nonzlinefrac;
+    MultiCS_Data.MultiCS_zlinefrac=MultiCS_zlinefrac; 
+    MultiCS_Data.MultiCS_grid_sizes=MultiCS_grid_sizes;
+    MultiCS_Data.MultiCS_actin_threshs=MultiCS_actin_threshs;
+    MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
+    MultiCS_Data.MultiCS_CSID=MultiCS_CSID;
+    MultiCS_Data.MultiCS_CONDID=MultiCS_CONDID;    
+    MultiCS_Data.name_CS = name_CS;
+    MultiCS_Data.MultiCS_ACTINOOP = MultiCS_ACTINOOP; 
+    MultiCS_Data.MultiCS_anglecount = MultiCS_anglecount; 
+    MultiCS_Data.MultiCS_ACTINanglecount = MultiCS_ACTINanglecount; 
+    
+    
+    
+end 
+
+
+
+
+
 if settings.num_cs > 1 
     
 if settings.cardio_type == 1 && settings.analysis

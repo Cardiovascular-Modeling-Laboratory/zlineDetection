@@ -304,6 +304,9 @@ if settings.cardio_type == 1 && settings.analysis
     end 
     
 elseif settings.cardio_type == 2 && settings.analysis
+    %Save the CS results as NaN (so there won't be an error) 
+    CS_results = NaN; 
+    
     %Save the struct for single cells 
     SC_results = struct(); 
 
@@ -338,6 +341,9 @@ elseif settings.cardio_type == 2 && settings.analysis
         save(fullfile(zline_path{1}, summary_file_name), ...
             'SC_results')
     end 
+else
+    %Save the CS results as NaN (so there won't be an error) 
+    CS_results = NaN; 
     
 end 
     
