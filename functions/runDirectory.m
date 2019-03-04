@@ -297,10 +297,10 @@ if settings.cardio_type == 1 && settings.analysis
     %Save the summary file 
     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'CS_results','FOV_results','-append')
+            'CS_results','FOV_results','settings','-append')
     else
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'CS_results','FOV_results')
+            'CS_results','FOV_results','settings')
     end 
     
 elseif settings.cardio_type == 2 && settings.analysis
@@ -336,10 +336,10 @@ elseif settings.cardio_type == 2 && settings.analysis
     %Save the summary file 
     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'SC_results', '-append')
+            'SC_results', 'settings', '-append')
     else
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'SC_results')
+            'SC_results', 'settings')
     end 
 else
     %Save the CS results as NaN (so there won't be an error) 
