@@ -1,5 +1,5 @@
-function [] = createSummaries(MultiCS_Data,name_CS,zline_images,...
-    zline_path, cond,settings)
+function [] = createSummaries(MultiCS_Data, name_CS, zline_images,...
+    zline_path, cond, settings)
 
 %%%%%%%%%%%%%%%%%%%%%%% Initialize Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Summary name
