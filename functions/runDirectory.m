@@ -107,17 +107,20 @@ for k = 1:zn
         %>>> ACTIN FILTERING: OOP 
         FOV_angles{1,k} = actin_explore.orientims; 
 
-        %>>> EXPLORATION
+        %>>> EXPLORATION PARAMETERS
         FOV_thresholds{1,k} = actin_explore.thresholds;  
         FOV_grid_sizes{1,k} = actin_explore.grid_sizes; 
     else
-        %>>> EXPLORATION
+        %>>> STORE ORIENTATION VECTORS
+        FOV_angles{1,k} = im_struct.orientim;      
+        
+        %>>> EXPLORATION PARAMETERS
         FOV_thresholds{1,k} = settings.actin_thresh; 
         FOV_grid_sizes{1,k} = settings.grid_size(1);
-        
+           
     end 
     
-    %If the user wants to filter with actin, save the non_zline fraction
+    %If the user filtered with actin, save the non_zline fraction
     if settings.actin_filt && ~settings.exploration
         %Fraction for each FOV 
         FOV_nonzlinefrac{1,k} = im_struct.nonzlinefrac; 
@@ -168,17 +171,12 @@ for k = 1:zn
         saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
         
         %Close all of the images 
-        close all; 
-        
+        close all;    
     end 
 
     % If the user wants to calculate OOP - Will need to change when I'm
     % analyzing tissues. 
     if settings.tf_OOP && ~settings.exploration
-        
-        %Save this orientation matrix 
-        FOV_angles{1,k} = im_struct.orientim;
-        
         %Save the orientation vectors as a new vairable
         temp_angles = FOV_angles{1,k}; 
         
@@ -252,16 +250,57 @@ summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
 if settings.cardio_type == 1 && settings.analysis
-    %Combine the FOV 
+        %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
+    
+    %Remove unnecessary fiels
+    CS_results = rmfield(CS_results, 'FOV_Grouped');
+    CS_results = rmfield(CS_results, 'FOV_OOPs'); 
+    CS_results = rmfield(CS_results, 'FOV_directors'); 
+    CS_results = rmfield(CS_results, 'FOVstats_medians');
+    CS_results = rmfield(CS_results, 'FOVstats_sums');
+    CS_results = rmfield(CS_results, 'FOVstats_nonzlinefrac');
+    CS_results = rmfield(CS_results, 'FOVstats_zlinefrac');
+    CS_results = rmfield(CS_results,'FOVstats_OOPs'); 
+    CS_results = rmfield(CS_results,'ACTINFOVstats_OOPs'); 
+    
+    %Create new struct to hold FOV data 
+    FOV_results = struct();
+    %Save the appropriate data fields
+    FOV_results.zline_path = zline_path;
+    FOV_results.zline_images = zline_images;
+    FOV_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
+    FOV_results.FOV_zlinefrac = FOV_zlinefrac;
+    FOV_results.FOV_prefiltered = FOV_prefiltered;
+    FOV_results.FOV_postfiltered = FOV_postfiltered;
+    FOV_results.FOV_lengths = FOV_lengths;
+    FOV_results.FOV_medians = FOV_medians;
+    FOV_results.FOV_sums = FOV_sums;
+    FOV_results.FOV_angles = FOV_angles;
+    FOV_results.FOV_thresholds = FOV_thresholds;
+    FOV_results.FOV_grid_sizes = FOV_grid_sizes;
+    FOV_results.ACTINFOV_angles = ACTINFOV_angles;
+
+    %Remove the appropriate data fields from the CS_results struct 
+    CS_results = rmfield(CS_results, 'FOV_nonzlinefrac');
+    CS_results = rmfield(CS_results, 'FOV_zlinefrac');
+    CS_results = rmfield(CS_results, 'FOV_prefiltered');
+    CS_results = rmfield(CS_results, 'FOV_postfiltered');
+    CS_results = rmfield(CS_results, 'FOV_lengths');
+    CS_results = rmfield(CS_results, 'FOV_medians');
+    CS_results = rmfield(CS_results, 'FOV_sums');
+    CS_results = rmfield(CS_results, 'FOV_angles');
+    CS_results = rmfield(CS_results, 'FOV_thresholds');
+    CS_results = rmfield(CS_results, 'FOV_grid_sizes');
+    CS_results = rmfield(CS_results, 'ACTINFOV_angles');
     
     %Save the summary file 
     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'CS_results', '-append')
+            'CS_results','FOV_results','-append')
     else
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'CS_results')
+            'CS_results','FOV_results')
     end 
     
 elseif settings.cardio_type == 2 && settings.analysis
