@@ -9,9 +9,9 @@
 % 
 % Returns:
 %       OOP                 - orientational order parameters
-%       directionAngle      - principle direction angle 
-%       direction_error     - difference between principle direction and
-%                               average direction 
+%       directionAngle      - principle direction angle in degrees 
+%       direction_error     - difference between principle direction (in 
+%                               degrees) average direction (in degrees)
 %       director            - principle direction vector
 %
 
