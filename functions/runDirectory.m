@@ -129,7 +129,7 @@ for k = 1:zn
         temp_post(temp_post == 0) = []; 
         
         %Get the pre filtering skeleton - used for CS calculation 
-        temp_pre = im_struct.skelTrim; 
+        temp_pre = im_struct.skel_trim; 
         temp_pre = temp_pre(:); 
         temp_pre(temp_pre == 0) = []; 
         

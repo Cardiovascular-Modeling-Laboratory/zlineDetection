@@ -74,7 +74,7 @@ post_filt = zeros(tot,1);
 image_savepath = im_struct.save_path;
 
 % Save the prefiltered skeleton 
-prefilt_skel = im_struct.skelTrim;
+prefilt_skel = im_struct.skel_trim;
 
 % Save the pre-filtered skeleton for calculation of the non-zlinefrac
 % percentages
@@ -113,7 +113,7 @@ for g = 1:gtot
         figure;
         spacing = 15; color_spec = 'b'; 
         plotOrientationVectors(actin_struct.visualization_matrix,...
-            mat2gray(im_struct.gray),spacing, color_spec) 
+            mat2gray(im_struct.im_gray),spacing, color_spec) 
 
         % Save figure 
         saveas(gcf, fullfile(image_savepath, ...
