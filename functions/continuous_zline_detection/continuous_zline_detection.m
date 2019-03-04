@@ -45,7 +45,7 @@ pix2um = settings.pix2um;
 dot_product_error = settings.dp_threshold; 
 
 %Save the image and convert to a matrix 
-BW = im_struct.img; 
+BW = im_struct.im; 
 BW = mat2gray(BW);
 
 %Find the nonzero positions of this matrix and get their values. 

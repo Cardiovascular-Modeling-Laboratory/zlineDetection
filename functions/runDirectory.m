@@ -107,17 +107,20 @@ for k = 1:zn
         %>>> ACTIN FILTERING: OOP 
         FOV_angles{1,k} = actin_explore.orientims; 
 
-        %>>> EXPLORATION
+        %>>> EXPLORATION PARAMETERS
         FOV_thresholds{1,k} = actin_explore.thresholds;  
         FOV_grid_sizes{1,k} = actin_explore.grid_sizes; 
     else
-        %>>> EXPLORATION
+        %>>> STORE ORIENTATION VECTORS
+        FOV_angles{1,k} = im_struct.orientim;      
+        
+        %>>> EXPLORATION PARAMETERS
         FOV_thresholds{1,k} = settings.actin_thresh; 
         FOV_grid_sizes{1,k} = settings.grid_size(1);
-        
+           
     end 
     
-    %If the user wants to filter with actin, save the non_zline fraction
+    %If the user filtered with actin, save the non_zline fraction
     if settings.actin_filt && ~settings.exploration
         %Fraction for each FOV 
         FOV_nonzlinefrac{1,k} = im_struct.nonzlinefrac; 
@@ -129,7 +132,7 @@ for k = 1:zn
         temp_post(temp_post == 0) = []; 
         
         %Get the pre filtering skeleton - used for CS calculation 
-        temp_pre = im_struct.skelTrim; 
+        temp_pre = im_struct.skel_trim; 
         temp_pre = temp_pre(:); 
         temp_pre(temp_pre == 0) = []; 
         
@@ -168,17 +171,12 @@ for k = 1:zn
         saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
         
         %Close all of the images 
-        close all; 
-        
+        close all;    
     end 
 
     % If the user wants to calculate OOP - Will need to change when I'm
     % analyzing tissues. 
     if settings.tf_OOP && ~settings.exploration
-        
-        %Save this orientation matrix 
-        FOV_angles{1,k} = im_struct.orientim;
-        
         %Save the orientation vectors as a new vairable
         temp_angles = FOV_angles{1,k}; 
         
@@ -212,32 +210,6 @@ end
 
 %%%%%%%%%%%%%%%%%% Summarize Results for Entire Coverslip %%%%%%%%%%%%%%%%%
 
-%Create a struct for the outputs 
-CS_results = struct(); 
-
-%>>> Files 
-CS_results.zline_path = zline_path;
-CS_results.zline_images = zline_images; 
-
-%>>> ACTIN FILTERING: Non zline Fractions
-CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
-CS_results.FOV_zlinefrac = FOV_zlinefrac;
-CS_results.FOV_prefiltered = FOV_prefiltered;
-CS_results.FOV_postfiltered = FOV_postfiltered;
-%>>> ACTIN FILTERING: Continuous z-line length
-CS_results.FOV_lengths = FOV_lengths;
-CS_results.FOV_medians = FOV_medians; 
-CS_results.FOV_sums = FOV_sums; 
-%>>> ACTIN FILTERING: OOP 
-CS_results.FOV_angles = FOV_angles;  
-CS_results.FOV_OOPs = FOV_OOPs; 
-CS_results.FOV_directors = FOV_directors; 
-%>>> EXPLORATION
-CS_results.FOV_thresholds = FOV_thresholds; 
-CS_results.FOV_grid_sizes = FOV_grid_sizes; 
-%>>> ACTIN FILTERING: ACTIN ANGLES / OOP
-CS_results.ACTINFOV_angles = ACTINFOV_angles; 
-
 % Get today's date in string form.
 date_format = 'yyyymmdd';
 today_date = datestr(now,date_format);
@@ -251,31 +223,127 @@ summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
 
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
-if settings.cardio_type == 1 && settings.num_cs > 1 && settings.analysis
+if settings.cardio_type == 1 && settings.analysis
+    %Create a struct for the outputs 
+    CS_results = struct(); 
+
+    %>>> Files 
+    CS_results.zline_path = zline_path;
+    CS_results.zline_images = zline_images; 
+
+    %>>> ACTIN FILTERING: Non zline Fractions
+    CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
+    CS_results.FOV_zlinefrac = FOV_zlinefrac;
+    CS_results.FOV_prefiltered = FOV_prefiltered;
+    CS_results.FOV_postfiltered = FOV_postfiltered;
+    %>>> ACTIN FILTERING: Continuous z-line length
+    CS_results.FOV_lengths = FOV_lengths;
+    CS_results.FOV_medians = FOV_medians; 
+    CS_results.FOV_sums = FOV_sums; 
+    %>>> ACTIN FILTERING: OOP 
+    CS_results.FOV_angles = FOV_angles;  
+    CS_results.FOV_OOPs = FOV_OOPs; 
+    CS_results.FOV_directors = FOV_directors; 
+    %>>> EXPLORATION
+    CS_results.FOV_thresholds = FOV_thresholds; 
+    CS_results.FOV_grid_sizes = FOV_grid_sizes; 
+    %>>> ACTIN FILTERING: ACTIN ANGLES / OOP
+    CS_results.ACTINFOV_angles = ACTINFOV_angles; 
+    
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
     
+    %Remove unnecessary fiels
+    CS_results = rmfield(CS_results, 'FOV_Grouped');
+    CS_results = rmfield(CS_results, 'FOV_OOPs'); 
+    CS_results = rmfield(CS_results, 'FOV_directors'); 
+    CS_results = rmfield(CS_results, 'FOVstats_medians');
+    CS_results = rmfield(CS_results, 'FOVstats_sums');
+    CS_results = rmfield(CS_results, 'FOVstats_nonzlinefrac');
+    CS_results = rmfield(CS_results, 'FOVstats_zlinefrac');
+    CS_results = rmfield(CS_results,'FOVstats_OOPs'); 
+    CS_results = rmfield(CS_results,'ACTINFOVstats_OOPs'); 
+    
+    %Create new struct to hold FOV data 
+    FOV_results = struct();
+    %Save the appropriate data fields
+    FOV_results.zline_path = zline_path;
+    FOV_results.zline_images = zline_images;
+    FOV_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
+    FOV_results.FOV_zlinefrac = FOV_zlinefrac;
+    FOV_results.FOV_prefiltered = FOV_prefiltered;
+    FOV_results.FOV_postfiltered = FOV_postfiltered;
+    FOV_results.FOV_lengths = FOV_lengths;
+    FOV_results.FOV_medians = FOV_medians;
+    FOV_results.FOV_sums = FOV_sums;
+    FOV_results.FOV_angles = FOV_angles;
+    FOV_results.FOV_thresholds = FOV_thresholds;
+    FOV_results.FOV_grid_sizes = FOV_grid_sizes;
+    FOV_results.ACTINFOV_angles = ACTINFOV_angles;
+
+    %Remove the appropriate data fields from the CS_results struct 
+    CS_results = rmfield(CS_results, 'FOV_nonzlinefrac');
+    CS_results = rmfield(CS_results, 'FOV_zlinefrac');
+    CS_results = rmfield(CS_results, 'FOV_prefiltered');
+    CS_results = rmfield(CS_results, 'FOV_postfiltered');
+    CS_results = rmfield(CS_results, 'FOV_lengths');
+    CS_results = rmfield(CS_results, 'FOV_medians');
+    CS_results = rmfield(CS_results, 'FOV_sums');
+    CS_results = rmfield(CS_results, 'FOV_angles');
+    CS_results = rmfield(CS_results, 'FOV_thresholds');
+    CS_results = rmfield(CS_results, 'FOV_grid_sizes');
+    CS_results = rmfield(CS_results, 'ACTINFOV_angles');
+    
     %Save the summary file 
     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'CS_results', '-append')
+            'CS_results','FOV_results','settings','-append')
     else
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'CS_results')
+            'CS_results','FOV_results','settings')
     end 
     
-elseif settings.cardio_type == 2 && settings.num_cs > 1 && settings.analysis
-    %Save the struct as Single Cell instead of Coverslip
-    SC_results = CS_results;
+elseif settings.cardio_type == 2 && settings.analysis
+    %Save the CS results as NaN (so there won't be an error) 
+    CS_results = NaN; 
+    
+    %Save the struct for single cells 
+    SC_results = struct(); 
+
+    %>>> Files 
+    SC_results.zline_path = zline_path;
+    SC_results.zline_images = zline_images; 
+
+    %>>> ACTIN FILTERING: Non zline Fractions
+    SC_results.nonzlinefrac = FOV_nonzlinefrac;
+    SC_results.zlinefrac = FOV_zlinefrac;
+    SC_results.prefiltered = FOV_prefiltered;
+    SC_results.postfiltered = FOV_postfiltered;
+    %>>> ACTIN FILTERING: Continuous z-line length
+    SC_results.lengths = FOV_lengths;
+    SC_results.medians = FOV_medians; 
+    SC_results.sums = FOV_sums; 
+    %>>> ACTIN FILTERING: OOP 
+    SC_results.angles = FOV_angles;  
+    SC_results.OOPs = FOV_OOPs; 
+    SC_results.directors = FOV_directors; 
+    %>>> EXPLORATION
+    SC_results.thresholds = FOV_thresholds; 
+    SC_results.grid_sizes = FOV_grid_sizes; 
+    %>>> ACTIN FILTERING: ACTIN ANGLES / OOP
+    SC_results.ACTIN_angles = ACTINFOV_angles;
     
     %Save the summary file 
     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'SC_results', '-append')
+            'SC_results', 'settings', '-append')
     else
         save(fullfile(zline_path{1}, summary_file_name), ...
-            'SC_results')
+            'SC_results', 'settings')
     end 
+else
+    %Save the CS results as NaN (so there won't be an error) 
+    CS_results = NaN; 
     
 end 
     

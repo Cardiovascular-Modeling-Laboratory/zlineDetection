@@ -87,8 +87,6 @@ FOV_Grouped.ACTINFOV_angles = cell(zn,tot);
 % Specially group data if the user did an exploration 
 if settings.actinthresh_explore || settings.grid_explore 
 
-
-
     %Loop through all of the conditions 
     for z = 1:zn 
         %Store the information for the current image 
@@ -143,10 +141,11 @@ if settings.actinthresh_explore || settings.grid_explore
 
                 %Store the current angles 
                 FOV_Grouped.FOV_angles{z,n} = current_angles{p,1};
-
+                
                 %Store the current ACTIN angles 
-                FOV_Grouped.ACTINFOV_angles{z,n} = ACTINcurrent_angles{p,1};
-
+%                 FOV_Grouped.ACTINFOV_angles{z,n} = ACTINcurrent_angles{p,1};
+                FOV_Grouped.ACTINFOV_angles{z,n} = ACTINcurrent_angles;
+                
                 %Add the pre and post filtered number of pixels 
                 FOV_Grouped.FOV_prefiltered(1,n) = ...
                    FOV_Grouped.FOV_prefiltered(1,n) + current_prefilt(p,1);
@@ -222,6 +221,7 @@ if settings.actinthresh_explore || settings.grid_explore
         end
     end 
 else
+    %%%%%%%%%%%%%%% NO EXPLORATION: GROUP VALUES  %%%%%%%%%%%%%%%%%%%%%%%%%
     for k = 1:zn
         %Store the analysis values 
         FOV_Grouped.FOV_lengths{k,1} = CS_results.FOV_lengths{1,k};
@@ -230,12 +230,12 @@ else
         
         FOV_Grouped.FOV_prefiltered(k,1) = CS_results.FOV_prefiltered{1,k};
         FOV_Grouped.FOV_postfiltered(k,1) = CS_results.FOV_postfiltered{1,k};
-
-        
     end
-    %Store the exploration values 
+    
+    %Store the exploration values
     CS_results.CS_thresholds = settings.actin_thresh;
-    CS_results.CS_gridsizes = settings.grid_size(1);       
+    CS_results.CS_gridsizes = settings.grid_size(1);    
+    
 end
 
 %Loop through and calculate the values for all of the different combination  
@@ -316,9 +316,11 @@ for t = 1:tot
     
     %Calculate the non-zline fraction 
     CS_results.CS_nonzlinefrac(1,t) = ...
-        (FOV_Grouped.FOV_prefiltered(1,t) - ...
-        FOV_Grouped.FOV_postfiltered(1,t))/ ...
-        FOV_Grouped.FOV_prefiltered(1,t);
+        (sum(FOV_Grouped.FOV_prefiltered(:,t)) - ...
+        sum(FOV_Grouped.FOV_postfiltered(:,t)))/ ...
+        sum(FOV_Grouped.FOV_prefiltered(:,t));
+    
+    %Calculate z-line fraction 
     CS_results.CS_zlinefrac(1,t) = 1 - CS_results.CS_nonzlinefrac(1,t); 
         
 end 

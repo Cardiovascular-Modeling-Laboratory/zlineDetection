@@ -51,7 +51,7 @@ if ~settings.grid_explore
         figure;
         spacing = 15; color_spec = 'b'; 
         plotOrientationVectors(actin_struct.visualization_matrix,...
-            mat2gray(im_struct.gray),spacing, color_spec) 
+            mat2gray(im_struct.im_gray),spacing, color_spec) 
 
         % Save figure 
         saveas(gcf, fullfile(im_struct.save_path, ...

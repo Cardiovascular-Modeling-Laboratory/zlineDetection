@@ -49,18 +49,18 @@ disp('Filtering and computing orientation information...');
 
 % Fitler the image using coherence-enhancing anisotropic diffusion 
 % filtering and top hat filtering, then compute the orientation vectors 
-[ im_struct.gray, im_struct.CEDgray, im_struct.CEDtophat, ...
+[ im_struct.im_gray, im_struct.im_anisodiffuse, im_struct.im_tophat, ...
     im_struct.orientim, im_struct.reliability ] = ...
-    orientInfo( im_struct.img, settings.Options, settings.tophat_size); 
+    orientInfo( im_struct.im, settings.Options, settings.tophat_size); 
 
 % If the user would like to display the diffusion filtered image, display 
 % it
 if settings.disp_df
     % Open a figure and display the image
-    figure; imshow( im_struct.CEDgray );
+    figure; imshow( im_struct.im_anisodiffuse );
     
     % Save the figure. 
-    imwrite( im_struct.CEDgray, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.im_anisodiffuse, fullfile(im_struct.save_path, ...
         strcat( im_struct.im_name, '_DiffusionFiltered.tif' ) ),...
         'Compression','none');
 
@@ -69,10 +69,10 @@ end
 % If the user would like to display the top hat filtered image, display it
 if settings.disp_tophat
     % Open a figure and display the image
-    figure; imshow( im_struct.CEDtophat ); 
+    figure; imshow( im_struct.im_tophat ); 
     
     % Save the figure. 
-    imwrite( im_struct.CEDtophat, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.im_tophat, fullfile(im_struct.save_path, ...
         strcat( im_struct.im_name, '_TopHatFiltered.tif' ) ),...
         'Compression','none');
     
@@ -83,35 +83,35 @@ end
 % Update user
 disp('Threshold and Clean...');
 
-% Use adaptive thresholding to convert to black and white.  
-[ im_struct.CEDbw, im_struct.surface_thresh ] = ...
-    segmentImage( im_struct.CEDtophat ); 
+% Use adaptive thresholding to convert to binary image
+[ im_struct.im_binary, im_struct.surface_thresh ] = ...
+    segmentImage( im_struct.im_tophat ); 
 
 % Remove regions that are not reliable (less than 0.5)
-im_struct.CEDbw( im_struct.reliability < settings.reliability_thresh) = 0; 
+im_struct.im_binary( im_struct.reliability < settings.reliability_thresh) = 0; 
 
-% If the user would like to display the filtered image, display it
+% If the user would like to display the binarized image, display it
 if settings.disp_bw
     % Open a figure and display the image 
-    figure; imshow( im_struct.CEDbw )
+    figure; imshow( im_struct.im_binary )
     
     % Save the figure. 
-    imwrite( im_struct.CEDbw, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.im_binary, fullfile(im_struct.save_path, ...
         strcat( im_struct.im_name, '_Binariazed.tif' ) ),...
         'Compression','none');
     
 end
 
 % Remove small objects from binary image.
-im_struct.CEDclean = bwareaopen( im_struct.CEDbw, settings.noise_area );
+im_struct.im_binaryclean = bwareaopen( im_struct.im_binary, settings.noise_area );
 
-% If the user would like to display the filtered image, display it
+% If the user would like to display the noise removed binary image, display it
 if settings.disp_nonoise
     % Open a figure and display the image 
-    figure; imshow(im_struct.CEDclean)
+    figure; imshow(im_struct.im_binaryclean)
     
     % Save the figure. 
-    imwrite( im_struct.CEDclean, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.im_binaryclean, fullfile(im_struct.save_path, ...
         strcat( im_struct.im_name, '_BinariazedClean.tif' ) ),...
         'Compression','none');
     
@@ -124,12 +124,12 @@ disp('Skeletonization...');
 
 % Use Matlab skeletonization morphological function, convert to a skeleton,
 % fill inside spaces and then conver to a skeleton again.
-im_struct.skel = bwmorph( im_struct.CEDclean, 'skel', Inf );
+im_struct.skel = bwmorph( im_struct.im_binaryclean, 'skel', Inf );
 im_struct.skel = bwmorph( im_struct.skel, 'fill' );
 im_struct.skel = bwmorph( im_struct.skel, 'skel', Inf );
 
 % Clean up the skeleton 
-im_struct.skelTrim = cleanSkel( im_struct.skel, settings.branch_size );
+im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
 
 
 if settings.disp_skel
@@ -142,10 +142,10 @@ if settings.disp_skel
         'Compression','none');
     
     % Open a figure and display the trimmed image 
-    figure; imshow(im_struct.skelTrim)
+    figure; imshow(im_struct.skel_trim)
 
     % Save the figure. 
-    imwrite( im_struct.skelTrim, fullfile(im_struct.save_path, ...
+    imwrite( im_struct.skel_trim, fullfile(im_struct.save_path, ...
         strcat( im_struct.im_name, '_SkeletonTrimmed.tif' ) ),...
         'Compression','none');
     
@@ -157,18 +157,18 @@ end
 
 if ~settings.actin_filt
     % Set the final skeleton equal to the trimmed skeleton
-    im_struct.skel_final = im_struct.skelTrim; 
+    im_struct.skel_final = im_struct.skel_trim; 
     
     % Create a mask of all ones.
-    im_struct.mask = ones(size(im_struct.skelTrim)); 
+    im_struct.mask = ones(size(im_struct.skel_trim)); 
     
 else
-    % Remove false sarcomeres by looking at the actin directors
+    % Remove false z-lines by looking at the actin directors
     [ im_struct.mask, im_struct.actin_struct, im_struct.dp ] = ...
     filterWithActin( im_struct, filenames, settings); 
 
     % Multiply the mask by the trimmed skeleton to get the final skeleton
-    im_struct.skel_final = im_struct.mask.*im_struct.skelTrim;
+    im_struct.skel_final = im_struct.mask.*im_struct.skel_trim;
 end 
 
 % Save the mask. 
@@ -191,7 +191,7 @@ post_filt = im_struct.skel_final;
 post_filt = post_filt(:);
 post_filt(post_filt == 0) = []; 
 % Pre filtering skeleton 
-pre_filt = im_struct.skelTrim; 
+pre_filt = im_struct.skel_trim; 
 pre_filt = pre_filt(:); 
 pre_filt(pre_filt == 0) = []; 
 % Calculate the non-sarcomeric alpha actinin 
