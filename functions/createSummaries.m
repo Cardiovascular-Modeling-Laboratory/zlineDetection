@@ -114,7 +114,7 @@ if settings.num_cs > 1 && settings.analysis
             ConditionName{k,1} = NaN; 
         end
         %Save CS path 
-        temp = zline_path{k,1}; 
+        temp = zline_path{CoverslipID(k,1),1}; 
         CoverslipPath{k,1} = temp{1}; 
         %Save today's date
         DateAnalyzed_YYYYMMDD{k,1} =today_date; 
