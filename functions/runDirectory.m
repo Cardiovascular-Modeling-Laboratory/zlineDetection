@@ -210,32 +210,6 @@ end
 
 %%%%%%%%%%%%%%%%%% Summarize Results for Entire Coverslip %%%%%%%%%%%%%%%%%
 
-%Create a struct for the outputs 
-CS_results = struct(); 
-
-%>>> Files 
-CS_results.zline_path = zline_path;
-CS_results.zline_images = zline_images; 
-
-%>>> ACTIN FILTERING: Non zline Fractions
-CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
-CS_results.FOV_zlinefrac = FOV_zlinefrac;
-CS_results.FOV_prefiltered = FOV_prefiltered;
-CS_results.FOV_postfiltered = FOV_postfiltered;
-%>>> ACTIN FILTERING: Continuous z-line length
-CS_results.FOV_lengths = FOV_lengths;
-CS_results.FOV_medians = FOV_medians; 
-CS_results.FOV_sums = FOV_sums; 
-%>>> ACTIN FILTERING: OOP 
-CS_results.FOV_angles = FOV_angles;  
-CS_results.FOV_OOPs = FOV_OOPs; 
-CS_results.FOV_directors = FOV_directors; 
-%>>> EXPLORATION
-CS_results.FOV_thresholds = FOV_thresholds; 
-CS_results.FOV_grid_sizes = FOV_grid_sizes; 
-%>>> ACTIN FILTERING: ACTIN ANGLES / OOP
-CS_results.ACTINFOV_angles = ACTINFOV_angles; 
-
 % Get today's date in string form.
 date_format = 'yyyymmdd';
 today_date = datestr(now,date_format);
@@ -250,6 +224,32 @@ summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
 if settings.cardio_type == 1 && settings.analysis
+    %Create a struct for the outputs 
+    CS_results = struct(); 
+
+    %>>> Files 
+    CS_results.zline_path = zline_path;
+    CS_results.zline_images = zline_images; 
+
+    %>>> ACTIN FILTERING: Non zline Fractions
+    CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
+    CS_results.FOV_zlinefrac = FOV_zlinefrac;
+    CS_results.FOV_prefiltered = FOV_prefiltered;
+    CS_results.FOV_postfiltered = FOV_postfiltered;
+    %>>> ACTIN FILTERING: Continuous z-line length
+    CS_results.FOV_lengths = FOV_lengths;
+    CS_results.FOV_medians = FOV_medians; 
+    CS_results.FOV_sums = FOV_sums; 
+    %>>> ACTIN FILTERING: OOP 
+    CS_results.FOV_angles = FOV_angles;  
+    CS_results.FOV_OOPs = FOV_OOPs; 
+    CS_results.FOV_directors = FOV_directors; 
+    %>>> EXPLORATION
+    CS_results.FOV_thresholds = FOV_thresholds; 
+    CS_results.FOV_grid_sizes = FOV_grid_sizes; 
+    %>>> ACTIN FILTERING: ACTIN ANGLES / OOP
+    CS_results.ACTINFOV_angles = ACTINFOV_angles; 
+    
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
     
@@ -304,8 +304,31 @@ if settings.cardio_type == 1 && settings.analysis
     end 
     
 elseif settings.cardio_type == 2 && settings.analysis
-    %Save the struct as Single Cell instead of Coverslip
-    SC_results = CS_results;
+    %Save the struct for single cells 
+    SC_results = struct(); 
+
+    %>>> Files 
+    SC_results.zline_path = zline_path;
+    SC_results.zline_images = zline_images; 
+
+    %>>> ACTIN FILTERING: Non zline Fractions
+    SC_results.nonzlinefrac = FOV_nonzlinefrac;
+    SC_results.zlinefrac = FOV_zlinefrac;
+    SC_results.prefiltered = FOV_prefiltered;
+    SC_results.postfiltered = FOV_postfiltered;
+    %>>> ACTIN FILTERING: Continuous z-line length
+    SC_results.lengths = FOV_lengths;
+    SC_results.medians = FOV_medians; 
+    SC_results.sums = FOV_sums; 
+    %>>> ACTIN FILTERING: OOP 
+    SC_results.angles = FOV_angles;  
+    SC_results.OOPs = FOV_OOPs; 
+    SC_results.directors = FOV_directors; 
+    %>>> EXPLORATION
+    SC_results.thresholds = FOV_thresholds; 
+    SC_results.grid_sizes = FOV_grid_sizes; 
+    %>>> ACTIN FILTERING: ACTIN ANGLES / OOP
+    SC_results.ACTIN_angles = ACTINFOV_angles;
     
     %Save the summary file 
     if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
