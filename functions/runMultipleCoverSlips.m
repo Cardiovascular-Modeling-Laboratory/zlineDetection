@@ -189,7 +189,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%% Summarize Coverslips %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Store all of the Multi CS data in a struct if these are not single cells
-if settings.cardio_type == 1
+% and there is more than one CS 
+if settings.cardio_type == 1 && settings.num_cs > 1
     
     %Store results in struct 
     MultiCS_Data = struct(); 
