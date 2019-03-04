@@ -67,7 +67,7 @@ for k = 1:settings.num_cs
     
     % Prompt the user to select the images they would like to analyze. 
     [ zline_images{k,1}, zline_path{k,1}, zn(k,1) ] = ...
-        load_files( {'*w1mCherry*.TIF;*w1mCherry*.tif;*w4Cy7*.tif;*w1Cy7*.tif;*Sarc*.tif'}, ...
+        load_files( {'*w1mCherry*.TIF;*w1mCherry*.tif;*w4Cy7*.tif;*w1Cy7*.tif;*Sarc*.tif;*w3mCherry*.TIF'}, ...
         'Select images stained for z-lines...', previous_path);
     
     %Temporarily store the path 
@@ -189,7 +189,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%% Summarize Coverslips %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Store all of the Multi CS data in a struct if these are not single cells
-if cardio_type == 1
+if settings.cardio_type == 1
     
     %Store results in struct 
     MultiCS_Data = struct(); 
