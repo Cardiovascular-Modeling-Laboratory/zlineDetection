@@ -25,7 +25,8 @@ if settings.num_cs > 1 && settings.analysis
     %Get all of the scalar value coverslip numbers and number of 
     %orientation vectors 
     MultiCS_CSN = concatCells( MultiCS_Data.MultiCS_CSID, true );
-    MultiCS_anglecount = MultiCS_Data.MultiCS_anglecount; 
+    MultiCS_anglecount = concatCells( MultiCS_Data.MultiCS_anglecount, ...
+        true ); 
     
     %>>> Continuous z-line analysis 
     if settings.exploration || settings.tf_CZL
@@ -61,7 +62,7 @@ if settings.num_cs > 1 && settings.analysis
         MultiCS_ACTINOOP = ...
             concatCells( MultiCS_Data.MultiCS_ACTINOOP, true );
         MultiCS_ACTINanglecount = ...
-            MultiCS_Data.MultiCS_ACTINanglecount;
+            concatCells( MultiCS_Data.MultiCS_ACTINanglecount, true );
     else
         %Set to NaN if does not exist 
         MultiCS_nonzlinefrac = NaN*zeros(size(MultiCS_CSN));

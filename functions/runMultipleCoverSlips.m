@@ -45,11 +45,11 @@ MultiCS_lengths = cell(1,settings.num_cs);
 %Save the OOP for each coverslip 
 MultiCS_OOP = cell(1,settings.num_cs);
 %Save the number of orientation vectors of each CS 
-MultiCS_anglecount = zeros(1,settings.num_cs); 
+MultiCS_anglecount = cell(1,settings.num_cs); 
 %Save the ACTIN OOP for each coverslip 
 MultiCS_ACTINOOP = cell(1,settings.num_cs);
 %Save the number of actin orientation vectors of each CS 
-MultiCS_ACTINanglecount = zeros(1,settings.num_cs); 
+MultiCS_ACTINanglecount = cell(1,settings.num_cs); 
 
 %IDs for the different coverslips and conditions 
 MultiCS_CSID = cell(1,settings.num_cs); 
@@ -165,7 +165,7 @@ for k = 1:settings.num_cs
         MultiCS_grid_sizes{1,k} = CS_results.CS_gridsizes;
         MultiCS_actin_threshs{1,k} = CS_results.CS_thresholds;
         MultiCS_OOP{1,k} = CS_results.CS_OOPs;    
-        MultiCS_anglecount(1,k) = sum(CS_results.angle_count); 
+        MultiCS_anglecount{1,k} = CS_results.angle_count; 
         %Save coverslip number 
         MultiCS_CSID{1,k} = k*ones(size(CS_results.CS_OOPs)); 
     end
@@ -174,7 +174,7 @@ for k = 1:settings.num_cs
     %vectors 
     if settings.cardio_type == 1 && settings.actin_filt 
         MultiCS_ACTINOOP{1,k} = CS_results.ACTINCS_OOPs; 
-        MultiCS_ACTINanglecount(1,k) = sum(CS_results.ACTINangle_count);
+        MultiCS_ACTINanglecount{1,k} = CS_results.ACTINangle_count;
     end 
     
     %Store the condition ID 
