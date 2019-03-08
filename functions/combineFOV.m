@@ -60,12 +60,14 @@ CS_results.FOVstats_zlinefrac = zeros(2,tot);%1: mean 2: stdev
 %>>> OOP 
 CS_results.CS_angles = cell(1,tot); 
 CS_results.CS_OOPs = zeros(1,tot);
+CS_results.CS_director = zeros(1,tot);
 CS_results.FOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
 CS_results.angle_count = zeros(1,tot); 
 
 %>>> ACTIN OOP 
 CS_results.ACTINCS_angles = cell(1,tot); 
 CS_results.ACTINCS_OOPs = zeros(1,tot);
+CS_results.ACTINCS_director = zeros(1,tot);
 CS_results.ACTINFOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
 CS_results.ACTINangle_count = zeros(1,tot); 
 
@@ -291,7 +293,7 @@ for t = 1:tot
     if settings.exploration || settings.tf_OOP 
         temp_angles = CS_results.CS_angles{1,t}; 
         temp_angles(isnan(temp_angles)) = 0;
-        [CS_results.CS_OOPs(1,t), ~, ~, ~ ] = calculate_OOP( temp_angles ); 
+        [CS_results.CS_OOPs(1,t), CS_results.CS_director(1,t), ~, ~ ] = calculate_OOP( temp_angles ); 
         %Calculate the number of nonzero angles
         temp_angles(temp_angles == 0) = []; 
         CS_results.angle_count(1,t) = length(temp_angles); 
@@ -304,7 +306,7 @@ for t = 1:tot
     if settings.actin_filt
         ACTINtemp_angles = CS_results.ACTINCS_angles{1,t}; 
         ACTINtemp_angles(isnan(ACTINtemp_angles)) = 0;
-        [CS_results.ACTINCS_OOPs(1,t), ~, ~, ~ ] = ...
+        [CS_results.ACTINCS_OOPs(1,t), CS_results.ACTINCS_director(1,t), ~, ~ ] = ...
             calculate_OOP( ACTINtemp_angles ); 
         %Calculate the number of nonzero angles
         ACTINtemp_angles(ACTINtemp_angles == 0) = []; 
