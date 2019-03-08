@@ -55,6 +55,10 @@ MultiCS_ACTINanglecount = cell(1,settings.num_cs);
 MultiCS_CSID = cell(1,settings.num_cs); 
 MultiCS_CONDID = cell(1,settings.num_cs); 
 
+%Save the orientation angles of actin and zlines for each CS 
+MultiCS_ACTINorientim = cell(1,settings.num_cs); 
+MultiCS_orientim = cell(1,settings.num_cs); 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Select Files %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all; 
 %Have the user select the different directories for the coverslips
@@ -166,8 +170,10 @@ for k = 1:settings.num_cs
         MultiCS_actin_threshs{1,k} = CS_results.CS_thresholds;
         MultiCS_OOP{1,k} = CS_results.CS_OOPs;    
         MultiCS_anglecount{1,k} = CS_results.angle_count; 
+        MultiCS_orientim{1,k} = CS_results.CS_angles; 
         %Save coverslip number 
-        MultiCS_CSID{1,k} = k*ones(size(CS_results.CS_OOPs)); 
+        MultiCS_CSID{1,k} = k*ones(size(CS_results.CS_OOPs));
+        
     end
     
     %Store the actin OOP for each coverslip and the number of orientation
@@ -175,6 +181,7 @@ for k = 1:settings.num_cs
     if settings.cardio_type == 1 && settings.actin_filt 
         MultiCS_ACTINOOP{1,k} = CS_results.ACTINCS_OOPs; 
         MultiCS_ACTINanglecount{1,k} = CS_results.ACTINangle_count;
+        MultiCS_ACTINorientim{1,k} = CS_results.ACTINCS_angles; 
     end 
     
     %Store the condition ID 
@@ -209,7 +216,8 @@ if settings.cardio_type == 1 && settings.num_cs > 1
     MultiCS_Data.MultiCS_ACTINOOP = MultiCS_ACTINOOP; 
     MultiCS_Data.MultiCS_anglecount = MultiCS_anglecount; 
     MultiCS_Data.MultiCS_ACTINanglecount = MultiCS_ACTINanglecount; 
-    
+    MultiCS_Data.MultiCS_ACTINorientim = MultiCS_ACTINorientim; 
+    MultiCS_Data.MultiCS_orientim = MultiCS_orientim; 
     
     %Create summary information, including excel sheets and plots (when
     %applicable

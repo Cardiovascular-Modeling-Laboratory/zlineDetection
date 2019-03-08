@@ -1,21 +1,40 @@
+% CALCULATE_OOP - calculate the orientational order parameter of a matrix
+% of orientation vectors in radians 
+%
+% Usage:   [ OOP, directionAngle, direction_error, director ] = ...
+%               calculate_OOP( angles_matrix )
+%
+% Arguments:
+%       angles_matrix   - a matrix of orientation angles in radians 
+% 
+% Returns:
+%       OOP                 - orientational order parameters
+%       directionAngle      - principle direction angle in degrees 
+%       direction_error     - difference between principle direction (in 
+%                               degrees) average direction (in degrees)
+%       director            - principle direction vector
+%
+
+% Tessa Morris, Anna Grosberg
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
+
 function [ OOP, directionAngle, direction_error, director ] = ...
     calculate_OOP( angles_matrix )
-%Function to calculate the OOP code, which is based on the 
-%orientationalOrder_Matrix_function from OOP_MultipleCond 
 
 %Reshape the matrix and remove all zero values. 
 reshaped_matrix = angles_matrix(:); 
 reshaped_matrix(reshaped_matrix == 0) = []; 
 
 %Initialize a matrix to store the x and y components of each orientation
-%vector
+%angle
 r = zeros(2, length(reshaped_matrix));
 
 %Calculate x and y components of each vector r
 r(1,:) = cos(reshaped_matrix);
 r(2,:) = sin(reshaped_matrix);
-        
-        
+             
 %Calculate the Orientational Order Tensor for each r and 
 %the average Orientational Order Tensor (OOT_Mean)
 for i=1:2
@@ -37,14 +56,6 @@ OOT = 2.*OOT_Mean - eye(2);
 %direcotor is the corresponding eigenvector.
 [OOP,I] = max(max(orient_parameters));
 director = directions(:,I);
-
-%Calculate the angle corresponding to the director, note that by symmetry
-%the director = - director. This implies that any angle with a period of
-%180 degrees will match this director. To help compare these results to
-%the plot results we enforce the period to match the period of the
-%original data.
-% directionAngle_default = acosd(director(1)/sum(director.^2));
-% directionAngle = directionAngle_default+180*(floor(min(reshaped_matrix)/pi()));
 
 %Calculate the angle corresponding to the director, by taking the inverse
 %tangent of the y component of the director divided by the x component. 
