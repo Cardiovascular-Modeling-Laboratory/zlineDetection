@@ -316,13 +316,9 @@ if settings.cardio_type == 1 && settings.analysis
     FOV_results.FOV_grid_sizes = FOV_grid_sizes;
     
     %Remove the appropriate data fields from the CS_results struct 
-    CS_results = rmfield(CS_results, 'FOV_nonzlinefrac');
-    CS_results = rmfield(CS_results, 'FOV_zlinefrac');
     CS_results = rmfield(CS_results, 'FOV_prefiltered');
     CS_results = rmfield(CS_results, 'FOV_postfiltered');
     CS_results = rmfield(CS_results, 'FOV_lengths');
-    CS_results = rmfield(CS_results, 'FOV_medians');
-    CS_results = rmfield(CS_results, 'FOV_sums');
     CS_results = rmfield(CS_results, 'FOV_angles');
     CS_results = rmfield(CS_results, 'FOV_thresholds');
     CS_results = rmfield(CS_results, 'FOV_grid_sizes');
