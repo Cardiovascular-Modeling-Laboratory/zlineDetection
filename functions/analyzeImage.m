@@ -183,6 +183,11 @@ imwrite( im_struct.skel_final, fullfile(im_struct.save_path, ...
 
 %%%%%%%%%%%%%%%%% Report Final Orentation Vectors %%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Save the unfiltered orienation angles 
+im_struct.noskel_orientim = im_struct.orientim; 
+im_struct.noactinfilt_orientim = im_struct.noskel_orientim; 
+im_struct.noactinfilt_orientim(~im_struct.skel_trim) = NaN; 
+
 % Remove regions that were not part of the binary skeleton
 im_struct.orientim(~im_struct.skel_final) = NaN; 
 
