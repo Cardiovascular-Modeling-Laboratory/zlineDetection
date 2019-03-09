@@ -23,28 +23,24 @@ function [ CS_results ] = ...
 %%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 zn = length(zline_images); 
 
-%>>> ACTIN FILTERING: Non Zline Fractions (NO EXPLORATION) 
+%>>> Actin Filtering analysis 
 FOV_nonzlinefrac = cell(1,zn);
 FOV_zlinefrac = cell(1,zn);
-
 FOV_prefiltered = cell(1,zn); 
 FOV_postfiltered = cell(1,zn); 
-
-%>>> ACTIN FILTERING: Continuous z-line length (NO EXPLORATION) 
+%>>> Continuous Z-line Analysis
 FOV_lengths = cell(1,zn); 
 FOV_medians = cell(1,zn); 
 FOV_sums = cell(1,zn);  
-
-%>>> ACTIN FILTERING: OOP (NO EXPLORATION) 
+%>>> Z-line Angle analysis
 FOV_angles = cell(1,zn);  
 FOV_OOPs = cell(1,zn); 
 FOV_directors = cell(1,zn); 
 FOV_anglecount = cell(1,zn); 
-%>>> EXPLORATION
+%>>> EXPLORATION Parmaeters
 FOV_thresholds = cell(1,zn); 
 FOV_grid_sizes = cell(1,zn); 
-
-%>>>SAVE THE ACTIN VECTORS 
+%>>> Actin angle analysis
 ACTINFOV_angles = cell(1,zn);  
 ACTINFOV_OOPs = cell(1,zn); 
 ACTINFOV_directors = cell(1,zn); 
@@ -270,69 +266,54 @@ summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
 if settings.cardio_type == 1 && settings.analysis
-    %Create a struct for the outputs 
+    %Create a struct for the coverslip data  
     CS_results = struct(); 
-
     %>>> Files 
     CS_results.zline_path = zline_path;
     CS_results.zline_images = zline_images; 
-
-    %>>> ACTIN FILTERING: Non zline Fractions
-%     CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
-%     CS_results.FOV_zlinefrac = FOV_zlinefrac;
+    %>>> Actin Filtering analysis 
     CS_results.FOV_prefiltered = FOV_prefiltered;
     CS_results.FOV_postfiltered = FOV_postfiltered;
-    %>>> ACTIN FILTERING: Continuous z-line length
+    %>>> Continuous Z-line Analysis 
     CS_results.FOV_lengths = FOV_lengths;
-%     CS_results.FOV_medians = FOV_medians; 
-%     CS_results.FOV_sums = FOV_sums; 
-    %>>> ACTIN FILTERING: OOP 
-    CS_results.FOV_angles = FOV_angles;  
-%     CS_results.FOV_OOPs = FOV_OOPs; 
-%     CS_results.FOV_directors = FOV_directors; 
-    %>>> EXPLORATION
+    %>>> Z-line Angle analysis  
+    CS_results.FOV_angles = FOV_angles; 
+    %>>> Actin angle analysis 
+    CS_results.ACTINFOV_angles = ACTINFOV_angles; 
+    %>>> EXPLORATION Parmaeters 
     CS_results.FOV_thresholds = FOV_thresholds; 
     CS_results.FOV_grid_sizes = FOV_grid_sizes; 
-    %>>> ACTIN FILTERING: ACTIN ANGLES / OOP
-    CS_results.ACTINFOV_angles = ACTINFOV_angles; 
     
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
     
-    %Remove unnecessary fiels
-    CS_results = rmfield(CS_results, 'FOV_Grouped');
-%     CS_results = rmfield(CS_results, 'FOV_OOPs'); 
-%     CS_results = rmfield(CS_results, 'FOV_directors'); 
-%     CS_results = rmfield(CS_results, 'FOVstats_medians');
-%     CS_results = rmfield(CS_results, 'FOVstats_sums');
-%     CS_results = rmfield(CS_results, 'FOVstats_nonzlinefrac');
-%     CS_results = rmfield(CS_results, 'FOVstats_zlinefrac');
-%     CS_results = rmfield(CS_results,'FOVstats_OOPs'); 
-%     CS_results = rmfield(CS_results,'ACTINFOVstats_OOPs'); 
-    
     %Create new struct to hold FOV data 
     FOV_results = struct();
-    %Save the appropriate data fields
+    %>>> Files 
     FOV_results.zline_path = zline_path;
     FOV_results.zline_images = zline_images;
+    %>>> Actin Filtering analysis 
     FOV_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
     FOV_results.FOV_zlinefrac = FOV_zlinefrac;
     FOV_results.FOV_prefiltered = FOV_prefiltered;
     FOV_results.FOV_postfiltered = FOV_postfiltered;
+    %>>> Continuous Z-line Analysis 
     FOV_results.FOV_lengths = FOV_lengths;
     FOV_results.FOV_medians = FOV_medians;
     FOV_results.FOV_sums = FOV_sums;
-    %ZLINE 
+    %>>> Z-line Angle analysis  
     FOV_results.FOV_angles = FOV_angles;
     FOV_results.FOV_OOPs = FOV_OOPs; 
     FOV_results.FOV_directors = FOV_directors;
-    FOV_results.FOV_anglecount = FOV_anglecount; 
-    FOV_results.FOV_thresholds = FOV_thresholds;
-    FOV_results.FOV_grid_sizes = FOV_grid_sizes;
+    FOV_results.FOV_anglecount = FOV_anglecount;
+    %>>> Actin angle analysis 
     FOV_results.ACTINFOV_angles = ACTINFOV_angles;
     FOV_results.ACTINFOV_OOPs = ACTINFOV_OOPs; 
     FOV_results.ACTINFOV_directors = ACTINFOV_directors; 
     FOV_results.ACTINFOV_anglecount = ACTINFOV_anglecount; 
+    %>>> EXPLORATION Parameters 
+    FOV_results.FOV_thresholds = FOV_thresholds;
+    FOV_results.FOV_grid_sizes = FOV_grid_sizes;
     
     %Remove the appropriate data fields from the CS_results struct 
     CS_results = rmfield(CS_results, 'FOV_nonzlinefrac');
@@ -366,24 +347,24 @@ elseif settings.cardio_type == 2 && settings.analysis
     %>>> Files 
     SC_results.zline_path = zline_path;
     SC_results.zline_images = zline_images; 
-    %>>> ACTIN FILTERING: Non zline Fractions
+    %>>> Actin Filtering analysis 
     SC_results.nonzlinefrac = FOV_nonzlinefrac;
     SC_results.zlinefrac = FOV_zlinefrac;
     SC_results.prefiltered = FOV_prefiltered;
     SC_results.postfiltered = FOV_postfiltered;
-    %>>> ACTIN FILTERING: Continuous z-line length
+    %>>> Continuous z-line length
     SC_results.lengths = FOV_lengths;
     SC_results.medians = FOV_medians; 
     SC_results.sums = FOV_sums; 
-    %>>> Z-LINE ANGLES / OOP 
+    %>>> Z-line Angle analysis
     SC_results.angles = FOV_angles;  
     SC_results.OOPs = FOV_OOPs; 
     SC_results.directors = FOV_directors; 
     SC_results.angle_count = FOV_anglecount; 
-    %>>> EXPLORATION
+    %>>> EXPLORATION Parameters
     SC_results.thresholds = FOV_thresholds; 
     SC_results.grid_sizes = FOV_grid_sizes; 
-    %>>> ACTIN FILTERING: ACTIN ANGLES / OOP
+    %>>> Actin angle analysis
     SC_results.ACTIN_angles = ACTINFOV_angles;
     SC_results.ACTINOOPs = ACTINFOV_OOPs; 
     SC_results.ACTINdirectors = ACTINFOV_directors; 
