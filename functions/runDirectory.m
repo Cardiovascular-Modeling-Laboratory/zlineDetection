@@ -278,18 +278,18 @@ if settings.cardio_type == 1 && settings.analysis
     CS_results.zline_images = zline_images; 
 
     %>>> ACTIN FILTERING: Non zline Fractions
-    CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
-    CS_results.FOV_zlinefrac = FOV_zlinefrac;
+%     CS_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
+%     CS_results.FOV_zlinefrac = FOV_zlinefrac;
     CS_results.FOV_prefiltered = FOV_prefiltered;
     CS_results.FOV_postfiltered = FOV_postfiltered;
     %>>> ACTIN FILTERING: Continuous z-line length
     CS_results.FOV_lengths = FOV_lengths;
-    CS_results.FOV_medians = FOV_medians; 
-    CS_results.FOV_sums = FOV_sums; 
+%     CS_results.FOV_medians = FOV_medians; 
+%     CS_results.FOV_sums = FOV_sums; 
     %>>> ACTIN FILTERING: OOP 
     CS_results.FOV_angles = FOV_angles;  
-    CS_results.FOV_OOPs = FOV_OOPs; 
-    CS_results.FOV_directors = FOV_directors; 
+%     CS_results.FOV_OOPs = FOV_OOPs; 
+%     CS_results.FOV_directors = FOV_directors; 
     %>>> EXPLORATION
     CS_results.FOV_thresholds = FOV_thresholds; 
     CS_results.FOV_grid_sizes = FOV_grid_sizes; 
@@ -303,10 +303,10 @@ if settings.cardio_type == 1 && settings.analysis
     CS_results = rmfield(CS_results, 'FOV_Grouped');
 %     CS_results = rmfield(CS_results, 'FOV_OOPs'); 
 %     CS_results = rmfield(CS_results, 'FOV_directors'); 
-    CS_results = rmfield(CS_results, 'FOVstats_medians');
-    CS_results = rmfield(CS_results, 'FOVstats_sums');
-    CS_results = rmfield(CS_results, 'FOVstats_nonzlinefrac');
-    CS_results = rmfield(CS_results, 'FOVstats_zlinefrac');
+%     CS_results = rmfield(CS_results, 'FOVstats_medians');
+%     CS_results = rmfield(CS_results, 'FOVstats_sums');
+%     CS_results = rmfield(CS_results, 'FOVstats_nonzlinefrac');
+%     CS_results = rmfield(CS_results, 'FOVstats_zlinefrac');
 %     CS_results = rmfield(CS_results,'FOVstats_OOPs'); 
 %     CS_results = rmfield(CS_results,'ACTINFOVstats_OOPs'); 
     

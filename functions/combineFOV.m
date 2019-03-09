@@ -1,25 +1,10 @@
 function [CS_results] = combineFOV( settings, CS_results )
 % This function will combine the FOV for a single coverslip
 
-%%%%%%%%%%%%%%%%%%%% Convert Cells to Matrices %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %Properly ordered FOV values
 FOV_Grouped = struct; 
 
-%>>> ACTIN FILTERING: Non Sarc Fractions (NO EXPLORATION) 
-FOV_Grouped.FOV_nonzlinefrac = ...
-    concatCells( CS_results.FOV_nonzlinefrac, true ); 
-FOV_Grouped.FOV_zlinefrac = ...
-    concatCells( CS_results.FOV_zlinefrac, true ); 
-
-%>>> ACTIN FILTERING: Continuous z-line length (NO EXPLORATION) 
-FOV_Grouped.FOV_medians = concatCells( CS_results.FOV_medians, true ); 
-FOV_Grouped.FOV_sums = concatCells( CS_results.FOV_sums, true ); 
-
-%>>> ACTIN FILTERING: OOP (NO EXPLORATION) 
-FOV_Grouped.FOV_OOPs = concatCells( CS_results.FOV_OOPs, true );  
-
-%>>> EXPLORATION
+%Convert exploration values from cell to matrix 
 FOV_Grouped.FOV_thresholds = ...
     concatCells( CS_results.FOV_thresholds, true );  
 FOV_Grouped.FOV_grid_sizes = ...
@@ -42,7 +27,14 @@ else
     tot = 1; 
 end 
 
-%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Initialize cells to store grouped data
+FOV_Grouped.FOV_lengths = cell(zn,tot);
+FOV_Grouped.FOV_angles = cell(zn,tot); 
+FOV_Grouped.FOV_prefiltered = zeros(1,tot);
+FOV_Grouped.FOV_postfiltered = zeros(1,tot);
+FOV_Grouped.ACTINFOV_angles = cell(zn,tot);
+
+%%%%%%%%%%%%%%%%%%%%%%%% Initialize CS Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%
 %>>> Continuous Z-line Length
 CS_results.CS_lengths = cell(1,tot); 
 CS_results.CS_medians = zeros(1,tot); 
@@ -60,14 +52,14 @@ CS_results.CS_zlinefrac = zeros(1,tot);
 %>>> OOP 
 CS_results.CS_angles = cell(1,tot); 
 CS_results.CS_OOPs = zeros(1,tot);
-CS_results.CS_director = zeros(1,tot);
+CS_results.CS_directors = zeros(1,tot);
 % CS_results.FOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
 CS_results.angle_count = zeros(1,tot); 
 
 %>>> ACTIN OOP 
 CS_results.ACTINCS_angles = cell(1,tot); 
 CS_results.ACTINCS_OOPs = zeros(1,tot);
-CS_results.ACTINCS_director = zeros(1,tot);
+CS_results.ACTINCS_directors = zeros(1,tot);
 % CS_results.ACTINFOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
 CS_results.ACTINangle_count = zeros(1,tot); 
 
@@ -77,14 +69,7 @@ CS_results.CS_gridsizes = zeros(1,tot);
 
 
 %%%%%%%%%%%%%%%%%%% GROUP EXPLORATION VALUES  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%>>> Specially Group data (more than 1 value that are inconsistently valued
-FOV_Grouped.FOV_lengths = cell(zn,tot);
-FOV_Grouped.FOV_angles = cell(zn,tot); 
 
-FOV_Grouped.FOV_prefiltered = zeros(1,tot);
-FOV_Grouped.FOV_postfiltered = zeros(1,tot);
-
-FOV_Grouped.ACTINFOV_angles = cell(zn,tot);
     
 % Specially group data if the user did an exploration 
 if settings.actinthresh_explore || settings.grid_explore 
