@@ -1,6 +1,16 @@
 function [nuclei_probabilities, nuclei_labels] = ...
     classifyCMNuclei(nuclei_im, nuclei_binary,  labels)
 
+%Add in boundaries instead of nuclei and label 
+% in = inpolygon(xq,yq,xv,yv)
+% [in,on] = inpolygon(xq,yq,xv,yv)
+% plot(xv,yv) % polygon
+% axis equal
+% 
+% hold on
+% plot(xq(in),yq(in),'r+') % points inside
+% plot(xq(~in),yq(~in),'bo') % points outside
+
 %Convert nuclei image to be 2D grayscale matrix 
 if size(nuclei_im,3) > 1
     nuclei_im = rgb2gray(nuclei_im); 
