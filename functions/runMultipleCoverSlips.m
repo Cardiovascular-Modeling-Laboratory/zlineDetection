@@ -29,35 +29,32 @@ else
 end 
 
 %Initialize matrices to hold analysis information for each coverslip
-%Save the medians for each coverslip 
-MultiCS_medians = cell(1,settings.num_cs); 
-%Save the totals for each coverslip 
-MultiCS_sums = cell(1,settings.num_cs); 
-%Save the non-zline fraction for each coverslip 
-MultiCS_nonzlinefrac = cell(1,settings.num_cs);
-MultiCS_zlinefrac = cell(1,settings.num_cs);
-
-%Save the medians for each coverslip 
-MultiCS_grid_sizes = cell(1,settings.num_cs);
-MultiCS_actin_threshs = cell(1,settings.num_cs);
-%Save the lengths for each coverslip 
-MultiCS_lengths = cell(1,settings.num_cs);
-%Save the OOP for each coverslip 
-MultiCS_OOP = cell(1,settings.num_cs);
-%Save the number of orientation vectors of each CS 
-MultiCS_anglecount = cell(1,settings.num_cs); 
-%Save the ACTIN OOP for each coverslip 
-MultiCS_ACTINOOP = cell(1,settings.num_cs);
-%Save the number of actin orientation vectors of each CS 
-MultiCS_ACTINanglecount = cell(1,settings.num_cs); 
-
-%IDs for the different coverslips and conditions 
+%>>> IDs for the different coverslips and conditions 
 MultiCS_CSID = cell(1,settings.num_cs); 
 MultiCS_CONDID = cell(1,settings.num_cs); 
+%>>> Actin Filtering analysis 
+MultiCS_nonzlinefrac = cell(1,settings.num_cs);
+MultiCS_zlinefrac = cell(1,settings.num_cs);
+%>>> Continuous Z-line Analysis
+MultiCS_medians = cell(1,settings.num_cs); 
+MultiCS_sums = cell(1,settings.num_cs); 
+MultiCS_lengths = cell(1,settings.num_cs);
+%>>> Z-line Angle analysis
+MultiCS_orientim = cell(1,settings.num_cs); 
+MultiCS_OOP = cell(1,settings.num_cs);
+MultiCS_anglecount = cell(1,settings.num_cs); 
+MultiCS_directors = cell(1,settings.num_cs); 
+%>>> EXPLORATION Parameters
+MultiCS_grid_sizes = cell(1,settings.num_cs);
+MultiCS_actin_threshs = cell(1,settings.num_cs);
+%>>> Actin angle analysis
+MultiCS_ACTINorientim = cell(1,settings.num_cs); 
+MultiCS_ACTINOOP = cell(1,settings.num_cs);
+MultiCS_ACTINanglecount = cell(1,settings.num_cs); 
+MultiCS_ACTINdirectors = cell(1,settings.num_cs); 
+
 
 %Save the orientation angles of actin and zlines for each CS 
-MultiCS_ACTINorientim = cell(1,settings.num_cs); 
-MultiCS_orientim = cell(1,settings.num_cs); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Select Files %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all; 
@@ -171,6 +168,7 @@ for k = 1:settings.num_cs
         MultiCS_OOP{1,k} = CS_results.CS_OOPs;    
         MultiCS_anglecount{1,k} = CS_results.angle_count; 
         MultiCS_orientim{1,k} = CS_results.CS_angles; 
+        MultiCS_directors{1,k} = CS_results.CS_directors; 
         %Save coverslip number 
         MultiCS_CSID{1,k} = k*ones(size(CS_results.CS_OOPs));
         
@@ -182,6 +180,7 @@ for k = 1:settings.num_cs
         MultiCS_ACTINOOP{1,k} = CS_results.ACTINCS_OOPs; 
         MultiCS_ACTINanglecount{1,k} = CS_results.ACTINangle_count;
         MultiCS_ACTINorientim{1,k} = CS_results.ACTINCS_angles; 
+        MultiCS_ACTINdirectors{1,k} = CS_results.ACTINCS_directors; 
     end 
     
     %Store the condition ID 
@@ -201,24 +200,31 @@ if settings.cardio_type == 1 && settings.num_cs > 1
     
     %Store results in struct 
     MultiCS_Data = struct(); 
-    
-    MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
-    MultiCS_Data.MultiCS_medians=MultiCS_medians;
-    MultiCS_Data.MultiCS_sums=MultiCS_sums;
-    MultiCS_Data.MultiCS_nonzlinefrac=MultiCS_nonzlinefrac;
-    MultiCS_Data.MultiCS_zlinefrac=MultiCS_zlinefrac; 
-    MultiCS_Data.MultiCS_grid_sizes=MultiCS_grid_sizes;
-    MultiCS_Data.MultiCS_actin_threshs=MultiCS_actin_threshs;
-    MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
+    %>>> IDs for the different coverslips and conditions 
     MultiCS_Data.MultiCS_CSID=MultiCS_CSID;
     MultiCS_Data.MultiCS_CONDID=MultiCS_CONDID;    
     MultiCS_Data.name_CS = name_CS;
-    MultiCS_Data.MultiCS_ACTINOOP = MultiCS_ACTINOOP; 
-    MultiCS_Data.MultiCS_anglecount = MultiCS_anglecount; 
-    MultiCS_Data.MultiCS_ACTINanglecount = MultiCS_ACTINanglecount; 
-    MultiCS_Data.MultiCS_ACTINorientim = MultiCS_ACTINorientim; 
+    %>>> Actin Filtering analysis
+    MultiCS_Data.MultiCS_nonzlinefrac=MultiCS_nonzlinefrac;
+    MultiCS_Data.MultiCS_zlinefrac=MultiCS_zlinefrac; 
+    %>>> Continuous Z-line Analysis
+    MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
+    MultiCS_Data.MultiCS_medians=MultiCS_medians;
+    MultiCS_Data.MultiCS_sums=MultiCS_sums;
+    %>>> Z-line Angle analysis
     MultiCS_Data.MultiCS_orientim = MultiCS_orientim; 
-    
+    MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
+    MultiCS_Data.MultiCS_anglecount = MultiCS_anglecount; 
+    MultiCS_Data.MultiCS_directors = MultiCS_directors; 
+    %>>> Actin angle analysis
+    MultiCS_Data.MultiCS_ACTINorientim = MultiCS_ACTINorientim; 
+    MultiCS_Data.MultiCS_ACTINOOP = MultiCS_ACTINOOP; 
+    MultiCS_Data.MultiCS_ACTINanglecount = MultiCS_ACTINanglecount; 
+    MultiCS_Data.MultiCS_ACTINdirectors = MultiCS_ACTINdirectors; 
+    %>>> EXPLORATION Parameters 
+    MultiCS_Data.MultiCS_grid_sizes=MultiCS_grid_sizes;
+    MultiCS_Data.MultiCS_actin_threshs=MultiCS_actin_threshs;
+
     %Create summary information, including excel sheets and plots (when
     %applicable
     createSummaries(MultiCS_Data, name_CS, zline_images,...

@@ -43,9 +43,12 @@ if settings.num_cs > 1 && settings.analysis
     %>>> OOP
     if settings.exploration || settings.tf_OOP
         MultiCS_OOP = concatCells( MultiCS_Data.MultiCS_OOP, true );
+        MultiCS_directors = concatCells( MultiCS_Data.MultiCS_directors,...
+            true ); 
     else
         %Set to NaN if does not exist 
         MultiCS_OOP = NaN*zeros(size(MultiCS_CSN));
+        MultiCS_directors = NaN*zeros(size(MultiCS_CSN));
     end 
     
     %>>> ACTIN FILTERING 
@@ -63,6 +66,8 @@ if settings.num_cs > 1 && settings.analysis
             concatCells( MultiCS_Data.MultiCS_ACTINOOP, true );
         MultiCS_ACTINanglecount = ...
             concatCells( MultiCS_Data.MultiCS_ACTINanglecount, true );
+        MultiCS_ACTINdirectors = ...
+            concatCells( MultiCS_Data.MultiCS_ACTINdirectors, true );
     else
         %Set to NaN if does not exist 
         MultiCS_nonzlinefrac = NaN*zeros(size(MultiCS_CSN));
@@ -71,7 +76,7 @@ if settings.num_cs > 1 && settings.analysis
         MultiCS_actin_threshs = NaN*zeros(size(MultiCS_CSN));
         MultiCS_ACTINOOP = NaN*zeros(size(MultiCS_CSN));
         MultiCS_ACTINanglecount = NaN*zeros(size(MultiCS_CSN));
-        
+        MultiCS_ACTINdirectors = NaN*zeros(size(MultiCS_CSN));
     end 
     
     %If comparing conditions, store the conditions
@@ -93,6 +98,8 @@ if settings.num_cs > 1 && settings.analysis
     ZlineFraction = MultiCS_zlinefrac';  
     OOPzline = MultiCS_OOP';  
     OOPactin = MultiCS_ACTINOOP'; 
+    DirectorZline = MultiCS_directors'; 
+    DirectorActin = MultiCS_ACTINdirectors'; 
     TotalZline = MultiCS_anglecount'; 
     TotalActin = MultiCS_ACTINanglecount';     
     
@@ -107,7 +114,7 @@ if settings.num_cs > 1 && settings.analysis
     CoverslipPath = cell(size(CoverslipID)); 
     
     %Loop through and save variables 
-    for k=1:length(CoverslipID); 
+    for k=1:length(CoverslipID) 
         %Save condition name (if applicable 
         if settings.multi_cond
             ConditionName{k,1} = settings.cond_names{MultiCS_Cond(1,k),1}; 
@@ -127,6 +134,7 @@ if settings.num_cs > 1 && settings.analysis
     %Save in a table 
     T = table(ConditionValue,ConditionName,CoverslipName,...
         DateAnalyzed_YYYYMMDD,OOPzline,OOPactin,...
+        DirectorZline, DirectorActin,... 
         ZlineFraction,NonZlineFraction,TotalZline, ...
         TotalActin, MedianCZL,...
         TotalCZL,GridSize,ActinThreshold,CoverslipPath); 
