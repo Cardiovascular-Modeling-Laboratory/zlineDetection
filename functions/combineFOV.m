@@ -48,27 +48,27 @@ CS_results.CS_lengths = cell(1,tot);
 CS_results.CS_medians = zeros(1,tot); 
 CS_results.CS_sums = zeros(1,tot);  
 % FOV_lengths = cell(1,tot); 
-CS_results.FOVstats_medians = zeros(2,tot); %1: mean 2: stdev 
-CS_results.FOVstats_sums = zeros(2,tot);  %1: mean 2: stdev 
+% CS_results.FOVstats_medians = zeros(2,tot); %1: mean 2: stdev 
+% CS_results.FOVstats_sums = zeros(2,tot);  %1: mean 2: stdev 
 
 %>>> Non Zline & Zline Fractions 
 CS_results.CS_nonzlinefrac = zeros(1,tot);
-CS_results.FOVstats_nonzlinefrac = zeros(2,tot);%1: mean 2: stdev 
+% CS_results.FOVstats_nonzlinefrac = zeros(2,tot);%1: mean 2: stdev 
 CS_results.CS_zlinefrac = zeros(1,tot);
-CS_results.FOVstats_zlinefrac = zeros(2,tot);%1: mean 2: stdev 
+% CS_results.FOVstats_zlinefrac = zeros(2,tot);%1: mean 2: stdev 
 
 %>>> OOP 
 CS_results.CS_angles = cell(1,tot); 
 CS_results.CS_OOPs = zeros(1,tot);
 CS_results.CS_director = zeros(1,tot);
-CS_results.FOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
+% CS_results.FOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
 CS_results.angle_count = zeros(1,tot); 
 
 %>>> ACTIN OOP 
 CS_results.ACTINCS_angles = cell(1,tot); 
 CS_results.ACTINCS_OOPs = zeros(1,tot);
 CS_results.ACTINCS_director = zeros(1,tot);
-CS_results.ACTINFOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
+% CS_results.ACTINFOVstats_OOPs = zeros(2,tot);%1: mean 2: stdev 
 CS_results.ACTINangle_count = zeros(1,tot); 
 
 %>>> EXPLORATION
@@ -200,21 +200,21 @@ if settings.actinthresh_explore || settings.grid_explore
                         include_OOP(isnan(include_OOP)) = []; 
                     end 
 
-                    %Get the FOV stats 1: mean 2: stdev 
-                    CS_results.FOVstats_medians(1,n) = mean(include_medians);
-                    CS_results.FOVstats_medians(2,n) = std(include_medians);
-                    CS_results.FOVstats_sums(1,n) = mean(include_sums); 
-                    CS_results.FOVstats_sums(2,n) = std(include_sums); 
-                    CS_results.FOVstats_nonzlinefrac(1,n) = ...
-                        mean(include_nonzlinefrac);
-                    CS_results.FOVstats_nonzlinefrac(2,n) = ...
-                        std(include_nonzlinefrac);
-                    CS_results.FOVstats_zlinefrac(1,n) = ...
-                        mean(include_zlinefrac);
-                    CS_results.FOVstats_zlinefrac(2,n) = ...
-                        std(include_zlinefrac); 
-                    CS_results.FOVstats_OOPs(1,n) = mean(include_OOP); 
-                    CS_results.FOVstats_OOPs(2,n) = std(include_OOP); 
+%                     %Get the FOV stats 1: mean 2: stdev 
+%                     CS_results.FOVstats_medians(1,n) = mean(include_medians);
+%                     CS_results.FOVstats_medians(2,n) = std(include_medians);
+%                     CS_results.FOVstats_sums(1,n) = mean(include_sums); 
+%                     CS_results.FOVstats_sums(2,n) = std(include_sums); 
+%                     CS_results.FOVstats_nonzlinefrac(1,n) = ...
+%                         mean(include_nonzlinefrac);
+%                     CS_results.FOVstats_nonzlinefrac(2,n) = ...
+%                         std(include_nonzlinefrac);
+%                     CS_results.FOVstats_zlinefrac(1,n) = ...
+%                         mean(include_zlinefrac);
+%                     CS_results.FOVstats_zlinefrac(2,n) = ...
+%                         std(include_zlinefrac); 
+%                     CS_results.FOVstats_OOPs(1,n) = mean(include_OOP); 
+%                     CS_results.FOVstats_OOPs(2,n) = std(include_OOP); 
                 end              
                 %Increase counter 
                 n = n+1; 
