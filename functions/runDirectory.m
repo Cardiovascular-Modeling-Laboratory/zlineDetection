@@ -37,7 +37,7 @@ FOV_angles = cell(1,zn);
 FOV_OOPs = cell(1,zn); 
 FOV_directors = cell(1,zn); 
 FOV_anglecount = cell(1,zn); 
-%>>> EXPLORATION Parmaeters
+%>>> EXPLORATION Parameters
 FOV_thresholds = cell(1,zn); 
 FOV_grid_sizes = cell(1,zn); 
 %>>> Actin angle analysis
