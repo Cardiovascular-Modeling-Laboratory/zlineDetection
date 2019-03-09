@@ -99,6 +99,8 @@ else
                 labels(d1:s1, d2:s2) = 3; 
             end 
             
+            %Increase count 
+            n = n+1; 
         end
     end   
 end 
