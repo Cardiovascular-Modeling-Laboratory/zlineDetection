@@ -60,9 +60,26 @@ if nargin == 3
     save_path = fullfile(actin_path, new_subfolder); 
 end 
 
-% Compute the actin orientation and reliability
-[ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
-    orientInfo( im, settings.Options, settings.tophat_size);
+%Create a grayscale version of the image (if it was not already in
+%grayscale) 
+[ grayIM ] = makeGray( im ); 
+
+% Run Diffusion Filter:
+% Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
+% contrast and calculates the orientation vectors for later usage. 
+% The parameters (supplied by the GUI) are (1) Orientation Smoothing and
+% (2) Diffusion Time 
+Options = settings.Options; 
+% Inputs are the grayscale image and the Options struct from settings. 
+% The output is the diffusion filtered image and eigenvectors - Not sure
+% why this is important, but... 
+[ CEDgray, ~, ~ ] = CoherenceFilter( grayIM, Options );
+
+
+% 
+% % Compute the actin orientation and reliability
+% [ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
+%     orientInfo( im, settings.Options, settings.tophat_size);
 
 % Only keep orientation values with a reliability greater than 0.5
 reliability_binary = reliability > settings.reliability_thresh;

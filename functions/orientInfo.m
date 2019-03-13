@@ -23,6 +23,7 @@ function [ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
 % The parameters (supplied by the GUI) are (1) Orientation Smoothing and
 % (2) Diffusion Time 
 
+
 % Inputs are the grayscale image and the Options struct from settings. 
 % The output is the diffusion filtered image and eigenvectors - Not sure
 % why this is important, but... 

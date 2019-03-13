@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 31-Jan-2019 16:21:34
+% Last Modified by GUIDE v2.5 13-Mar-2019 12:10:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -742,3 +742,12 @@ function multi_cond_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of multi_cond
+
+
+% --- Executes on button press in diffusion_explore.
+function diffusion_explore_Callback(hObject, eventdata, handles)
+% hObject    handle to diffusion_explore (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of diffusion_explore
