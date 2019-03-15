@@ -124,12 +124,15 @@ disp('Skeletonization...');
 
 % Use Matlab skeletonization morphological function, convert to a skeleton,
 % fill inside spaces and then conver to a skeleton again.
-im_struct.skel = bwmorph( im_struct.im_binaryclean, 'skel', Inf );
-im_struct.skel = bwmorph( im_struct.skel, 'fill' );
-im_struct.skel = bwmorph( im_struct.skel, 'skel', Inf );
+im_struct.skel_initial = bwmorph( im_struct.im_binaryclean, 'skel', Inf );
+im_struct.skel_initial = bwmorph( im_struct.skel, 'fill' );
+im_struct.skel_initial = bwmorph( im_struct.skel, 'skel', Inf );
 
-% Clean up the skeleton 
-im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
+%Binarize the filtered image and remove positions that are not positive in
+%the skeleton. 
+mask = imbinarize(im_struct.im_gray);
+im_struct.skel = im_strct.skel_initial; 
+im_struct.skel(~mask) = 0; 
 
 
 if settings.disp_skel
@@ -138,15 +141,7 @@ if settings.disp_skel
     
     % Save the figure. 
     imwrite( im_struct.skel, fullfile(im_struct.save_path, ...
-        strcat( im_struct.im_name, '_Skeleton.tif' ) ),...
-        'Compression','none');
-    
-    % Open a figure and display the trimmed image 
-    figure; imshow(im_struct.skel_trim)
-
-    % Save the figure. 
-    imwrite( im_struct.skel_trim, fullfile(im_struct.save_path, ...
-        strcat( im_struct.im_name, '_SkeletonTrimmed.tif' ) ),...
+        strcat( im_struct.im_name, '_SkeletonInitial.tif' ) ),...
         'Compression','none');
     
 end
@@ -155,12 +150,18 @@ end
 % If the image should not be filtered with actin, set the final mask equal
 % to the trimmed skeleton and save 
 
+
 if ~settings.actin_filt
+    % Save the mask 
+    im_struct.mask = mask; 
+    
+    % Clean up the skeleton 
+    im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
+
     % Set the final skeleton equal to the trimmed skeleton
     im_struct.skel_final = im_struct.skel_trim; 
     
-    % Create a mask of all ones.
-    im_struct.mask = ones(size(im_struct.skel_trim)); 
+
     
 else
     % Remove false z-lines by looking at the actin directors
@@ -168,8 +169,12 @@ else
     filterWithActin( im_struct, filenames, settings); 
 
     % Multiply the mask by the trimmed skeleton to get the final skeleton
-    im_struct.skel_final = im_struct.mask.*im_struct.skel_trim;
+    im_struct.skel_trim = im_struct.mask.*im_struct.skel;
+    im_struct.skel_final = cleanSkel( im_struct.skel_trim, ...
+        settings.branch_size );
+    im_struct.skel_trim = im_struct.skel_final; 
 end 
+
 
 % Save the mask. 
 imwrite( im_struct.mask, fullfile(im_struct.save_path, ...
