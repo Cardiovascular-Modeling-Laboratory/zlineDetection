@@ -1,4 +1,4 @@
-function [skel_final] = ...
+function [] = ...
     diffusionParameterExploration(im_struct, settings)
 
 %Add inputs to path 
@@ -27,14 +27,12 @@ skel_masked = cell(1,nit);
 skel_final= cell(1,nit); 
     
 %Save_path 
-save_path = 'D:\Richard_Zline\Good Bad\SeedDate2019-02-22_NRVM_ISO_well2_w1_w4mCherry\ParameterExploration'; 
+save_path = 'D:\Richard_Zline\2019_03_14\SeedDate2019-02-22_NRVM_ISO_well12_w10_w4mCherry\ParameterExploration'; 
 %Start a counter 
 n = 1; 
 %Loop through all of the diffusion times and rho values 
-% for d = 1:length(var_diffusiontime)
-%     for r = 1:length(var_rho)
-for d = 1:1
-    for r = 1:1
+for d = 1:length(var_diffusiontime)
+    for r = 1:length(var_rho)
         %Save current parameters
         id_explore(1,n) = var_rho(r);
         id_explore(2,n) = var_diffusiontime(d); 
@@ -77,8 +75,7 @@ for d = 1:1
             'Compression','none');
 
         %Create initial mask 
-        mask = imbinarize(im_gray);
-        
+        mask = imbinarize(im_anisodiffuse{1,n});
         %Save the masked skeleton 
         skel(~mask) = 0; 
         skel_masked{1,n} = skel; 
@@ -114,15 +111,11 @@ for d = 1:1
         imwrite( skel_final{1,n}, fullfile(save_path, ...
             strcat( save_name, '_skelActinFiltered.tif' ) ),...
             'Compression','none'); 
- 
-        %Increase counter 
-        n = n+1; 
         
-        %Get the positions to plot 
-        skel_plot = zeros(size(skel_final{1,n})); 
-        skel_plot(skel_final{1,n} == true) = 1; 
-        skel_plot(skel_final{1,n} == 1) = 1; 
-        [x,y] = find(skel_plot)
+        
+        %Get the positions to plot in the skelton to plot 
+        [x,y] = find(skel_final{1,n} == 1);
+      
         %Plot skeleton on top of image 
         figure; imshow(mat2gray(im_gray)); 
         hold on; 
@@ -130,15 +123,20 @@ for d = 1:1
         % Save figure 
         saveas(gcf, fullfile(save_path, ...
             strcat( save_name, '_IM_SKEL.tif' )), ...
-            'tiffn');                
+            'tiffn');    
+        
+        %Close all figures
+        close all; 
+        %Increase counter 
+        n = n+1; 
     end
 end
 
-% % Save the data 
-% save(fullfile(save_path, strcat(im_struct.im_name,...
-%     '_DiffusionParameterExploration.mat')), 'im_struct', 'settings',...
-%     'id_explore','im_anisodiffuse','skel_initial','skel_masked',...
-%     'skel_final' );
+% Save the data 
+save(fullfile(save_path, strcat(im_struct.im_name,...
+    '_DiffusionParameterExploration.mat')), 'im_struct', 'settings',...
+    'id_explore','im_anisodiffuse','skel_initial','skel_masked',...
+    'skel_final' );
 
 end
 
