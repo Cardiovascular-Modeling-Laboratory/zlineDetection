@@ -81,16 +81,21 @@ clc;
 % Convert the matrix to be an intensity image 
 CEDgray = mat2gray( CEDgray );
 
+% Binaize 
+BW = imbinarize(CEDgray); 
+
 % Calculate orientation vectors
 [orientim, reliability] = ridgeorient(CEDgray, ...
     Options.sigma, Options.rho, Options.rho);
 
-% Only keep orientation values with a reliability greater than 0.5
-reliability_binary = reliability > settings.reliability_thresh;
+% % Only keep orientation values with a reliability greater than 0.5
+% reliability_binary = reliability > settings.reliability_thresh;
+% 
+% orientim = orientim.*reliability_binary;
 
 % Multiply orientation angles by the binary mask image to remove
 % data where there are no cells
-orientim = orientim.*reliability_binary;
+orientim(~BW) = 0; 
 
 if disp_actin
     % Save the diffusion filtered actin image
