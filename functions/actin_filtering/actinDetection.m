@@ -75,26 +75,18 @@ Options = settings.Options;
 % why this is important, but... 
 [ CEDgray, ~, ~ ] = CoherenceFilter( grayIM, Options );
 
+% Clear the command line 
+clc; 
 
-% 
-% % Compute the actin orientation and reliability
-% [ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
-%     orientInfo( im, settings.Options, settings.tophat_size);
+% Convert the matrix to be an intensity image 
+CEDgray = mat2gray( CEDgray );
+
+% Calculate orientation vectors
+[orientim, reliability] = ridgeorient(CEDgray, ...
+    Options.sigma, Options.rho, Options.rho);
 
 % Only keep orientation values with a reliability greater than 0.5
 reliability_binary = reliability > settings.reliability_thresh;
-
-% Get the size of the image
-[height, width] = size(grayIM); 
-
-% Size of border to remove
-br = 10; 
-
-% Remove 10 pixel wide border (br) where orientation values are not accurate
-reliability_binary(:,1:1:br) = 0;
-reliability_binary(1:1:br,:) = 0;
-reliability_binary(:,width-br:1:width) = 0;
-reliability_binary(height-br:1:height,:) = 0;
 
 % Multiply orientation angles by the binary mask image to remove
 % data where there are no cells
@@ -104,11 +96,6 @@ if disp_actin
     % Save the diffusion filtered actin image
     imwrite( CEDgray, fullfile(save_path, ...
         strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
-        'Compression','none');
-
-    % Save the top hat filtered image 
-    imwrite( CEDtophat, fullfile(save_path, ...
-        strcat( actin_name, '_ActinTopHatFiltered.tif' ) ),...
         'Compression','none');
 end 
     

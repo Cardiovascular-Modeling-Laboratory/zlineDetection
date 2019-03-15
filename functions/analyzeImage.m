@@ -125,13 +125,13 @@ disp('Skeletonization...');
 % Use Matlab skeletonization morphological function, convert to a skeleton,
 % fill inside spaces and then conver to a skeleton again.
 im_struct.skel_initial = bwmorph( im_struct.im_binaryclean, 'skel', Inf );
-im_struct.skel_initial = bwmorph( im_struct.skel, 'fill' );
-im_struct.skel_initial = bwmorph( im_struct.skel, 'skel', Inf );
+im_struct.skel_initial = bwmorph( im_struct.skel_initial, 'fill' );
+im_struct.skel_initial = bwmorph( im_struct.skel_initial, 'skel', Inf );
 
 %Binarize the filtered image and remove positions that are not positive in
 %the skeleton. 
 mask = imbinarize(im_struct.im_gray);
-im_struct.skel = im_strct.skel_initial; 
+im_struct.skel = im_struct.skel_initial; 
 im_struct.skel(~mask) = 0; 
 
 
@@ -169,7 +169,8 @@ else
     filterWithActin( im_struct, filenames, settings); 
 
     % Multiply the mask by the trimmed skeleton to get the final skeleton
-    im_struct.skel_trim = im_struct.mask.*im_struct.skel;
+    im_struct.skel_trim = im_struct.skel;
+    im_struct.skel_trim(im_struct.mask == 0) = 0; 
     im_struct.skel_final = cleanSkel( im_struct.skel_trim, ...
         settings.branch_size );
     im_struct.skel_trim = im_struct.skel_final; 
