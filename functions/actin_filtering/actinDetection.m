@@ -67,31 +67,55 @@ end
 % Only keep orientation values with a reliability greater than 0.5
 reliability_binary = reliability > settings.reliability_thresh;
 
-% Get the size of the image
-[height, width] = size(grayIM); 
-
-% Size of border to remove
-br = 10; 
-
-% Remove 10 pixel wide border (br) where orientation values are not accurate
-reliability_binary(:,1:1:br) = 0;
-reliability_binary(1:1:br,:) = 0;
-reliability_binary(:,width-br:1:width) = 0;
-reliability_binary(height-br:1:height,:) = 0;
-
 % Multiply orientation angles by the binary mask image to remove
 % data where there are no cells
 orientim = orientim.*reliability_binary;
+
+%%%%%%%%%
+% 
+% %Create a grayscale version of the image (if it was not already in
+% %grayscale) 
+% [ grayIM ] = makeGray( im ); 
+% 
+% % Run Diffusion Filter:
+% % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
+% % contrast and calculates the orientation vectors for later usage. 
+% % The parameters (supplied by the GUI) are (1) Orientation Smoothing and
+% % (2) Diffusion Time 
+% Options = settings.Options; 
+% % Inputs are the grayscale image and the Options struct from settings. 
+% % The output is the diffusion filtered image and eigenvectors - Not sure
+% % why this is important, but... 
+% [ CEDgray, ~, ~ ] = CoherenceFilter( grayIM, Options );
+% 
+% % Clear the command line 
+% clc; 
+% 
+% % Convert the matrix to be an intensity image 
+% CEDgray = mat2gray( CEDgray );
+% 
+% % Binaize 
+% BW = imbinarize(CEDgray); 
+% 
+% % Calculate orientation vectors
+% [orientim, reliability] = ridgeorient(CEDgray, ...
+%     Options.sigma, Options.rho, Options.rho);
+% 
+% % % Only keep orientation values with a reliability greater than 0.5
+% % reliability_binary = reliability > settings.reliability_thresh;
+% %
+% % orientim = orientim.*reliability_binary;
+% 
+% % Multiply orientation angles by the binary mask image to remove
+% % data where there are no cells
+% orientim(~BW) = 0; 
+
+%%%%%%%%%%%%%%%%
 
 if disp_actin
     % Save the diffusion filtered actin image
     imwrite( CEDgray, fullfile(save_path, ...
         strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
-        'Compression','none');
-
-    % Save the top hat filtered image 
-    imwrite( CEDtophat, fullfile(save_path, ...
-        strcat( actin_name, '_ActinTopHatFiltered.tif' ) ),...
         'Compression','none');
 end 
     
