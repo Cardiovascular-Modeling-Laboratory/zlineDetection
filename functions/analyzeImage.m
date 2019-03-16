@@ -130,7 +130,7 @@ im_struct.skel_initial = bwmorph( im_struct.skel_initial, 'skel', Inf );
 
 %Binarize the filtered image and remove positions that are not positive in
 %the skeleton. 
-mask = imbinarize(im_struct.im_gray);
+mask = imbinarize(im_struct.im_anisodiffuse);
 im_struct.skel = im_struct.skel_initial; 
 im_struct.skel(~mask) = 0; 
 
