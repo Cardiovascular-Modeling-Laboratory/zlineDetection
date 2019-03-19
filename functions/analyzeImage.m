@@ -130,7 +130,16 @@ im_struct.skel_initial = bwmorph( im_struct.skel_initial, 'skel', Inf );
 
 %Binarize the filtered image and remove positions that are not positive in
 %the skeleton. 
-mask = imbinarize(im_struct.im_anisodiffuse);
+%imbinarize is an improved version of im2bw, however it was implemented in
+%the 2016 Matlab. Therefore, use the inferior im2bw, along with
+%"graythresh" to choose the level (done automatically in imbinarize). 
+if exist('imbinarize.m','file') == 2 
+    mask = imbinarize(im_struct.im_anisodiffuse);
+else
+    mask = im2bw(im_struct.im_anisodiffuse,...
+        graythresh(im_struct.im_anisodiffuse));
+
+end 
 im_struct.skel = im_struct.skel_initial; 
 im_struct.skel(~mask) = 0; 
 
