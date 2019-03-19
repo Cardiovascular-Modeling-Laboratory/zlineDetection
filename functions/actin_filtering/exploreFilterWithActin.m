@@ -74,7 +74,7 @@ post_filt = zeros(tot,1);
 image_savepath = im_struct.save_path;
 
 % Save the prefiltered skeleton 
-prefilt_skel = im_struct.skel;
+prefilt_skel = im_struct.skel_trim;
 
 % Save the pre-filtered skeleton for calculation of the non-zlinefrac
 % percentages
