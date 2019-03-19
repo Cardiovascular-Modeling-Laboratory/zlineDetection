@@ -130,14 +130,27 @@ im_struct.skel_initial = bwmorph( im_struct.skel_initial, 'skel', Inf );
 
 %Binarize the filtered image and remove positions that are not positive in
 %the skeleton. 
-mask = imbinarize(im_struct.im_anisodiffuse);
+%imbinarize is an improved version of im2bw, however it was implemented in
+%the 2016 Matlab. Therefore, use the inferior im2bw, along with
+%"graythresh" to choose the level (done automatically in imbinarize). 
+if exist('imbinarize.m','file') == 2 
+    mask = imbinarize(im_struct.im_anisodiffuse);
+else
+    mask = im2bw(im_struct.im_anisodiffuse,...
+        graythresh(im_struct.im_anisodiffuse));
+
+end 
+
+%Remove the regions in the image that do not have z-lines. 
 im_struct.skel = im_struct.skel_initial; 
 im_struct.skel(~mask) = 0; 
 
+% Clean up the skeleton 
+im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
 
 if settings.disp_skel
     % Open a figure and display the image 
-    figure; imshow( im_struct.skel ); 
+    figure; imshow( im_struct.skel_trim ); 
     
     % Save the figure. 
     imwrite( im_struct.skel, fullfile(im_struct.save_path, ...
@@ -155,25 +168,20 @@ if ~settings.actin_filt
     % Save the mask 
     im_struct.mask = mask; 
     
-    % Clean up the skeleton 
-    im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
-
     % Set the final skeleton equal to the trimmed skeleton
     im_struct.skel_final = im_struct.skel_trim; 
-    
-
-    
+       
 else
     % Remove false z-lines by looking at the actin directors
     [ im_struct.mask, im_struct.actin_struct, im_struct.dp ] = ...
     filterWithActin( im_struct, filenames, settings); 
 
-    % Multiply the mask by the trimmed skeleton to get the final skeleton
-    im_struct.skel_trim = im_struct.skel;
-    im_struct.skel_trim(im_struct.mask == 0) = 0; 
-    im_struct.skel_final = cleanSkel( im_struct.skel_trim, ...
+    % Multiply the mask by the trimmed skeleton to get the final skeleton.
+    % Trim again to get 
+    im_struct.skel_final =  im_struct.skel_trim;
+    im_struct.skel_final(im_struct.mask == 0) = 0; 
+    im_struct.skel_final_trimmed = cleanSkel( im_struct.skel_final, ...
         settings.branch_size );
-    im_struct.skel_trim = im_struct.skel_final; 
 end 
 
 
