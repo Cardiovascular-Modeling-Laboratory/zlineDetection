@@ -108,7 +108,7 @@ for k = 1:settings.num_cs
 
         % If the number of actin and z-line files are not equal,
         % warn the user
-        if an ~= zn
+        if an(k,1) ~= zn(k,1)
             disp(['The number of z-line files does not equal',...
                 'the number of actin files.']); 
             disp(strcat('Actin Images: ',{' '}, num2str(an), ...
