@@ -1,4 +1,4 @@
-function [sorted_set1,sorted_set2, comp_matrix] = ...
+function [sorted_set1,sorted_set2, comp_matrix, together_vis] = ...
     sortFilenames(set1, set2, exclusions)
 %Get the number of filenames in both sets 
 n1 = length(set1); 
@@ -44,10 +44,23 @@ if length(d1) == n1 && length(unique(d1)) == n1 && length(unique(d2)) == n2
         together_vis{k,1} = set1{1,d1(k)};
         together_vis{k,2} = set2{1,d2(k)}; 
     end
-else
-    disp('Need to compare the actual values'); 
-    sorted_set1 = set1; 
-    sorted_set2 = set2; 
+else 
+    %Find the positions that have the minimum number of differences 
+    min_diff = comp_matrix(:,:,2); 
+    [m1, m2] = find( min_diff == min(min_diff(:)) );  
+    if length(m1) == n1 && length(unique(m1)) == n1 && ...
+            length(unique(m2)) == n2 
+        for k = 1:n1
+            sorted_set1{1,k} = set1{1,m1(k)}; 
+            sorted_set2{1,k} = set2{1,m2(k)}; 
+            together_vis{k,1} = set1{1,m1(k)};
+            together_vis{k,2} = set2{1,m2(k)}; 
+        end
+    else
+        disp('You have outsmarted me. I cannot sort your files for you.'); 
+        sorted_set1 = set1; 
+        sorted_set2 = set2; 
+    end
 end
 
 %Display results for visualization together. 
