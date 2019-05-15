@@ -1,11 +1,14 @@
-function [diff, n_diff, diff_values]  = ...
-    compareFileNumbers(filename1,filename2, dispmsg)
-% This function will be used to compare the numbers in two files. It will
-% then tell you the difference between the numbers and output the total
-% difference between them 
+function [diff_values, n_diff, max_diff]  = ...
+    compareFileNumbers(filename1,filename2, dispmsg, exclusions)
+% This function will be used to compare the numbers in two files.
+% It will exclude any of the following strings 
+filename1_edit = filename1; 
+filename2_edit = filename2; 
 
-%Compare extensions
-%Remove any of the strings to remove
+for k = 1:length(exclusions)
+    filename1_edit = strrep(filename1_edit, exclusions{k}, ''); 
+    filename2_edit = strrep(filename2_edit, exclusions{k}, '');
+end
 
 %If the user did not supply a third input set dispmsg to false. 
 if nargin < 3
@@ -13,57 +16,18 @@ if nargin < 3
 end 
 
 %Use Matlab string compare to see if the strings are exactly the same. 
-if strcmp(filename1,filename2)
+if strcmp(filename1_edit,filename2_edit)
     %If the strings are identical, set the distance equal to 0
-    diff = 0; 
-    n_diff = 0; 
     diff_values = NaN; 
+    n_diff = 0; 
+    max_diff = 0; 
     if dispmsg
-        disp('No differences between numbers.'); 
+        disp('No differences between filenames.'); 
     end 
 else
-    %Isolate the characters
-    char1 = regexprep(filename1,'[^a-zA-Z]','');
-    char2 = regexprep(filename2,'[^a-zA-Z]','');
-    %Compare the string portion of the filenames  
-    if strcmp(char1, char2)
-        chardiff = 0; 
-        if dispmsg
-            disp('No differences between characters.'); 
-        end 
-    else
-        %Store the values 
-        char1 = char(char1); 
-        char2 = char(char2); 
-        
-        %Get the lenths of both 
-        cl = length(char1); 
-        c2 = length(char2); 
-        
-        %Create a matrix to store the differences between characters
-        chardiff = zeros(c1+1, c2+1); 
-        chardiff(:,1) = (0:c1)';
-        chardiff(1,:) = (0:c2);
-    %     for i = 1:m
-    %         for j = 1:n
-    %             c = s(i) ~= t(j); % c = 0 if chars match, 1 if not.
-    %             D(i+1,j+1) = min([D(i,j+1) + 1
-    %                               D(i+1,j) + 1
-    %                               D(i,j)  +  c]);
-    %         end
-    %     end
-    %     levm_print(s,t,D)    
-    %     d = D(m+1,n+1);
-    %         end    
-
-        
-        
-        disp('Characters are also different.'); 
-    end 
-    
     %Isolate the numbers in the filenames 
-    nums1 = regexp(filename1,'\d*','Match');
-    nums2 = regexp(filename2,'\d*','Match'); 
+    nums1 = regexp(filename1_edit,'\d*','Match');
+    nums2 = regexp(filename2_edit,'\d*','Match');
     
     %Get the length of both cells
     len1 = length(nums1); 
@@ -72,16 +36,16 @@ else
     %If the lengths are the same compare the differences 
     if len1 == len2 
         %Array to save difference 
-        diff = zeros(size(nums1)); 
+        diff_values = zeros(size(nums1)); 
         %Compute differences 
         for l = 1:len1
-            diff(l) = str2double(nums1{1,l}) - str2double(nums2{1,l}); 
+            diff_values(l) = str2double(nums1{1,l}) - str2double(nums2{1,l}); 
         end 
         
         %Number of differences 
-        diff_values = diff; 
-        diff_values(diff_values == 0) = []; 
-        n_diff = length(diff_values); 
+        diff = diff_values; 
+        diff(diff == 0) = []; 
+        n_diff = length(diff);
         total_nums = len1; 
         
         %Display results if requested
@@ -99,10 +63,20 @@ else
                 'numbers,', {' '}, num2str(n_diff), {' '}, con_word, ...
                 ' different by the following ',{' '}, am); 
             disp(msg{1}); 
-            disp(diff_values); 
+            disp(diff); 
             disp(filename1); 
-            disp(filename2); 
-        end 
+            disp(filename2);
+        end
+        
+        %Save the max difference
+        max_diff = max(abs(diff)); 
+            
+    else
+        disp('Not the same amount of numbers'); 
+        diff_values = NaN; 
+        n_diff = NaN; 
+        max_diff = NaN; 
+        
     end 
 end 
 
