@@ -2,6 +2,12 @@ function [] = runMultipleCoverSlips(settings)
 %This function will be used to run multiple coverslips and obtain a summary
 %file
 
+%Possible stains/wells that could included in filenames and should be
+%excluded in concatination of filenames
+string1 = {'w1','w2','w3','w4','w5'};
+string2 = {'Cy7','mCherry','GFP','DAPI'};
+txt_exclude = combineStrings(string1,string2);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Create a cell to hold the coverslip name 
 name_CS = cell(settings.num_cs,1);
@@ -58,8 +64,15 @@ MultiCS_ACTINdirectors = cell(1,settings.num_cs);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Select Files %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all; 
-%Have the user select the different directories for the coverslips
-for k = 1:settings.num_cs 
+
+%Start counting variable
+k = 1; 
+while k < settings.num_cs + 1 
+
+    %Boolean statement to keep going unless there is an issue
+    keepGoing = true; 
+% %Have the user select the different directories for the coverslips
+% for k = 1:settings.num_cs 
     
     %Display message telling the user which coverslip they're on 
     disp_message = strcat('Selecting Coverslip',{' '}, num2str(k),...
@@ -109,19 +122,37 @@ for k = 1:settings.num_cs
         % If the number of actin and z-line files are not equal,
         % warn the user
         if an(k,1) ~= zn(k,1)
+            %Display message telling the user that they did not select the
+            %same number of files 
             disp(['The number of z-line files does not equal',...
                 'the number of actin files.']); 
             disp(strcat('Actin Images: ',{' '}, num2str(an), ...
                 'Z-line Images: ',{' '}, num2str(zn))); 
-            disp('Press "Run Folder" to try again.'); 
-            return; 
+            %Set keepGoing equal to false so they keep selecting. 
+            keepGoing = false; 
+        else
+            %Sort the z-line and actin file names to make sure that they're
+            %matching
+            [zline_images{k,1}, actin_images{k,1}, ~, together_vis] = ...
+                sortFilenames(zline_images{k,1}, actin_images{k,1}, ...
+                txt_exclude);
+            %Display results for visualization together. 
+            disp(together_vis); 
+            disp('Please take a moment to make sure your files are properly sorted.'); 
+            disp('Press any key to continue.'); 
+            pause; 
+            sortedProperly = questdlg('Are your filenames sorted properly?', ...
+                    'File Sorting','Yes','No','Yes');
+            %Re select this coverslip
+            if strcmp('No',sortedProperly)
+                %Set keepGoing equal to false so they keep selecting. 
+                keepGoing = false; 
+            end
+            
         end
-    
-        % Sort the z-line and actin files. Ideally this means that 
-        % they'll be called in the correct order. 
-        zline_images{k,1} = sort(zline_images{k,1}); 
-        actin_images{k,1} = sort(actin_images{k,1}); 
-    
+        
+
+     
     else
         %Set the actin image to NaN 
         actin_images{k,1} = NaN; 
@@ -132,7 +163,7 @@ for k = 1:settings.num_cs
     %Display path the user selected 
     disp(zline_path{k,1});
     
-    if settings.multi_cond
+    if settings.multi_cond && keepGoing
         %Declare conditions for the selected coverslip 
         cond(k,1) = ...
             declareCondition(settings.cond_names, k, settings.num_cs); 
@@ -143,6 +174,14 @@ for k = 1:settings.num_cs
             settings.cond_names{cond(k,1),1}); 
         disp(disp_message{1}); 
     end 
+    
+    % Only increase the counter if there were no issues with the data
+    % selection
+    if keepGoing 
+        k = k + 1; 
+    else
+        disp('Fix any errors and reselect coverslip.'); 
+    end
 end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Analyze all CS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

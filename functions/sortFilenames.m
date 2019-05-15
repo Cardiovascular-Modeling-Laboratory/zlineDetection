@@ -63,10 +63,5 @@ else
     end
 end
 
-%Display results for visualization together. 
-disp(together_vis); 
-disp('Please take a moment to make sure your filenames are properly sorted.'); 
-disp('Press any key to continue.'); 
-pause; 
 end
 
