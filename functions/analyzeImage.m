@@ -128,22 +128,31 @@ im_struct.skel_initial = bwmorph( im_struct.im_binaryclean, 'skel', Inf );
 im_struct.skel_initial = bwmorph( im_struct.skel_initial, 'fill' );
 im_struct.skel_initial = bwmorph( im_struct.skel_initial, 'skel', Inf );
 
-%Binarize the filtered image and remove positions that are not positive in
-%the skeleton. 
-%imbinarize is an improved version of im2bw, however it was implemented in
-%the 2016 Matlab. Therefore, use the inferior im2bw, along with
-%"graythresh" to choose the level (done automatically in imbinarize). 
-if exist('imbinarize.m','file') == 2 
-    mask = imbinarize(im_struct.im_anisodiffuse);
+% Binarize the filtered image and remove positions that are considered
+% background if requested by the user 
+if settings.rm_background
+    %imbinarize is an improved version of im2bw, however it was 
+    %implemented in the 2016 Matlab. Therefore, use the inferior im2bw, 
+    %along with "graythresh" to choose the level (done automatically in
+    %imbinarize). 
+    if exist('imbinarize.m','file') == 2 
+        mask = imbinarize(im_struct.im_anisodiffuse);
+    else
+        mask = im2bw(im_struct.im_anisodiffuse,...
+            graythresh(im_struct.im_anisodiffuse));
+    end 
+    
+    %Remove the regions in the image that are considered background 
+    im_struct.skel = im_struct.skel_initial; 
+    im_struct.skel(~mask) = 0; 
 else
-    mask = im2bw(im_struct.im_anisodiffuse,...
-        graythresh(im_struct.im_anisodiffuse));
-
+    %Create a mask of all ones the same size as the image
+    mask = ones(size(im_struct.skel_initial)); 
+    %Save the initital skeleton 
+    im_struct.skel = im_struct.skel_initial; 
 end 
 
-%Remove the regions in the image that do not have z-lines. 
-im_struct.skel = im_struct.skel_initial; 
-im_struct.skel(~mask) = 0; 
+
 
 % Clean up the skeleton 
 im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
@@ -162,7 +171,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%% Remove false z-lines %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % If the image should not be filtered with actin, set the final mask equal
 % to the trimmed skeleton and save 
-
 
 if ~settings.actin_filt
     % Save the mask 
@@ -216,7 +224,8 @@ pre_filt(pre_filt == 0) = [];
 % Calculate the non-sarcomeric alpha actinin 
 % number of pixles eliminated / # total # of pixles positive for alpha
 % actinin 
-im_struct.nonzlinefrac = (length(pre_filt) - length(post_filt))/ length(pre_filt);
+im_struct.nonzlinefrac = (length(pre_filt) - length(post_filt))/ ...
+    length(pre_filt);
 im_struct.zlinefrac = 1 - im_struct.nonzlinefrac; 
 
 % Display that you're saving the data
