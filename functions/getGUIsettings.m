@@ -3,10 +3,12 @@
 %
 %
 % Usage:
-%  settings = getGUIsettings(handles); 
+%  settings = getGUIsettings(handles,conversionOnly); 
 %
 % Arguments:
-%       handles     - an object that indirectly references its data
+%       handles         - an object that indirectly references its data
+%       conversionOnly  - optional argument, when true do not ask for
+%                           additional input, only convert parameters 
 % Returns:
 %       settings    - structural array that contains the following
 %                       parameters from the GUI:
@@ -15,7 +17,12 @@
 % Advisor: Anna Grosberg
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine 
-function settings = getGUIsettings(handles)
+function settings = getGUIsettings(handles, conversionOnly)
+
+% If there is only one arugment, set conversionOnly equal to false. 
+if nargin == 1
+    conversionOnly = false;
+end 
 
 %%%%%%%%%%%%%%%%%%%%%%% Physical Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -169,7 +176,8 @@ if ~settings.tf_CZL && ~settings.tf_OOP && ~settings.actin_filt
 end 
 
 %%%%%%%%%%%%%%%%%%%%% Additional User Inputs  %%%%%%%%%%%%%%%%%%%
-
-settings = additionalUserInput(settings);
-
+% Only get additional user input if this is more than just a conversion 
+if ~conversionOnly
+    settings = additionalUserInput(settings);
+end 
 end

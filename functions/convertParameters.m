@@ -3,7 +3,7 @@
 function [ settings ] = convertParameters( handles )
 
 % Get all of the GUIsettings 
-settings = getGUIsettings(handles);
+settings = getGUIsettings(handles, true);
 
 % Store the pixel to micron conversion 
 pix2um = str2double(get(handles.pix2um,'String'));
