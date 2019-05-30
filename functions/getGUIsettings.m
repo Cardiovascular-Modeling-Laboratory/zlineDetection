@@ -77,6 +77,10 @@ Options.verbose = 'n';
 % Save the Options in the settings struct. 
 settings.Options = Options;
 
+% Determine if the user wants to do a parameter exploration for the
+% diffusion filter parameters
+settings.diffusion_explore = get(handles.diffusion_explore,'Value');
+
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Radius of the flat disk-shaped structuring element used for the top hat
 % filter
@@ -104,6 +108,10 @@ settings.reliability_thresh = ...
 settings.bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
 settings.branch_size = round( settings.bio_branch_size.*pix2um ); 
+
+
+% If yes then use imbinarize to remove the background
+settings.rm_background = get(handles.rm_background,'Value');
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
