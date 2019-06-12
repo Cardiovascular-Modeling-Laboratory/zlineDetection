@@ -1,5 +1,27 @@
-%This function will take an input image and break it into components [10 10] 
-
+% averageImage - Takes an input image and breaks it into grids and computes
+% the average value in that grid 
+%
+% Usage:
+%   [ avgIM ] = averageImage( im, comp )
+%
+% Arguments:
+%   im      - 2D matrix
+%               Class Support: 2D numeric or logical matrix 
+%   comp    - size of the grids [dim1 dim2] 
+%               Class Support: 2x1 array of positive values  
+%
+% Returns:
+%   avgIM   - 2D matrix size 
+%               Class Support: 2D numeric matrix 
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
 function [ avgIM ] = averageImage( im, comp )
 

@@ -1,3 +1,31 @@
+% declareCondition - For usage with zlineDetection.m ONLY. Request the
+% condition number for the current coverslip 
+% 
+% Usage: 
+%  createSummaries(MultiCS_Data, name_CS, zline_images,...
+%    zline_path, cond, settings)
+%
+% Arguments:
+%   cond_names  - name of all conditions 
+%                   Class Support: cell of strings 
+%   k           - current cover slip number 
+%                   Class Support: postive integer 
+%   num_cs      - total number of coverslips 
+%                   Class Support: postive integer 
+%
+% Returns:
+%   cond        - condition number declared by user
+%                   Class Support: positive integer 
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [cond] = declareCondition(cond_names, k, num_cs)
 %Create a pop up list for user to declare their conditions 
 

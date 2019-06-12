@@ -1,3 +1,26 @@
+% combineStrings - Concatinate every combination of string1{i} + string2{j}
+%
+% Usage:
+%   all_combinations = combineStrings(string1,string2); 
+%
+% Arguments:
+%   string1             - Cell containing strings 
+%                           Class Support: Cell of STRINGs
+%   string2             - Cell containing strings 
+%                           Class Support: Cell of STRINGs
+% Returns:
+%   all_combinations    - name of a directory that does not exist 
+%                           Class Support: Cell of size 
+%                           1 x length(string1)*length(string2) of STRINGS
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [all_combinations] = combineStrings(string1,string2)
 %Length of strings and total combinations 
 len1 = length(string1); 

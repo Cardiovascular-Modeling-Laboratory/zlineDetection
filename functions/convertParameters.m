@@ -1,4 +1,27 @@
-% Convert Parameters - Convert parameters from microns to pixels 
+% convertParameters - For usage with zlineDetection.m ONLY. Convert 
+% parameters from microns to pixels 
+%
+% Usage: 
+%   settings = convertParameters( handles )
+%
+% Arguments:
+%   handles     - an object that indirectly references its data, which is 
+%                   zlineDetection parameters from the GUI 
+%                   Class Support: OBJECT 
+% Returns:
+%   settings    - zlineDetection parameters converted into pixels 
+%                   Class Support: STRUCT
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Functions: 
+%       additionalUserInput.m
+%       getGUIsettings.m
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
 function [ settings ] = convertParameters( handles )
 

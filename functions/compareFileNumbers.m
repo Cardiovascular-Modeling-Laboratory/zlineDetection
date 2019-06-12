@@ -1,14 +1,49 @@
+% compareFileNumbers - Compare all of the numbers in two files.
+% It will exclude any of the following strings in exclusions 
+%
+% Usage:
+%   [diff_values, n_diff, max_diff]  = ...
+%    compareFileNumbers(filename1,filename2, dispmsg, exclusions)
+%
+% Arguments:
+%   filename1       - filename to compare 
+%                       Class Support: STRING
+%   filename2       - filename to compare 
+%                       Class Support: STRING
+%   dispmsg         - [optional] display results of comparions 
+%                       Class Support: LOGICAL  
+%   exclusions      - [optional] cell that has strings to exclude 
+%                       Class Support: Cell of strings 
+%
+% Returns:
+%   diff_values     - numeric differences between each number 
+%                       Class Support: array of numbers 
+%   n_diff          - number of differences 
+%                       Class Support: double 
+%   max_diff        - value of the maximum difference 
+%                       Class Support: double 
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [diff_values, n_diff, max_diff]  = ...
     compareFileNumbers(filename1,filename2, dispmsg, exclusions)
-% This function will be used to compare the numbers in two files.
-% It will exclude any of the following strings 
+
 filename1_edit = filename1; 
 filename2_edit = filename2; 
 
-for k = 1:length(exclusions)
-    filename1_edit = strrep(filename1_edit, exclusions{k}, ''); 
-    filename2_edit = strrep(filename2_edit, exclusions{k}, '');
-end
+% Remove any of the exlusions if it is declared 
+if nargin > 3
+    for k = 1:length(exclusions)
+        filename1_edit = strrep(filename1_edit, exclusions{k}, ''); 
+        filename2_edit = strrep(filename2_edit, exclusions{k}, '');
+    end
+end 
 
 %If the user did not supply a third input set dispmsg to false. 
 if nargin < 3

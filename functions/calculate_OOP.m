@@ -1,24 +1,37 @@
-% CALCULATE_OOP - calculate the orientational order parameter of a matrix
-% of orientation vectors in radians 
+% calculate_OOP - calculate the orientational order parameter of a matrix
+% of orientation angles in radians 
 %
-% Usage:   [ OOP, directionAngle, direction_error, director ] = ...
-%               calculate_OOP( angles_matrix )
+% Usage:   
+%   [ OOP, directionAngle, direction_error, director ] = ...
+%       calculate_OOP( angles_matrix )
 %
 % Arguments:
-%       angles_matrix   - a matrix of orientation angles in radians 
+%   angles_matrix       - orientation angles in radians with no NaN values
+%                           Class Support: numeric 
 % 
 % Returns:
-%       OOP                 - orientational order parameters
-%       directionAngle      - principle direction angle in degrees 
-%       direction_error     - difference between principle direction (in 
+%   OOP                 - orientational order parameters
+%                           Class Support: double 
+%	directionAngle      - principle direction angle in degrees 
+%                           Class Support: double 
+%   direction_error     - difference between principle direction (in 
 %                               degrees) average direction (in degrees)
-%       director            - principle direction vector
+%                           Class Support: double 
+%   director            - principle direction vector
+%                           Class Support: 2x1 double 
 %
-
-% Tessa Morris, Anna Grosberg
-% Cardiovascular Modeling Laboratory 
-% University of California, Irvine 
-
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+%
+% Written by: Tessa Morris
+%   Advisor: Anna (Anya) Grosberg, Department of Biomedical Engineering 
+%   Cardiovascular Modeling Laboratory 
+%   University of California, Irvine 
+% Algorithm and Implementation by: Anya Grosberg
+%   Disease Biophysics Group
+%   School of Engineering and Applied Sciences
+%   Havard University, Cambridge, MA 02138
 
 function [ OOP, directionAngle, direction_error, director ] = ...
     calculate_OOP( angles_matrix )

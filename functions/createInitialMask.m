@@ -1,16 +1,33 @@
-function [ im, bw, mask ] = createInitialMask( im , disk_size)
-%Disk size 10 seems to work best for our data 
-% %Convert image to grayscale 
-% if size(im,3) > 1
-%     im = rgb2gray(im); 
-% else
-%     im = mat2gray(im);
-% end 
-% 
-% %Normalize image to have 0 mean and unit standard deviation 
-% im=im-mean(im(:));
-% im=im/std(im(:));
+% createInitialMask - Create binary image from a grayscale image 
+%
+% Usage:
+%   im, bw, mask = createInitialMask( im , disk_size)
+%
+% Arguments:
+%   im          - grayscale 2D image 
+%                   Class Support: real, non-sparse, 2-D matrix 
+%   disk_size   - size of disk structuring object for dilation 
+%                   Class Support: real, positive number 
+%
+% Returns:
+%   im          - same as input im 
+%                   Class Support: real, non-sparse, 2-D matrix 
+%   bw          - binary version of im 
+%                 	Class Support: logical matrix the same size as im 
+%   mask        - dilated binary version of bw 
+%                   Class Support: logical matrix the same size as im 
+%   
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Image Processing Toolbox Version 10.3
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
+function [ im, bw, mask ] = createInitialMask( im , disk_size)
 %Convert to binary using both adaptive and normal thresholding
 bw1 = imbinarize(im,'adaptive','Sensitivity',1); 
 bw2 = imbinarize(im); 

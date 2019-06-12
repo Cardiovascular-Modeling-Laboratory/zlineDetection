@@ -1,18 +1,25 @@
-% GETGUISETTINGS - This function will collect all of the options selected 
-% by the user and output them in a structural array
-%
+% getGUIsettings - For usage with zlineDetection.m ONLY. Collects all of 
+% the options selected by the user and output them in a structural array
 %
 % Usage:
 %  settings = getGUIsettings(handles,conversionOnly); 
 %
 % Arguments:
-%       handles         - an object that indirectly references its data
-%       conversionOnly  - optional argument, when true do not ask for
-%                           additional input, only convert parameters 
+%   handles         - an object that indirectly references its data, which 
+%                       is zlineDetection parameters from the GUI
+%                       Class Support: OBJECT
+% 	conversionOnly  - [optional] when true do not ask for additional
+%                   	input, only convert parameters 
+%                       Class Support: LOGICAL 
 % Returns:
-%       settings    - structural array that contains the following
+% 	settings        - structural array that contains the following
 %                       parameters from the GUI:
+%                       Class Support: STRUCT
 % 
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Functions: additionalUserInput.m
+%
 % Tessa Morris
 % Advisor: Anna Grosberg
 % Cardiovascular Modeling Laboratory 

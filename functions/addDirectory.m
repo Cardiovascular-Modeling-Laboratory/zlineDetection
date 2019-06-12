@@ -1,22 +1,30 @@
 % addDirectory - This function will check if a directory exists. If
 % it does exist, it will keep adding numbers until it no longer exists and
 % then create that directory if the user would like, otherwise it will just
-% output the non existing directory
-%
+% output the name of the non existing directory
 %
 % Usage:
-%  new_subfolder_name = appendName(subfolder_path, subfolder_name, create); 
+%   new_subfolder_name = ...
+%       addDirectory(subfolder_path, subfolder_name, create); 
 %
 % Arguments:
-%       subfolder_path  - path where the new directory should be added 
-%       subfolder_name  - name of new directory 
-%       create          - boolean on whether the user would like to create 
+%   subfolder_path      - path where the new directory should be added
+%                           Class Support: STRING
+%   subfolder_name      - name of new directory 
+%                           Class Support: STRING
+%   create              - boolean on whether the user would like to create 
 %                           the directory as soon as it no longer exists
+%                           Class Support: LOGICAL  
+%
 % Returns:
-%       new_subfolder_name - directory that does not exist 
-% 
+%   new_subfolder_name  - name of a directory that does not exist 
+%                           Class Support: STRING
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
 % Tessa Morris
-% Advisor: Anna Grosberg
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine 
 

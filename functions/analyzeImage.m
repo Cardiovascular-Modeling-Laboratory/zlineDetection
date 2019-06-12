@@ -1,4 +1,4 @@
-% ANALYZEIMAGE - Main function to create binary skeleton and compute
+% analyzeImage - Main function to create binary skeleton and compute
 % orientation vectors of an image. It will load an image and convert it 
 % to grayscale and then perform (1) coherence-enhancing anisotropic  
 % diffusion filtering (2) top hat filetering (3) convert to binary using
@@ -6,28 +6,47 @@
 % manually. 
 %
 % Usage:
-%  [ im_struct ] = storeImageInfo( filename );
+%   [ im_struct ] = analyzeImage( filenames, settings );
 %
 % Arguments:
-%       filename    - A string containing the path, filename, and extension
-%                       of the image 
-%       settings    - A structure array that contains the following
-%                       information (from the GUI) 
+%   filename    - A string containing the path, filename, and extension
+%                   of the image 
+%   settings    - A structure array that contains the following
+%                   information (from the GUI) 
 % 
 % Returns:
-%       im_struct   - A structura array containing the following
-%                       information
-% 
+%   im_struct   - A structural array containing the following
+%                   information
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Image Processing Toolbox Version 10.3
+%   coherencefilter_version5b   Dirk-Jan Kroon 2010, University of Twente
+%   zlineDetection Functions: 
+%       YBiter.m
+%       addDirectory.m
+%       analyzeImage.m
+%       calculate_OOP.m
+%       cleanSkel.m
+%       findNearBranch.m
+%       makeGray.m
+%       orientInfo.m
+%       ridgeorient.m
+%       segmentImage.m
+%       storeImageInfo.m
+%       actin_filtering/actinDetection.m
+%       actin_filtering/filterWithActin.m
+%       actin_filtering/gridDirector.m
+%       actin_filtering/plotOrientationVectors.m
+%
+%
 % Tessa Morris
-% Advisor: Anna Grosberg
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
 % Cardiovascular Modeling Laboratory 
-% University of California, Irvine 
+% University of California, Irvine
 
 
 function [ im_struct ] = analyzeImage( filenames, settings )
-%This function will be the "main" analyzing script for a series of
-%functions 
-
 %%%%%%%%%%%%%%%%%%%%%%%% Initalize Image Info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Store the image information

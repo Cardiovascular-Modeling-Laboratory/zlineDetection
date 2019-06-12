@@ -1,6 +1,33 @@
+% concatCells - Combine the matrices contained in a cell array. 
+%
+% Usage: 
+%   concated_matrix = concatCells( cell_matrix, same_sze, ...
+%       start_pos, stop_pos)
+%
+% Arguments:
+%   cell_matrix - zlineDetection parameters 
+%               Class Support: STRUCT
+%   same_sze            - logical statement about whether the two matrices
+%                           should be the same size
+%                           Class Support: LOGICAL 
+%   start_pos           - [optional] start index combination positions 
+%                           Class Support: positive integer > 1
+%   stop_pos            - [optional] end index combination positions 
+%                           Class Support: positive integer > 1
+% Returns:
+%   concated_matrix     - Matrix the size of the combined cell matrix
+%                           Class Support: STRUCT
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [ concated_matrix ] = concatCells( cell_matrix, same_sze, ...
     start_pos, stop_pos)
-%This function will combine the matrices contained in a cell array. 
 
 %Get the size of the cell matrix
 [d1, d2] = size(cell_matrix); 

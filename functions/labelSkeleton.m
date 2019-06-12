@@ -3,16 +3,22 @@
 %
 % Arguments:
 %   im          - grayscale image 
+%                   Class Support: 2D image matrix 
 %   skel        - binary skeleton 
+%                   Class Support: 2D logical same size as im 
 % 
 % Returns:    
 %   labeled_im  - image labeled in yellow with binary skelton
+%                   Class Support: 3D matrix 
 % 
-% Tessa Morris 
-% The Edwards Lifesciences Center for Advanced Cardiovascular Technology
-% 2418 Engineering Hall
-% University of California, Irvine
-% Irvine, CA  92697-2700
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Image Processing Toolbox Version 10.3
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
 function [ labeled_im ] = labelSkeleton( im, skel )
 

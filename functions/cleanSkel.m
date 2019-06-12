@@ -1,26 +1,37 @@
-% CLEANSKEL - Skeleton pruning 
-%
-% The prupose of this function is to prune a skeleton according to the
-% minimum branch length 
+% cleanSkel - Prune a skeleton by removing branches that are less than the 
+% supplied branch length 
 %
 % Usage:
-%  Vf = YBiter(V0); 
+%  skel2 = cleanSkel( skel, minBranchLen )
 %
 % Arguments:
-%       skel        - 
-%       maxBranchLen- 
+% 	skel            - binary skeleton 
+%                       Class Support: numeric or logical, must be 2-D,
+%                       real and nonsparse
+%   minBranchLen    - minimum size of a branch that for it to be kept
+%                       in the binary skeleton 
+%                       Class Support: positive number 
+% 
 % Returns:
-%       skel2       - 
+% 	skel2           - pruned binary skeleton 
+%                        Class Support: 2-D logical
 % 
-% Suggested parameters: maxBranchLen
-% 
-% See also: YBiter
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Image Processing Toolbox Version 10.3
+%   Functions: findNearBranch.m
 %
-% Annotated / Modified by Tessa Morris 
-% Copyright (C) 2016 Nils Persson 
 %
+% Annotated / Modified by: Tessa Morris
+%   Advisor: Anna Grosberg, Department of Biomedical Engineering 
+%   Cardiovascular Modeling Laboratory 
+%   University of California, Irvine 
+% Created by: Nils Persson ( GTFiber-Mac/Functions/cleanSkel.m )
+%   Persson, Nils E., et al. "Automated analysis of orientational order
+%   in images of fibrillar materials." Chemistry of Materials 29.1 
+%   (2016): 3-14.
 
-function skel2 = cleanSkel( skel, maxBranchLen )
+function skel2 = cleanSkel( skel, minBranchLen )
 % This function will prune the skeleton
 
 % Find branch points of skeleton.
@@ -45,7 +56,7 @@ DE = bwdistgeodesic(skel,E);
 
 % Find where the sum of the distances are less than the maxBranchLen input
 % by the user
-Nubs2 = DB+DE<maxBranchLen;
+Nubs2 = DB+DE<minBranchLen;
 
 % Subtract the branch points 
 Nubs3 = Nubs2-B;
@@ -73,7 +84,7 @@ for ind = find(NubsCheck)'
 end
 
 %Remove small objects from binary image
-skel2 = bwareaopen(skel2,maxBranchLen);
+skel2 = bwareaopen(skel2,minBranchLen);
 
 end
 

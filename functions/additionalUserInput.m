@@ -1,6 +1,29 @@
-function [settings] = additionalUserInput(settings)
-%If the user would like to do a parameter exploration of any kind, ask for
-%additional information here         
+% additionalUserInput - For usage with zlineDetection.m ONLY. This function
+% requests additional parameters and settings from the user. It is 
+% necessary if the user would like to do a parameter exploration of any 
+% kind or compare multiple conditions or coverslips. 
+%
+% Usage: 
+%   settings = additionalUserInput(settings)
+%
+% Arguments:
+%   settings - zlineDetection parameters 
+%               Class Support: STRUCT
+% Returns:
+%   settings - zlineDetection parameters appended with additional 
+%               parameters 
+%               Class Support: STRUCT
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
+
+function [settings] = additionalUserInput(settings)       
                      
 % Set exploration equal to true if the user is doing any kind of
 % exploration 
@@ -108,7 +131,8 @@ if settings.num_cs > 1 && settings.analysis
     %Display message to select path 
     disp('Select a location to save summary analysis for all Coverslips'); 
     %Ask the user for the location of the summary file 
-    settings.SUMMARY_path = uigetdir(pwd,'Save Location for Summary Files'); 
+    settings.SUMMARY_path = ...
+        uigetdir(pwd,'Save Location for Summary Files'); 
     
     %Get the parts of the summary path 
     pathparts = strsplit(settings.SUMMARY_path,filesep); 
@@ -131,7 +155,8 @@ if settings.num_cs > 1 && settings.analysis
     
     %Ask the user for the summary name 
     %Prompt Questions
-    sumname_prompt = {'Name of Summary File for Multiple Coverslips (no extension):'};
+    sumname_prompt = ...
+        {'Name of Summary File for Multiple Coverslips (no extension):'};
     %Title of prompt
     sumname_title = 'Summary File Name';
     %Dimensions

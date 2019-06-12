@@ -1,3 +1,36 @@
+% convertParameters - For usage with zlineDetection.m ONLY. Create summary
+% plots, excel sheets, and .mat files 
+% 
+% Usage: 
+%  createSummaries(MultiCS_Data, name_CS, zline_images,...
+%    zline_path, cond, settings)
+%
+% Arguments:
+%   MultiCS_Data
+%   name_CS
+%   zline_images
+%   zline_path
+%   cond
+%   settings 
+% 
+% Returns:
+%
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Statistics and Machine Learning Toolbox Version 11.4
+%   Functions: 
+%       addDirectory.m
+%       appendFilename.m
+%       concatCells.m
+%       plotCSresults.m
+%       plotConditions.m
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [] = createSummaries(MultiCS_Data, name_CS, zline_images,...
     zline_path, cond, settings)
 
