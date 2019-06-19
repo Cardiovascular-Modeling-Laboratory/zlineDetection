@@ -1,5 +1,31 @@
+% combineFOV - For usage with zlineDetection.m ONLY. It is used to combine 
+% the FOV for a single coverslip
+%
+% Usage: 
+%   CS_results = combineFOV( settings, CS_results )
+%
+% Arguments:
+%   settings    - zlineDetection parameters 
+%                   Class Support: STRUCT
+%   CS_results  - Contains information for each FOV in a CS
+%                   Class Support: STRUCT
+% Returns:
+%   CS_results  - Combined information for all FOV in a CS 
+%                   Class Support: STRUCT
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Functions: 
+%       calculate_OOP.m
+%       combineFOV.m
+%       concatCells.m
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [CS_results] = combineFOV( settings, CS_results )
-% This function will combine the FOV for a single coverslip
 
 %Properly ordered FOV values
 FOV_Grouped = struct; 

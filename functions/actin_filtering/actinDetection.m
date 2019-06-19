@@ -64,12 +64,12 @@ end
 [ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
     orientInfo( im, settings.Options, settings.tophat_size);
 
-% Only keep orientation values with a reliability greater than 0.5
-reliability_binary = reliability > settings.reliability_thresh;
-
-% Multiply orientation angles by the binary mask image to remove
-% data where there are no cells
-orientim = orientim.*reliability_binary;
+% % Only keep orientation values with a reliability greater than 0.5
+% reliability_binary = reliability > settings.reliability_thresh;
+% 
+% % Multiply orientation angles by the binary mask image to remove
+% % data where there are no cells
+% orientim = orientim.*reliability_binary;
 
 %%%%%%%%%
 % 

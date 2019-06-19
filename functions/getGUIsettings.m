@@ -1,21 +1,35 @@
-% GETGUISETTINGS - This function will collect all of the options selected 
-% by the user and output them in a structural array
-%
+% getGUIsettings - For usage with zlineDetection.m ONLY. Collects all of 
+% the options selected by the user and output them in a structural array
 %
 % Usage:
-%  settings = getGUIsettings(handles); 
+%  settings = getGUIsettings(handles,conversionOnly); 
 %
 % Arguments:
-%       handles     - an object that indirectly references its data
+%   handles         - an object that indirectly references its data, which 
+%                       is zlineDetection parameters from the GUI
+%                       Class Support: OBJECT
+% 	conversionOnly  - [optional] when true do not ask for additional
+%                   	input, only convert parameters 
+%                       Class Support: LOGICAL 
 % Returns:
-%       settings    - structural array that contains the following
+% 	settings        - structural array that contains the following
 %                       parameters from the GUI:
+%                       Class Support: STRUCT
 % 
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Functions: additionalUserInput.m
+%
 % Tessa Morris
 % Advisor: Anna Grosberg
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine 
-function settings = getGUIsettings(handles)
+function settings = getGUIsettings(handles, conversionOnly)
+
+% If there is only one arugment, set conversionOnly equal to false. 
+if nargin == 1
+    conversionOnly = false;
+end 
 
 %%%%%%%%%%%%%%%%%%%%%%% Physical Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -70,6 +84,10 @@ Options.verbose = 'n';
 % Save the Options in the settings struct. 
 settings.Options = Options;
 
+% Determine if the user wants to do a parameter exploration for the
+% diffusion filter parameters
+settings.diffusion_explore = get(handles.diffusion_explore,'Value');
+
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Radius of the flat disk-shaped structuring element used for the top hat
 % filter
@@ -97,6 +115,10 @@ settings.reliability_thresh = ...
 settings.bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
 settings.branch_size = round( settings.bio_branch_size.*pix2um ); 
+
+
+% If yes then use imbinarize to remove the background
+settings.rm_background = get(handles.rm_background,'Value');
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -169,7 +191,8 @@ if ~settings.tf_CZL && ~settings.tf_OOP && ~settings.actin_filt
 end 
 
 %%%%%%%%%%%%%%%%%%%%% Additional User Inputs  %%%%%%%%%%%%%%%%%%%
-
-settings = additionalUserInput(settings);
-
+% Only get additional user input if this is more than just a conversion 
+if ~conversionOnly
+    settings = additionalUserInput(settings);
+end 
 end

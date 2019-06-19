@@ -209,7 +209,7 @@ for g = 1:gtot
             masks{n,1} = mask; 
     
             %Modify the final skeleton by multiplying by the maks 
-            final_skels{n,1} = im_struct.skel_final.*mask; 
+            final_skels{n,1} = prefilt_skel.*mask; 
     
             % Remove regions that were not part of the binary skeleton
             temp_orientim = im_struct.orientim; 
@@ -257,19 +257,27 @@ for g = 1:gtot
             %struct inside of the im_struct
             im_struct.actin_explore = actin_explore; 
             
-            % Calculate the continuous z-line lengths 
-            lengths{n,1} = continuous_zline_detection(im_struct, settings);
+            if settings.tf_CZL
+                % Calculate the continuous z-line lengths 
+                lengths{n,1} = ...
+                    continuous_zline_detection(im_struct, settings);
 
-            %Clear the command line 
-            clc 
-            
-            %Close all figures
-            close all; 
+                %Clear the command line 
+                clc 
 
-            %Find the median continuous z-line length
-            medians(n,1) = median(lengths{n,1});
-            %Find the sum continuous z-line length
-            sums(n,1) = sum(lengths{n,1});
+                %Close all figures
+                close all; 
+
+                %Find the median continuous z-line length
+                medians(n,1) = median(lengths{n,1});
+                %Find the sum continuous z-line length
+                sums(n,1) = sum(lengths{n,1});
+
+            else
+                lengths{n,1} = NaN; 
+                medians(n,1) = NaN; 
+                sums(n,1) = NaN; 
+            end 
     end
     
 end
@@ -295,9 +303,6 @@ actin_explore.post_filt = post_filt;
 actin_explore.prefilt_skel = prefilt_skel;
 actin_explore.pre_filt = pre_filt; 
 
-% Summarize the analysis 
-actinExplorePlots( im_struct, actin_explore, settings ); 
-
 % Create a name to save the file 
 summary_name = strcat(im_struct.im_name, '_ActinExploration.mat');
 
@@ -308,5 +313,7 @@ summary_name = appendFilename( im_struct.save_path, summary_name );
 save(fullfile(im_struct.save_path, summary_name), ...
     'im_struct', 'settings', 'actin_explore');
 
+% Summarize the analysis 
+%actinExplorePlots( im_struct, actin_explore, settings ); 
 
 end

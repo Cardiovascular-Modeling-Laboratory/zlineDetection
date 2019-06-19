@@ -30,7 +30,7 @@ settings.bio_noise_area = 0.2;
 
 % Remove non-reliable orientations from the orientation matrix based on the
 % actin orientation
-settings.reliability_thresh = 0.5;
+settings.reliability_thresh = 0;
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 

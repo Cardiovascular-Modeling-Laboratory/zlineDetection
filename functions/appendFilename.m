@@ -1,6 +1,30 @@
+% appendFilename - This function will check if a file exists at the given 
+% path. If it does then it it will add numbers at the end until it does not
+% exist. 
+% 
+% Usage:
+%   new_filename = appendFilename( path, file_name ) 
+%
+% Arguments:
+%   path            - path to check existance of a file 
+%                           Class Support: STRING
+%   file_name       - name of the file
+%                           Class Support: STRING
+%
+% Returns:
+%   new_filename    - name of a unique file name in the given path 
+%                           Class Support: STRING
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [ new_filename ] = appendFilename( path, file_name )
-%This function will check if a file exists at the given path. 
-%If it does then it it will add numbers at the end 
 
 %Start the while loop 
 keepAdding = true;  
