@@ -24,7 +24,62 @@
 
 
 function [settings] = additionalUserInput(settings)       
-                     
+    
+% Anisotropic Diffusion Parameter exploration 
+if settings.diffusion_explore
+    % Create a struct to store the parameters 
+    diffusion_explore_parameters = struct(); 
+    %Prompt Questions
+    rho_prompt = {'Smallest Rho:','Largest Rho:',...
+        'Step Size:'};
+    %Title of prompt 
+    rho_title = 'Rho Exploration';
+    %Dimensions 
+    rho_dims = [1,45];
+    %Default inputs
+    rho_definput = {'0.5', '3.5','0.5'}; 
+    %Save answers
+    rho_answer = inputdlg(rho_prompt,rho_title,...
+    rho_dims,rho_definput);
+    
+    %Store the rho answers
+    diffusion_explore_parameters.rho_min = ...
+        round(str2double(rho_answer{1}));
+    diffusion_explore_parameters.rho_max = ...
+        round(str2double(rho_answer{2}));
+    diffusion_explore_parameters.rho_step = ...
+        round(str2double(rho_answer{3}));
+    
+    %Prompt Questions
+    difftime_prompt = {'Smallest Diffusion Time:',...
+        'Largest Diffusion Time:', 'Step Size:'};
+    %Title of prompt 
+    difftime_title = 'Diffusion Time Exploration';
+    %Dimensions 
+    difftime_dims = [1,45];
+    %Default inputs
+    difftime_definput = {'1', '8','1'}; 
+    %Save answers
+    difftime_answer = inputdlg(difftime_prompt,difftime_title,...
+    difftime_dims,difftime_definput);
+    
+    %Store the difftime answers
+    diffusion_explore_parameters.difftime_min = ...
+        round(str2double(difftime_answer{1}));
+    diffusion_explore_parameters.difftime_max = ...
+        round(str2double(difftime_answer{2}));
+    diffusion_explore_parameters.difftime_step = ...
+        round(str2double(difftime_answer{3}));
+    
+    % Save all the parameters
+    settings.diffusion_explore_parameters = diffusion_explore_parameters; 
+    
+    
+else
+    % Set the struct to NaN
+    settings.diffusion_explore_parameters = NaN; 
+end 
+
 % Set exploration equal to true if the user is doing any kind of
 % exploration 
 if settings.grid_explore || settings.actinthresh_explore

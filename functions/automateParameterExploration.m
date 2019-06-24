@@ -12,16 +12,18 @@ addpath('continuous_zline_detection');
 % var_sigma = 0.25:0.25:1; 
 var_sigma = 1; 
 %Sigma of the Gaussian smoothing of the Hessian.
-% var_rho = 0.5:0.25:4;
-var_rho = [2.5,3,3.5];
+var_rho = 0.5:0.25:4;
+% var_rho = [2.5,3,3.5];
 % Total Diffusion Time 
 % var_diffusiontime = [1,3,5,8,10,12,15,20,25,50,100,200]; 
-var_diffusiontime = [5,8,10]; 
+% var_diffusiontime = [5,8,10]; 
+var_diffusiontime = 1:9; 
 
 %%%%%%%%%%%%%%%%%%%%% Set nonvariable parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Initialize structural arrays. 
-settings = struct(); 
-Options = struct();
+% settings = struct(); 
+% Options = struct();
+settings = settings; 
 
 % Pixel to micron conversion
 settings.pix2um = 6.22; pix2um = 6.22; 

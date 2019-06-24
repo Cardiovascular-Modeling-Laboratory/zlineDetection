@@ -39,7 +39,7 @@ Options = settings.Options;
 
 %Create a grayscale version of the image (if it was not already in
 %grayscale) 
-[ im_struct.gray ] = makeGray( im_struct.img ); 
+[ im_struct.gray ] = makeGray( im_struct.im ); 
 
 % Create a new folder in the image directory with the same name as the 
 % image file 
@@ -68,17 +68,17 @@ hwait = waitbar(0,'Diffusion Filter...');
 % Convert the matrix to be an intensity image 
 im_struct.CEDgray = mat2gray( im_struct.CEDgray );
 
-% If the user would like to display the filtered image, display it
-if settings.disp_df
-    % Open a figure and display the image
-    figure; imshow( im_struct.CEDgray );
-    
-    % Save the figure. 
-    imwrite( im_struct.CEDgray, fullfile(save_path, ...
-        strcat( im_struct.im_name, '_DiffusionFiltered.tif' ) ),...
-        'Compression','none');
-
-end
+% % If the user would like to display the filtered image, display it
+% if settings.disp_df
+%     % Open a figure and display the image
+%     figure; imshow( im_struct.CEDgray );
+%     
+%     % Save the figure. 
+%     imwrite( im_struct.CEDgray, fullfile(save_path, ...
+%         strcat( im_struct.im_name, '_DiffusionFiltered.tif' ) ),...
+%         'Compression','none');
+% 
+% end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Run Top Hat Filter %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
