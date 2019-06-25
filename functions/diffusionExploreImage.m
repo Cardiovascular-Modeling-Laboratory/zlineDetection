@@ -129,7 +129,7 @@ for t = var_diffusiontime
         dt_string = num2str(t); 
 
         % Replace '.' with 'p' for decimals
-        s_string = strrep(s_string, '.', 'p'); 
+        dt_string = strrep(dt_string, '.', 'p'); 
         p_string = strrep(p_string, '.', 'p'); 
         
         % Save a string to append names with 
