@@ -44,11 +44,11 @@ if settings.diffusion_explore
     
     %Store the rho answers
     diffusion_explore_parameters.rho_min = ...
-        round(str2double(rho_answer{1}));
+        str2double(rho_answer{1});
     diffusion_explore_parameters.rho_max = ...
-        round(str2double(rho_answer{2}));
+        str2double(rho_answer{2});
     diffusion_explore_parameters.rho_step = ...
-        round(str2double(rho_answer{3}));
+        str2double(rho_answer{3});
     
     %Prompt Questions
     difftime_prompt = {'Smallest Diffusion Time:',...
@@ -65,11 +65,11 @@ if settings.diffusion_explore
     
     %Store the difftime answers
     diffusion_explore_parameters.difftime_min = ...
-        round(str2double(difftime_answer{1}));
+        str2double(difftime_answer{1});
     diffusion_explore_parameters.difftime_max = ...
-        round(str2double(difftime_answer{2}));
+        str2double(difftime_answer{2});
     diffusion_explore_parameters.difftime_step = ...
-        round(str2double(difftime_answer{3}));
+        str2double(difftime_answer{3});
     
     % Save all the parameters
     settings.diffusion_explore_parameters = diffusion_explore_parameters; 

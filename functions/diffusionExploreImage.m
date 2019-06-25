@@ -197,7 +197,7 @@ diffexp_struct.im_tophat = im_tophat;
 diffexp_struct.im_binary = im_binary;
 diffexp_struct.surface_thresh = surface_thresh;
 diffexp_struct.skel_initial = skel_initial;
-
+diffexp_struct.diffusion_parameters = diffusion_parameters; 
 % Save the data 
 save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
     '_DiffusionExplore_OrientationAnalysis.mat')), 'im_struct', ...
