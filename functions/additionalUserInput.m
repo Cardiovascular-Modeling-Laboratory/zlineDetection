@@ -56,7 +56,7 @@ if settings.diffusion_explore
     %Title of prompt 
     difftime_title = 'Diffusion Time Exploration';
     %Dimensions 
-    difftime_dims = [1,45];
+    difftime_dims = [1,55];
     %Default inputs
     difftime_definput = {'1', '8','1'}; 
     %Save answers

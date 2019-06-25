@@ -130,25 +130,27 @@ while k < settings.num_cs + 1
                 'Z-line Images: ',{' '}, num2str(zn))); 
             %Set keepGoing equal to false so they keep selecting. 
             keepGoing = false; 
-        else
-            %Sort the z-line and actin file names to make sure that they're
-            %matching
-            [zline_images{k,1}, actin_images{k,1}, ~, together_vis] = ...
-                sortFilenames(zline_images{k,1}, actin_images{k,1}, ...
-                txt_exclude);
-            %Display results for visualization together. 
-            disp(together_vis); 
-            disp('Please take a moment to make sure your files are properly sorted.'); 
-            disp('Press any key to continue.'); 
-            pause; 
-            sortedProperly = questdlg('Are your filenames sorted properly?', ...
-                    'File Sorting','Yes','No','Yes');
-            %Re select this coverslip
-            if strcmp('No',sortedProperly)
-                %Set keepGoing equal to false so they keep selecting. 
-                keepGoing = false; 
-            end
-            
+        else 
+            % If there is more than one FOV, then sort the images 
+            if an(k,1) > 1 
+                %Sort the z-line and actin file names to make sure that they're
+                %matching
+                [zline_images{k,1}, actin_images{k,1}, ~, together_vis] = ...
+                    sortFilenames(zline_images{k,1}, actin_images{k,1}, ...
+                    txt_exclude);
+                %Display results for visualization together. 
+                disp(together_vis); 
+                disp('Please take a moment to make sure your files are properly sorted.'); 
+                disp('Press any key to continue.'); 
+                pause; 
+                sortedProperly = questdlg('Are your filenames sorted properly?', ...
+                        'File Sorting','Yes','No','Yes');
+                %Re select this coverslip
+                if strcmp('No',sortedProperly)
+                    %Set keepGoing equal to false so they keep selecting. 
+                    keepGoing = false; 
+                end
+            end 
         end
         
 
