@@ -1,16 +1,38 @@
-%Tessa Altair Morris ID: 60007036
-%CS 216 Spring 2018
-%Homework 4, Problem 1
+% hog - (Histogram of Gradient Orientations) Compute the gradient 
+% orientation histograms over blk_size x blk_size blocks of pixels in an 
+% image. The orientations are binned into 9 possible bins. 
+%
+% Usage: 
+%   ohist = hog( I, sigma ); 
+%
+% Arguments:
+%   I                   - grayscale image of dimension HxW
+%                           Class Support: GRAYSCALE IMAGE
+%   simga               - simga of Gaussian filter  
+%                           Class Support: positive number > 1 
+%   blk_size            - block size (DEFAULT 8)
+%                           Class Support: positive integer > 1
+% Returns:
+%   ohist               - orientation histograms for each block.
+%                           ohist(i,j,k) contains the count of how many 
+%                           edges of orientation k fell in block (i,j)
+%                           Class Support: DOUBLE (H/blk_size)x(W/blk_size)
+%                                           x9 
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Image Processing Toolbox Version 10.3
+%   Functions: computeImageGradient.m
+%
+% Written for CS 216: Image Understanding at University of California, 
+% Irvine in Spring 2018 taught by Professor Charless Fowlkes
+% Tessa Morris 
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
-function ohist = hog( I, sigma )
-% Histogram of Gradient Orientations
-% This function will compute the graident orientation histograms over 8 x 8
-% blocks of pixels in an image. The orientations are binned into 9 
-% possible bins
 
-% INPUT 
-% I :   grayscale image of dimension HxW
-% simga:simga of Gaussian filter    
+function ohist = hog( I, sigma, blk_size )
 
 % OUTPUT 
 % ohist : orientation histograms for each block. ohist is of dimension 
@@ -20,8 +42,10 @@ function ohist = hog( I, sigma )
 %Determine the size of the input image 
 [h,w] = size(I); 
 
-%Declare a block size 
-blk_size = 8; 
+%Declare a block size if not declared by user
+if nargin < 3
+    blk_size = 8; 
+end 
 
 %Determine the size of the output. It will be the (rounded up) size of the
 %image divided by the block size ( 8 x 8 )
@@ -33,7 +57,7 @@ nori = 9;
 
 %Use function mygradient to compute the gradient magnitude and orientation
 %at each pixel. This is based on how it was done in Homework 3  
-[ mag, ori ] = mygradient( I, sigma ); 
+[ mag, ori ] = computeImageGradient( I, sigma ); 
 
 %Use a threshold to determine if a pixel is an edge.
 %Suggested: a tenth of the maximum magnitude in the image i.e.:
