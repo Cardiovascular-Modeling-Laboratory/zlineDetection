@@ -31,8 +31,6 @@
 %       computeImageGradient.m
 %       hog.m
 %
-% Written for CS 216: Image Understanding at University of California, 
-% Irvine in Spring 2018 taught by Professor Charless Fowlkes
 % Tessa Morris 
 % Advisor: Anna Grosberg, Department of Biomedical Engineering 
 % Cardiovascular Modeling Laboratory 
