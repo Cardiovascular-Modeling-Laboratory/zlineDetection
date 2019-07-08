@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 15-May-2019 14:53:27
+% Last Modified by GUIDE v2.5 08-Jul-2019 11:36:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -245,13 +245,13 @@ function disp_nonoise_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of disp_nonoise
 
 
-% --- Executes on button press in disp_bw.
-function disp_bw_Callback(hObject, eventdata, handles)
-% hObject    handle to disp_bw (see GCBO)
+% --- Executes on button press in disp_back.
+function disp_back_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_back (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of disp_bw
+% Hint: get(hObject,'Value') returns toggle state of disp_back
 
 
 % --- Executes on selection change in popupmenu1.
@@ -399,7 +399,7 @@ set( handles.bio_tophat_size, 'String', ...
 %>> Threshold and Clean Parameters
 set( handles.bio_noise_area, 'String', ...
     num2str( settings.bio_noise_area ) ); 
-set( handles.reliability_thresh, 'String', ...
+set( handles.back_blksze, 'String', ...
     num2str( settings.reliability_thresh ) ); 
 %>> Skeletonization Parameters (biological)
 set( handles.bio_branch_size, 'String', ...
@@ -672,18 +672,18 @@ function actin_filt_Callback(hObject, eventdata, handles)
 
 
 
-function reliability_thresh_Callback(hObject, eventdata, handles)
-% hObject    handle to reliability_thresh (see GCBO)
+function back_blksze_Callback(hObject, eventdata, handles)
+% hObject    handle to back_blksze (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of reliability_thresh as text
-%        str2double(get(hObject,'String')) returns contents of reliability_thresh as a double
+% Hints: get(hObject,'String') returns contents of back_blksze as text
+%        str2double(get(hObject,'String')) returns contents of back_blksze as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function reliability_thresh_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to reliability_thresh (see GCBO)
+function back_blksze_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to back_blksze (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -760,3 +760,49 @@ function rm_background_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of rm_background
+
+
+
+function back_noisesze_Callback(hObject, eventdata, handles)
+% hObject    handle to back_noisesze (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of back_noisesze as text
+%        str2double(get(hObject,'String')) returns contents of back_noisesze as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function back_noisesze_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to back_noisesze (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function back_sigma_Callback(hObject, eventdata, handles)
+% hObject    handle to back_sigma (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of back_sigma as text
+%        str2double(get(hObject,'String')) returns contents of back_sigma as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function back_sigma_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to back_sigma (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
