@@ -32,7 +32,19 @@
 % University of California, Irvine 
 
 function [ mag, ori ] = computeImageGradient( I, sigma )
-%Gaussian filter the iamge  
+
+% If the image maximum is greater than 1 convert the matrix into an 
+% intensity image
+if max(I(:)) > 1
+    I = mat2gray(I); 
+end 
+
+% If the image is not a double, convert to a double 
+if ~isa(I,'double')
+    I = double(I); 
+end
+
+%Gaussian filter the image  
 gauss_image = imgaussfilt( I, sigma );
     
 %Compute the gradient in the x and y directions 
