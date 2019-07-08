@@ -1,0 +1,103 @@
+% textureBasedMasking - Determines regions (blk_sze x blk_sze) in an image
+% that contains an edge and texture in that region
+%
+% Usage: 
+%   [bw_final,background, per_rem] = ...
+%       textureBasedMasking(I,sigma,blk_size,noise_size,...
+%       displayResults)
+%
+% Arguments:
+%   I                   - grayscale image of dimension HxW
+%                           Class Support: GRAYSCALE IMAGE
+%   simga               - simga of Gaussian filter  
+%                           Class Support: positive number > 1 
+%   blk_size            - block size (DEFAULT 8)
+%                           Class Support: positive integer > 1
+%   noise_size          - amount of pixels to remove as noise
+%                           Class Support: positive integer > 1
+% Returns:
+%   bw_final            - binary image where 0 is considered background
+%                           based on texture 
+%                           Class Support: HxW LOGICAL
+%  background           - the background of the image 
+%                           Class Support: HxW image 
+%   per_rem             - percent of the image remaining (1 in bw_final)
+%                           Class Support: DOUBLE 
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Image Processing Toolbox Version 10.3
+%   Functions:
+%       computeImageGradient.m
+%       hog.m
+%
+% Tessa Morris 
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
+function [bw_final,background, per_rem] = ...
+    textureBasedMasking(I,sigma,blk_size,noise_size,...
+    displayResults)
+
+% If the user did not specify whether or not they'll display results, set
+% it to false 
+if nargin < 5 
+    displayResults = false; 
+end 
+
+% Compute histogram of oriented graidents. 
+% sigma = 0.5; 
+% blk_size = 15; 
+ohist = hog( I, sigma , blk_size); 
+
+% Calculate the average in each grid 
+ohist_avg = mean(ohist,3); 
+
+% Initial binarization 
+bw_ohist = zeros(size(ohist_avg)); 
+bw_ohist(ohist_avg > 0) = 1; 
+
+% Fill holes 
+bw_fill = imfill(bw_ohist, 'holes'); 
+
+% Remove noise 
+%noise_size = 1*8;
+bw_nonoise = bwareaopen( bw_fill, noise_size );
+
+% Dilate the binary image 
+disk_sze = 1; 
+se = strel('disk',disk_sze);
+bw4 = imdilate(bw_nonoise, se); 
+
+% Display the figure if requested 
+if displayResults
+    figure; imshow(bw4); 
+end 
+
+% Resize the binary image to be the size of the original image 
+bw_final = imresize(bw4, size(I));
+% Set all of the values greater than 0 equal to 1 
+bw_final(bw_final > 0) = 1; 
+
+% Calculate the percentage of the image that is positive in the binary
+% image 
+per_rem = sum(bw_final(:))/(size(I,1)*size(I,2)); 
+per_rem = per_rem*100; 
+
+% Get only the false parts of bw6
+background = I; 
+background(bw_final == 1) = 0; 
+
+% If the user would like to display the results, display the background and
+% the percent remaining in the background 
+if displayResults
+    % Display background
+    figure; imshow(background); 
+    % Display Percent remaining 
+    disp_msg = strcat('Percent Image Remaining:', {' '}, ...
+        num2str(round(per_rem,2)), '%'); 
+    disp(disp_msg{1});
+end 
+
+end 

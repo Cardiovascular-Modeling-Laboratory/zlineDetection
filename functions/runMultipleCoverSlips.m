@@ -130,25 +130,27 @@ while k < settings.num_cs + 1
                 'Z-line Images: ',{' '}, num2str(zn))); 
             %Set keepGoing equal to false so they keep selecting. 
             keepGoing = false; 
-        else
-            %Sort the z-line and actin file names to make sure that they're
-            %matching
-            [zline_images{k,1}, actin_images{k,1}, ~, together_vis] = ...
-                sortFilenames(zline_images{k,1}, actin_images{k,1}, ...
-                txt_exclude);
-            %Display results for visualization together. 
-            disp(together_vis); 
-            disp('Please take a moment to make sure your files are properly sorted.'); 
-            disp('Press any key to continue.'); 
-            pause; 
-            sortedProperly = questdlg('Are your filenames sorted properly?', ...
-                    'File Sorting','Yes','No','Yes');
-            %Re select this coverslip
-            if strcmp('No',sortedProperly)
-                %Set keepGoing equal to false so they keep selecting. 
-                keepGoing = false; 
-            end
-            
+        else 
+            % If there is more than one FOV, then sort the images 
+            if an(k,1) > 1 
+                %Sort the z-line and actin file names to make sure that they're
+                %matching
+                [zline_images{k,1}, actin_images{k,1}, ~, together_vis] = ...
+                    sortFilenames(zline_images{k,1}, actin_images{k,1}, ...
+                    txt_exclude);
+                %Display results for visualization together. 
+                disp(together_vis); 
+                disp('Please take a moment to make sure your files are properly sorted.'); 
+                disp('Press any key to continue.'); 
+                pause; 
+                sortedProperly = questdlg('Are your filenames sorted properly?', ...
+                        'File Sorting','Yes','No','Yes');
+                %Re select this coverslip
+                if strcmp('No',sortedProperly)
+                    %Set keepGoing equal to false so they keep selecting. 
+                    keepGoing = false; 
+                end
+            end 
         end
         
 
@@ -195,7 +197,8 @@ for k = 1:settings.num_cs
         actin_path{k,1}, actin_images{k,1}, name_CS{k,1} ); 
     
     %Store the results from each coverslip if these are not single cells 
-    if settings.cardio_type == 1 && settings.analysis
+    if settings.cardio_type == 1 && settings.analysis && ...
+            ~settings.diffusion_explore
         %Store the results from analyzing each coverslip 
         MultiCS_lengths{1,k} = CS_results.CS_lengths;
         MultiCS_medians{1,k} =CS_results.CS_medians;
@@ -215,7 +218,8 @@ for k = 1:settings.num_cs
     
     %Store the actin OOP for each coverslip and the number of orientation
     %vectors 
-    if settings.cardio_type == 1 && settings.actin_filt 
+    if settings.cardio_type == 1 && settings.actin_filt && ...
+            ~settings.diffusion_explore
         MultiCS_ACTINOOP{1,k} = CS_results.ACTINCS_OOPs; 
         MultiCS_ACTINanglecount{1,k} = CS_results.ACTINangle_count;
         MultiCS_ACTINorientim{1,k} = CS_results.ACTINCS_angles; 
@@ -223,7 +227,8 @@ for k = 1:settings.num_cs
     end 
     
     %Store the condition ID 
-    if settings.cardio_type == 1 && settings.multi_cond && settings.analysis
+    if settings.cardio_type == 1 && settings.multi_cond ...
+            && settings.analysis && ~settings.diffusion_explore
         %Save the condition ID 
         MultiCS_CONDID{1,k} = ...
             cond(k,1)*ones(size(CS_results.CS_gridsizes));
@@ -235,7 +240,8 @@ end
 
 % Store all of the Multi CS data in a struct if these are not single cells
 % and there is more than one CS 
-if settings.cardio_type == 1 && settings.num_cs > 1
+if settings.cardio_type == 1 && settings.num_cs > 1 ...
+        && ~settings.diffusion_explore
     
     %Store results in struct 
     MultiCS_Data = struct(); 

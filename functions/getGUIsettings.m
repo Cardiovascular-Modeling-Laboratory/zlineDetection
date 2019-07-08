@@ -31,6 +31,17 @@ if nargin == 1
     conversionOnly = false;
 end 
 
+%%%%%%%%%%%%%%%%%%%%%%% Hold over Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Parameter that should be set because they should eventually be removed 
+if ~conversionOnly
+    % Reliability threshold 
+    settings.reliability_thresh = 0; 
+    % Use imbinarize to remove the background
+    settings.rm_background = false; 
+    % Display thresholding 
+    settings.disp_bw = false; 
+end
+
 %%%%%%%%%%%%%%%%%%%%%%% Physical Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the pixel to micron conversion 
@@ -97,6 +108,17 @@ settings.bio_tophat_size = str2double(get(handles.bio_tophat_size,'String'));
 % Convert user input into pixels and then save in the structure array
 settings.tophat_size = round( settings.bio_tophat_size.*pix2um ); 
 
+%%%%%%%%%%%%%%%%%%% Background Removal Parameters %%%%%%%%%%%%%%%%%%%%%%%%
+
+% Standard deviation of gaussian smoothing to perform on image 
+settings.back_sigma = str2double(get(handles.back_sigma,'String'));
+% Size of blocks to break image into 
+settings.back_blksze = ...
+    round(str2double(get(handles.back_blksze,'String')));
+% Size of blocks considered "noise" in the condensed image
+settings.back_noisesze = ...
+    round(str2double(get(handles.back_noisesze,'String')));
+
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
@@ -105,9 +127,9 @@ settings.bio_noise_area = str2double(get(handles.bio_noise_area, 'String'));
 % Convert user input into pixels and then save in the structure array
 settings.noise_area= round( settings.bio_noise_area.*(pix2um.^2) ); 
 
-%Reliability threshold 
-settings.reliability_thresh = ...
-    str2double(get(handles.reliability_thresh, 'String')); 
+% %Reliability threshold 
+% settings.reliability_thresh = ...
+%     str2double(get(handles.reliability_thresh, 'String')); 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -116,9 +138,8 @@ settings.bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
 settings.branch_size = round( settings.bio_branch_size.*pix2um ); 
 
-
-% If yes then use imbinarize to remove the background
-settings.rm_background = get(handles.rm_background,'Value');
+% % If yes then use imbinarize to remove the background
+% settings.rm_background = get(handles.rm_background,'Value');
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -128,8 +149,11 @@ settings.disp_df = get(handles.disp_df,'Value');
 % Display top hat filter
 settings.disp_tophat = get(handles.disp_tophat, 'Value'); 
 
-% Display thresholding 
-settings.disp_bw = get(handles.disp_bw, 'Value'); 
+% % Display thresholding 
+% settings.disp_bw = get(handles.disp_bw, 'Value'); 
+
+% Display background  
+settings.disp_back = get(handles.disp_back, 'Value'); 
 
 % Display Noise Removal 
 settings.disp_nonoise = get(handles.disp_nonoise, 'Value'); 

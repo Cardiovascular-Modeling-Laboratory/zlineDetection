@@ -25,26 +25,26 @@
 %   zlineDetection Functions: 
 %       YBiter.m
 %       addDirectory.m
-%       analyzeImage.m
 %       calculate_OOP.m
 %       cleanSkel.m
+%       computeImageGradient.m
 %       findNearBranch.m
+%       hog.m
 %       makeGray.m
 %       orientInfo.m
 %       ridgeorient.m
 %       segmentImage.m
 %       storeImageInfo.m
+%       textureBasedMasking.m
 %       actin_filtering/actinDetection.m
 %       actin_filtering/filterWithActin.m
 %       actin_filtering/gridDirector.m
 %       actin_filtering/plotOrientationVectors.m
 %
-%
 % Tessa Morris
 % Advisor: Anna Grosberg, Department of Biomedical Engineering 
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine
-
 
 function [ im_struct ] = analyzeImage( filenames, settings )
 %%%%%%%%%%%%%%%%%%%%%%%% Initalize Image Info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,6 +97,27 @@ if settings.disp_tophat
     
 end
 
+%%%%%%%%%%%%%%%%%%%%%%% Create Background Mask %%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Use texture based masking to remove the background of the image 
+[im_struct.background, im_struct.im_background, im_struct.per_rem] = ...
+    textureBasedMasking(im_struct.im_gray, settings.back_sigma, ...
+    settings.back_blksze, settings.back_noisesze,...
+    settings.disp_back); 
+
+% If the user would like to display the binarized image, display it
+if settings.disp_bw
+    
+    % Save the figure. 
+    imwrite( im_struct.background, fullfile(im_struct.save_path, ...
+        strcat( im_struct.im_name, '_BackgroundMask.tif' ) ),...
+        'Compression','none');
+    % Save the figure. 
+    imwrite( im_struct.im_background, fullfile(im_struct.save_path, ...
+        strcat( im_struct.im_name, '_ImageBackground.tif' ) ),...
+        'Compression','none');
+    
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Update user
@@ -104,7 +125,7 @@ disp('Threshold and Clean...');
 
 % Use adaptive thresholding to convert to binary image
 [ im_struct.im_binary, im_struct.surface_thresh ] = ...
-    segmentImage( im_struct.im_tophat ); 
+    segmentImage( im_struct.im_tophat, im_struct.background ); 
 
 % Remove regions that are not reliable (less than 0.5)
 im_struct.im_binary( im_struct.reliability < settings.reliability_thresh) = 0; 
@@ -116,7 +137,7 @@ if settings.disp_bw
     
     % Save the figure. 
     imwrite( im_struct.im_binary, fullfile(im_struct.save_path, ...
-        strcat( im_struct.im_name, '_Binariazed.tif' ) ),...
+        strcat( im_struct.im_name, '_Binarized.tif' ) ),...
         'Compression','none');
     
 end
@@ -171,8 +192,6 @@ else
     im_struct.skel = im_struct.skel_initial; 
 end 
 
-
-
 % Clean up the skeleton 
 im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
 
@@ -211,11 +230,12 @@ else
         settings.branch_size );
 end 
 
-
-% Save the mask. 
-imwrite( im_struct.mask, fullfile(im_struct.save_path, ...
-    strcat( im_struct.im_name, '_Mask.tif' ) ),...
-    'Compression','none');
+% If requested by the user, save the final actin mask 
+if settings.disp_actin
+    imwrite( im_struct.mask, fullfile(im_struct.save_path, ...
+        strcat( im_struct.im_name, '_Mask.tif' ) ),...
+        'Compression','none');
+end
 
 % Save the final skeleton. 
 imwrite( im_struct.skel_final, fullfile(im_struct.save_path, ...

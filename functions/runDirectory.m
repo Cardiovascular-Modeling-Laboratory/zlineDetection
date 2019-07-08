@@ -70,8 +70,13 @@ for k = 1:zn
         filenames.actin = fullfile(actin_path{1}, actin_images{1,k});
     else 
         filenames.actin = NaN; 
-    end 
-%>>>> ANALYZE IMAGE 
+    end
+    
+%>>>> ANALYZE IMAGE - Diffusion parameter exploration 
+    if settings.diffusion_explore
+        diffusionExploreImage( filenames, settings ); 
+    else 
+%>>>> ANALYZE IMAGE
     % Perform the analysis including saving the image 
     im_struct = analyzeImage( filenames, settings ); 
 
@@ -244,7 +249,7 @@ for k = 1:zn
     
     % Close all figures
     close all; 
-    
+    end 
     % Clear the file name 
     clear filename
    
@@ -265,7 +270,7 @@ summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
 
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
-if settings.cardio_type == 1 && settings.analysis
+if settings.cardio_type == 1 && settings.analysis && ~settings.diffusion_explore
     %Create a struct for the coverslip data  
     CS_results = struct(); 
     %>>> Files 
@@ -333,7 +338,7 @@ if settings.cardio_type == 1 && settings.analysis
             'CS_results','FOV_results','settings')
     end 
     
-elseif settings.cardio_type == 2 && settings.analysis
+elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_explore
     %Save the CS results as NaN (so there won't be an error) 
     CS_results = NaN; 
     

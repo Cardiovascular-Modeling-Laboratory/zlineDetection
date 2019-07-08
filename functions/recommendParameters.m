@@ -23,14 +23,25 @@ settings.diffusion_time = 8;
 % filter
 settings.bio_tophat_size = 0.5; 
 
+%%%%%%%%%%%%%%%%%%% Background Removal Parameters %%%%%%%%%%%%%%%%%%%%%%%%
+
+% Standard deviation of gaussian smoothing to perform on image 
+settings.back_sigma = 0.5; 
+
+% Size of blocks to break image into 
+settings.back_blksze = 15;
+
+% Size of blocks considered "noise" in the condensed image
+settings.back_noisesze = 8;
+
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
 settings.bio_noise_area = 0.2; 
 
-% Remove non-reliable orientations from the orientation matrix based on the
-% actin orientation
-settings.reliability_thresh = 0;
+% % Remove non-reliable orientations from the orientation matrix based on the
+% % actin orientation
+% settings.reliability_thresh = 0;
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
