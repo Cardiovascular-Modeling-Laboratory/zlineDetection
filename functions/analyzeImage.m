@@ -104,6 +104,20 @@ end
     settings.back_blksze, settings.back_noisesze,...
     settings.disp_back); 
 
+% If the user would like to display the binarized image, display it
+if settings.disp_bw
+    
+    % Save the figure. 
+    imwrite( im_struct.background, fullfile(im_struct.save_path, ...
+        strcat( im_struct.im_name, '_BackgroundMask.tif' ) ),...
+        'Compression','none');
+    % Save the figure. 
+    imwrite( im_struct.im_background, fullfile(im_struct.save_path, ...
+        strcat( im_struct.im_name, '_ImageBackground.tif' ) ),...
+        'Compression','none');
+    
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Update user
@@ -123,7 +137,7 @@ if settings.disp_bw
     
     % Save the figure. 
     imwrite( im_struct.im_binary, fullfile(im_struct.save_path, ...
-        strcat( im_struct.im_name, '_Binariazed.tif' ) ),...
+        strcat( im_struct.im_name, '_Binarized.tif' ) ),...
         'Compression','none');
     
 end
@@ -216,11 +230,12 @@ else
         settings.branch_size );
 end 
 
-
-% Save the mask. 
-imwrite( im_struct.mask, fullfile(im_struct.save_path, ...
-    strcat( im_struct.im_name, '_Mask.tif' ) ),...
-    'Compression','none');
+% If requested by the user, save the final actin mask 
+if settings.disp_actin
+    imwrite( im_struct.mask, fullfile(im_struct.save_path, ...
+        strcat( im_struct.im_name, '_Mask.tif' ) ),...
+        'Compression','none');
+end
 
 % Save the final skeleton. 
 imwrite( im_struct.skel_final, fullfile(im_struct.save_path, ...
