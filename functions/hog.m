@@ -94,8 +94,8 @@ for i = 1:nori
     B = zeros(h,w); 
     B( ori >= min_angle & ori <= max_angle & mag > thresh) = 1;  
     
-    %Sum up the values over 8x8 pixel blocks.The function im2col is a  
-    %useful function for grabbing blocks
+    %Sum up the values over blk_sizexblk_size pixel blocks.The function 
+    %im2col is a useful function for grabbing blocks
     chblock = im2col(B,[blk_size blk_size],'distinct');  
   
     %Sum over each block and store result in ohist                                       
