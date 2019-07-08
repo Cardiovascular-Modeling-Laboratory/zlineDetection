@@ -1,32 +1,64 @@
-% SEGMENTIMAGE - adaptive thresholding to remove background from image 
-%
+% segmentImage - Adaptive thresholding to remove background from image.
 % This function will segment the image using the Yanowitz-Bruckstein 
-% image segmentation with fiber unentanglement.
-% The gray values of these edge pixels are fixed in the initial threshold 
-% surface and the remaining surface is obtained by solving the Laplace 
-% equation through successive over-relaxation
+% image segmentation with fiber unentanglement. The gray values of these 
+% edge pixels are fixed in the initial threshold surface and the remaining 
+% surface is obtained by solving the Laplace equation through successive 
+% over-relaxation
 %
 %
 % Usage:
 %  [ yb_bw, std_bw, yb_gray ] = segmentImage( im ); 
 %
 % Arguments:
-%       im          - Image to be segmented. For best results, this image
+%   im              - Image to be segmented. For best results, this image
 %                       should have been filtered using diffusion & top hat
 %                       filtering
+%                       Class Support: gray scale image  
+%   maxiter         - max the number of iterations (Default 40) 
+%                       Class Support: positive integer 
+%   mask            - Optional argument masking regions that are in the 
+%                       background
+%                       Class Support: logical same size as image 
+% 
 % Returns:
-%       seg_im      - Segmented image where pixels above the threshold
+%   seg_im          - Segmented image where pixels above the threshold
 %                       surface are white, back otherwise
-%       surface_thresh - Threshold surface 
-% 
-% Suggested parameters: None
-% 
-% See also: YBiter
+%                       Class Support: logical same size as image 
+%   surface_thresh  - Threshold surface 
+%                       Class Support: gray scale image of the surface  
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Image Processing Toolbox Version 10.3
+%   Functions: 
+%       makeGray.m
+%       segmentImage.m
+%
+% Written by Nils Persson 2016
+% Modified by Tessa Morris 
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
-function [ seg_im, surface_thresh ] = segmentImage( im )
+function [ seg_im, surface_thresh ] = segmentImage( im, maxiter, mask )
 
 % Convert the image to be grayscale and conver to double precision 
 [ gray_im ] = double( makeGray( im ) );
+
+% Set the max number of iterations if has not been provided by the user  
+if nargin == 1 || isnan(maxiter)
+    maxiter = 40; 
+end 
+
+% Set the mask to be all ones if it was not provided or if the mask is not 
+% the same size as the image create a mask the same size as the image 
+if nargin < 3  
+    mask = ones(size(im)); 
+else
+    if size(mask,1) ~= size(im,1) || size(mask,2) ~= size(im,2)
+        mask = ones(size(im)); 
+    end 
+end 
 
 % Apply a Canny edge finder - 1's at the edges, 0's elsewhere and convert
 % to double precision 
@@ -36,37 +68,18 @@ edges = double ( edge( gray_im,'canny' ) );
 % edge_intensities = gray_im.*edges;
 initial_thresh = gray_im.*edges;
 
-% % Set all of the zeros equal to NaN.                     
-% edge_intensitiesNAN = edge_intensities;
-% edge_intensitiesNAN(edge_intensitiesNAN == 0) = NaN;
-% 
-% % Create an image that is the average of the edge pixels. 
-% comp(1) = round( size(gray_im,1) / 10 ); 
-% comp(2) = round( size(gray_im,2) / 10 ); 
-% avgIM = averageImage( edge_intensitiesNAN, comp ); 
-% 
-% % Dilate the edges using a structuring element
-% disk_element = strel( 'disk', 3*settings.tophat_size );
-% dilated_edges = imdilate( edges, disk_element );
-% 
-% % Multiply the dilated edges times the averaged image 
-% initial_thresh = dilated_edges.*avgIM; 
-% % Add in intensities of edges
-% initial_thresh(edges == 1) = 0; 
-% initial_thresh = initial_thresh + edge_intensities; 
-
-% Set the value of the dilated edges equal to the average 
+% Remove the regions of the initial thresh that are masked
+initial_thresh( mask == 0 ) = 0; 
 
 % Perform Yanowitz-Bruckstein surface interpolation to create threshold
 % surface from edge gray values
-% surface_thresh = YBiter( initial_thresh );
-% Set the number of iterations 
-maxiter = 40; 
 surface_thresh = YBiter( initial_thresh, maxiter ); 
 
 % Segment the image. Pixels above threshold surface are white, black
 % otherwise
 seg_im = gray_im > surface_thresh;
-% seg_im = seg_im.*dilated_edges; 
+
+% Make sure that all regions in the background have been removed
+seg_im( mask == 0 ) = 0; 
 
 end

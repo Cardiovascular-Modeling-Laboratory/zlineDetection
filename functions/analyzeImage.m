@@ -97,6 +97,13 @@ if settings.disp_tophat
     
 end
 
+%%%%%%%%%%%%%%%%%%%%%%% Create Background Mask %%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Use texture based masking to remove the background of the image 
+[im_struct.background, im_struct.im_background, im_struct.per_rem] = ...
+    textureBasedMasking(im_struct.im_gray, settings.back_sigma, ...
+    settings.back_blksize, settings.back_noisesize,...
+    settings.disp_back); 
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Threshold and Clean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Update user
@@ -104,7 +111,7 @@ disp('Threshold and Clean...');
 
 % Use adaptive thresholding to convert to binary image
 [ im_struct.im_binary, im_struct.surface_thresh ] = ...
-    segmentImage( im_struct.im_tophat ); 
+    segmentImage( im_struct.im_tophat, im_struct.background ); 
 
 % Remove regions that are not reliable (less than 0.5)
 im_struct.im_binary( im_struct.reliability < settings.reliability_thresh) = 0; 
@@ -170,8 +177,6 @@ else
     %Save the initital skeleton 
     im_struct.skel = im_struct.skel_initial; 
 end 
-
-
 
 % Clean up the skeleton 
 im_struct.skel_trim = cleanSkel( im_struct.skel, settings.branch_size );
