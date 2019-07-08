@@ -14,12 +14,12 @@
 %                       should have been filtered using diffusion & top hat
 %                       filtering
 %                       Class Support: gray scale image  
-%   maxiter         - max the number of iterations (Default 40) 
-%                       Class Support: positive integer 
 %   mask            - Optional argument masking regions that are in the 
 %                       background
 %                       Class Support: logical same size as image 
-% 
+%   maxiter         - max the number of iterations (Default 40) 
+%                       Class Support: positive integer 
+%
 % Returns:
 %   seg_im          - Segmented image where pixels above the threshold
 %                       surface are white, back otherwise
@@ -40,24 +40,24 @@
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine 
 
-function [ seg_im, surface_thresh ] = segmentImage( im, maxiter, mask )
+function [ seg_im, surface_thresh ] = segmentImage( im, mask, maxiter )
 
 % Convert the image to be grayscale and conver to double precision 
 [ gray_im ] = double( makeGray( im ) );
 
-% Set the max number of iterations if has not been provided by the user  
-if nargin == 1 || isnan(maxiter)
-    maxiter = 40; 
-end 
-
 % Set the mask to be all ones if it was not provided or if the mask is not 
 % the same size as the image create a mask the same size as the image 
-if nargin < 3  
+if nargin == 1  
     mask = ones(size(im)); 
 else
     if size(mask,1) ~= size(im,1) || size(mask,2) ~= size(im,2)
         mask = ones(size(im)); 
     end 
+end 
+
+% Set the max number of iterations if has not been provided by the user  
+if nargin < 3
+    maxiter = 40; 
 end 
 
 % Apply a Canny edge finder - 1's at the edges, 0's elsewhere and convert

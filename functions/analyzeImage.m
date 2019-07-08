@@ -25,26 +25,26 @@
 %   zlineDetection Functions: 
 %       YBiter.m
 %       addDirectory.m
-%       analyzeImage.m
 %       calculate_OOP.m
 %       cleanSkel.m
+%       computeImageGradient.m
 %       findNearBranch.m
+%       hog.m
 %       makeGray.m
 %       orientInfo.m
 %       ridgeorient.m
 %       segmentImage.m
 %       storeImageInfo.m
+%       textureBasedMasking.m
 %       actin_filtering/actinDetection.m
 %       actin_filtering/filterWithActin.m
 %       actin_filtering/gridDirector.m
 %       actin_filtering/plotOrientationVectors.m
 %
-%
 % Tessa Morris
 % Advisor: Anna Grosberg, Department of Biomedical Engineering 
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine
-
 
 function [ im_struct ] = analyzeImage( filenames, settings )
 %%%%%%%%%%%%%%%%%%%%%%%% Initalize Image Info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
