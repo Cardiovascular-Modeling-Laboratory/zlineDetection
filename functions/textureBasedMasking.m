@@ -46,10 +46,14 @@ if nargin < 5
     displayResults = false; 
 end 
 
+% Equalize the image 
+% J = histeq(I);
+J = I; 
 % Compute histogram of oriented graidents. 
 % sigma = 0.5; 
 % blk_size = 15; 
-ohist = hog( I, sigma , blk_size); 
+[ohist,thresh_per] = hog( J, sigma , blk_size); 
+disp(thresh_per); 
 
 % Calculate the average in each grid 
 ohist_avg = mean(ohist,3); 
@@ -58,8 +62,8 @@ ohist_avg = mean(ohist,3);
 bw_ohist = zeros(size(ohist_avg)); 
 bw_ohist(ohist_avg > 0) = 1; 
 
-% Fill holes 
-bw_fill = imfill(bw_ohist, 'holes'); 
+% Fill holes that are less than the noise size 
+bw_fill = ~bwareaopen(~bw_ohist, noise_size);
 
 % Remove noise 
 %noise_size = 1*8;

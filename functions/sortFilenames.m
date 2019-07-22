@@ -1,3 +1,31 @@
+% sortFilenames - Compare two sets of filenames and sort them based on the
+% values within them 
+% 
+% Usage: 
+%  createSummaries(MultiCS_Data, name_CS, zline_images,...
+%    zline_path, cond, settings)
+%
+% Arguments:
+%   set1
+%   set2
+%   exclusions
+% 
+% Returns:
+%   sorted_set1
+%   sorted_set2
+%   comp_matrix
+%   together_vis
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%   Functions: 
+%       compareFileNumbers.m
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+
 function [sorted_set1,sorted_set2, comp_matrix, together_vis] = ...
     sortFilenames(set1, set2, exclusions)
 %Get the number of filenames in both sets 

@@ -71,6 +71,12 @@ im_struct.save_path = fullfile(im_struct.im_path, new_subfolder);
 % Get the size of the image
 [d1, d2] = size(im_struct.im); 
 
+% Find the background of the image 
+[im_struct.background, ~, ~] = ...
+    textureBasedMasking(im_struct.im_gray, settings.back_sigma, ...
+    settings.back_blksze, settings.back_noisesze,...
+    settings.disp_back); 
+
 %%%%%%%%%%%%%%%%%%% Initalize Exploration Parameters %%%%%%%%%%%%%%%%%%%%%%
 % Get the range of rho values 
 var_rho = ...
@@ -159,7 +165,7 @@ for t = var_diffusiontime
         
         % Use adaptive thresholding to convert to binary image
         [ im_binary(:,:,it), surface_thresh(:,:,it) ] = ...
-            segmentImage( im_tophat(:,:,it) ); 
+            segmentImage( im_tophat(:,:,it), im_struct.background ); 
 
         % Save binary image
         imwrite( im_binary(:,:,it), fullfile(im_struct.save_path, ...
@@ -198,6 +204,7 @@ diffexp_struct.im_binary = im_binary;
 diffexp_struct.surface_thresh = surface_thresh;
 diffexp_struct.skel_initial = skel_initial;
 diffexp_struct.diffusion_parameters = diffusion_parameters; 
+
 % Save the data 
 save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
     '_DiffusionExplore_OrientationAnalysis.mat')), 'im_struct', ...

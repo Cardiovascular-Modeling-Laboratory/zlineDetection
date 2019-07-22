@@ -126,8 +126,8 @@ while k < settings.num_cs + 1
             %same number of files 
             disp(['The number of z-line files does not equal',...
                 'the number of actin files.']); 
-            disp(strcat('Actin Images: ',{' '}, num2str(an), ...
-                'Z-line Images: ',{' '}, num2str(zn))); 
+            disp(strcat('Actin Images: ',{' '}, num2str(an(k,1)), ...
+                'Z-line Images: ',{' '}, num2str(zn(k,1)))); 
             %Set keepGoing equal to false so they keep selecting. 
             keepGoing = false; 
         else 
