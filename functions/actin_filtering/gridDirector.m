@@ -93,7 +93,7 @@ for d1 = 1:grid_size(1):m1
         temp_array = temp_grid(:); 
         grid_info(n,3) = length(temp_array); 
         
-        %Remove all of the nonzero positions and count the number of
+        %Remove all of the zero positions and count the number of
         %points remaining 
         temp_array(temp_array == 0) = []; 
         grid_info(n,4) = length(temp_array); 

@@ -33,7 +33,7 @@
 % Irvine, CA  92697-2700
 
 
-function [ orientim, reliability, grayIM ] = ...
+function [ orientim, gray_im, actin_background, actin_anisodiffuse] = ...
     actinDetection( filename, settings, disp_actin, save_path )
 
 %Get the file parts (path, name of the file, and the extension)
@@ -60,61 +60,39 @@ if nargin == 3
     save_path = fullfile(actin_path, new_subfolder); 
 end 
 
-% Compute the actin orientation and reliability
-[ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
-    orientInfo( im, settings.Options, settings.tophat_size);
+%Create a grayscale version of the image (if it was not already in
+%grayscale) 
+[ gray_im ] = makeGray( im ); 
 
-% % Only keep orientation values with a reliability greater than 0.5
-% reliability_binary = reliability > settings.reliability_thresh;
-% 
-% % Multiply orientation angles by the binary mask image to remove
-% % data where there are no cells
-% orientim = orientim.*reliability_binary;
 
-%%%%%%%%%
-% 
-% %Create a grayscale version of the image (if it was not already in
-% %grayscale) 
-% [ grayIM ] = makeGray( im ); 
-% 
-% % Run Diffusion Filter:
-% % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
-% % contrast and calculates the orientation vectors for later usage. 
-% % The parameters (supplied by the GUI) are (1) Orientation Smoothing and
-% % (2) Diffusion Time 
-% Options = settings.Options; 
-% % Inputs are the grayscale image and the Options struct from settings. 
-% % The output is the diffusion filtered image and eigenvectors - Not sure
-% % why this is important, but... 
-% [ CEDgray, ~, ~ ] = CoherenceFilter( grayIM, Options );
-% 
-% % Clear the command line 
-% clc; 
-% 
-% % Convert the matrix to be an intensity image 
-% CEDgray = mat2gray( CEDgray );
-% 
-% % Binaize 
-% BW = imbinarize(CEDgray); 
-% 
-% % Calculate orientation vectors
-% [orientim, reliability] = ridgeorient(CEDgray, ...
-%     Options.sigma, Options.rho, Options.rho);
-% 
-% % % Only keep orientation values with a reliability greater than 0.5
-% % reliability_binary = reliability > settings.reliability_thresh;
-% %
-% % orientim = orientim.*reliability_binary;
-% 
-% % Multiply orientation angles by the binary mask image to remove
-% % data where there are no cells
-% orientim(~BW) = 0; 
+% Use texture based masking to remove the background of the image 
+[actin_background, actin_im_background, actin_per_rem,...
+    actin_back_thresh_per] = ...
+    textureBasedMasking( gray_im, settings.back_sigma, ...
+    settings.back_blksze, settings.back_noisesze,...
+    settings.disp_back ); 
 
-%%%%%%%%%%%%%%%%
+% Run diffusion filtering on actin image  
+[ actin_anisodiffuse, ~, ~ ] = CoherenceFilter( gray_im, Options );
 
+% Clear the command line 
+clc; 
+
+% Convert the matrix to be an intensity image 
+actin_anisodiffuse = mat2gray( actin_anisodiffuse );
+
+
+% Calculate orientation vectors
+[orientim, ~] = ridgeorient(actin_anisodiffuse, ...
+    Options.sigma, Options.rho, Options.rho);
+
+% Set all of the orientation vectors considered background to be zero. 
+orientim(actin_background == 0) = 0; 
+
+% Save the diffusion filtered actin image if requested
 if disp_actin
-    % Save the diffusion filtered actin image
-    imwrite( CEDgray, fullfile(save_path, ...
+    
+    imwrite( actin_anisodiffuse, fullfile(save_path, ...
         strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
         'Compression','none');
 end 
