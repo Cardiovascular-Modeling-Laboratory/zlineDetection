@@ -12,10 +12,10 @@ settings.actin_thresh = 0.7;
 settings.bio_sigma = 0.1608;
 
 % Set the sigma of the Gaussian smoothing of the Hessian.
-settings.bio_rho = 0.4823; 
+settings.bio_rho = 0.2251; 
 
 % Total Diffusion Time 
-settings.diffusion_time = 8; 
+settings.diffusion_time = 1.5; 
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,7 +26,7 @@ settings.bio_tophat_size = 0.5;
 %%%%%%%%%%%%%%%%%%% Background Removal Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Standard deviation of gaussian smoothing to perform on image 
-settings.back_sigma = 0.5; 
+settings.back_sigma = 1; 
 
 % Size of blocks to break image into 
 settings.back_blksze = 15;
@@ -37,11 +37,7 @@ settings.back_noisesze = 8;
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
-settings.bio_noise_area = 0.2; 
-
-% % Remove non-reliable orientations from the orientation matrix based on the
-% % actin orientation
-% settings.reliability_thresh = 0;
+settings.bio_noise_area = 0; 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
