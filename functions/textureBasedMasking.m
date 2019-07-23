@@ -53,7 +53,6 @@ J = I;
 % sigma = 0.5; 
 % blk_size = 15; 
 [ohist,thresh_per] = hog( J, sigma , blk_size); 
-disp(thresh_per); 
 
 % Calculate the average in each grid 
 ohist_avg = mean(ohist,3); 
@@ -88,6 +87,23 @@ bw_final(bw_final > 0) = 1;
 % image 
 per_rem = sum(bw_final(:))/(size(I,1)*size(I,2)); 
 per_rem = per_rem*100; 
+
+% If the percent remaining is equal to 0, then use matlab binarization to
+% create mask. 
+if per_rem == 0 
+    if exist('imbinarize.m','file') == 2 
+        bw_final = imbinarize(I);
+    else
+        bw_final = im2bw(I, graythresh(I));
+    end 
+    
+    % Compute the new percentage remaining 
+    per_rem = sum(bw_final(:))/(size(I,1)*size(I,2)); 
+    per_rem = per_rem*100; 
+    % Set thresh_per equal to NaN, indicating this method was not used
+    thresh_per = NaN;     
+end 
+
 
 % Get only the false parts of bw6
 background = I; 

@@ -77,7 +77,7 @@ for tp = 1:length(threshes)
     temp_edges = mag; 
     temp_edges(mag > temp_thresh) = 1; 
     temp_edges(mag <= temp_thresh) = 0; 
-    figure; imshow(temp_edges); title(num2str(tp)); 
+
     % Compute average intensity of the foreground 
     Ifore = I; 
     Ifore(temp_edges == 0) = NaN; 
@@ -88,7 +88,7 @@ for tp = 1:length(threshes)
     Iback(temp_edges == 1) = NaN; 
     Iback = Iback(:); 
     Iback(isnan(Iback)) = []; 
-    disp(median(Ifore));
+    
     % Calculate the ratio of the background/foreground 
     bfratio(tp,1) = median(Iback)/median(Ifore); 
 end 
