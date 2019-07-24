@@ -32,6 +32,14 @@ function [sorted_set1,sorted_set2, comp_matrix, together_vis] = ...
 n1 = length(set1); 
 n2 = length(set2); 
 
+if iscolumn(set1)
+    set1 = set1'; 
+end 
+
+if iscolumn(set2)
+    set2 = set2'; 
+end 
+
 %Double check that the length of the two sets of filenames are the same. 
 if n1 ~= n2
     %Display a warning 
@@ -85,9 +93,15 @@ else
             together_vis{k,2} = set2{1,m2(k)}; 
         end
     else
-        disp('You have outsmarted me. I cannot sort your files for you.'); 
+        disp('The files cannot be properly matched with the current naming scheme.'); 
+        % Set the sorted set equal to the input set 
         sorted_set1 = set1; 
         sorted_set2 = set2; 
+        % Loop through and create the together visualization  
+        for k = 1:n1
+            together_vis{k,1} = sorted_set1{1,k};
+            together_vis{k,2} = sorted_set2{1,k}; 
+        end 
     end
 end
 
