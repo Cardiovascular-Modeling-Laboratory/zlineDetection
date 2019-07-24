@@ -379,6 +379,41 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
         save(fullfile(zline_path{1}, summary_file_name), ...
             'SC_results', 'settings')
     end 
+    
+    % Store all of the important information about the single cells 
+    ImagePath = SC_results.zline_path';
+    ImageName = SC_results.zline_images';
+    MedianCZL = SC_results.medians';
+    TotalCZL = SC_results.sums';
+    ZlineFraction = SC_results.zlinefrac';
+    NonZlineFraction = SC_results.nonzlinefrac';
+    DirectorZline = SC_results.directors';
+    DirectorActin = SC_results.ACTINdirectors';
+    OOPzline = SC_results.OOP';
+    OOPactin = SC_results.ACTINOOPs';
+    TotalZline = SC_results.angle_count';
+    TotalActin = SC_results.ACTIN_anglecount';
+    ActinThreshold = SC_results.thresholds';
+    GridSize = SC_results.grid_sizes';    
+    
+    % Save the current date in a cell 
+    DateAnalyzed_YYYYMMDD = cell(size(ImagePath));
+    for k=1:length(ImagePath) 
+        DateAnalyzed_YYYYMMDD{k,1} = today_date; 
+    end
+    
+    % Create a summary excel sheet
+    T = table(ImagePath, ImageName, DateAnalyzed_YYYYMMDD, ...
+        MedianCZL, TotalCZL, ZlineFraction, NonZlineFraction, ...
+        DirectorZline, DirectorActin, OOPzline, OOPactin, ...
+        TotalZline, TotalActin, ActinThreshold, ...
+        GridSize); 
+
+    %Write the sheet to memory 
+    filename = strrep(summary_file_name,'.mat','.xlsx'); 
+    writetable(T,fullfile(zline_path{1},filename),...
+        'Sheet',1,'Range','A1');     
+    
 else
     %Save the CS results as NaN (so there won't be an error) 
     CS_results = NaN; 
