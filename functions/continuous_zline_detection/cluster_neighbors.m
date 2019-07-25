@@ -1,5 +1,5 @@
 function [ zline_clusters , cluster_tracker, ignored_cases ] = ...
-    cluster_neighbors( dp_rows, dp_cols, m, n)
+    cluster_neighbors( dp_rows, dp_cols, m, n, tphase)
 %This function will cluster the orientation vectors into "continuous
 %z-lines" based on their position and their orientation angle. 
 
@@ -29,6 +29,10 @@ function [ zline_clusters , cluster_tracker, ignored_cases ] = ...
 % CASE 5-3: a b c - Ignore 
 % CASE 5-4: a a a - Ignore
 
+% Add testing phase and set the default to be false
+if nargin < 5
+    tphase = false; 
+end 
 
 %Storage matrix to update whether a position has been assigned to a cluster
 cluster_tracker = zeros(m,n); 
@@ -225,6 +229,33 @@ for k = 1:size(dp_rows, 1)
                 end 
             end 
         end 
+        
+        if tphase 
+            % Open a figure 
+            figure; 
+            % Visualize the latest cluster and store the case number and
+            % display cluster
+            tot_cluster = max(max(cluster_tracker)); 
+            imagesc(cluster_tracker);
+            hold on;
+            plot(dp_cols(:,2), dp_rows(:,2), 's', 'MarkerSize', 10,...
+                'color', 'black')
+            for hh = 1:tot_cluster
+                hold on;
+                temp_plot = zline_clusters{hh};
+                if isnan(temp_plot)
+                    disp(['Cluster ', num2str(hh), ' is NaN.']); 
+                else 
+                plot(temp_plot(:,2), temp_plot(:,1), '-.','color', 'red')
+                end
+                clear temp_plot
+            end 
+            % Add title 
+            title_message = strcat('Iteration Number: ',{' '}, num2str(k),...
+                {' '}, 'Case: ',num2str(case_num), '-', num2str(second_case));
+            title(title_message{1},'FontSize',16, 'FontWeight','bold' ); 
+        end 
+        
     end 
 end 
 

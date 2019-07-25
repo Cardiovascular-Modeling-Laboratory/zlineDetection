@@ -73,7 +73,8 @@ end
     settings.disp_back ); 
 
 % Run diffusion filtering on actin image  
-[ actin_anisodiffuse, ~, ~ ] = CoherenceFilter( gray_im, Options );
+[ actin_anisodiffuse, ~, ~ ] = ...
+    CoherenceFilter( gray_im, settings.Options );
 
 % Clear the command line 
 clc; 
@@ -84,7 +85,7 @@ actin_anisodiffuse = mat2gray( actin_anisodiffuse );
 
 % Calculate orientation vectors
 [orientim, ~] = ridgeorient(actin_anisodiffuse, ...
-    Options.sigma, Options.rho, Options.rho);
+    settings.Options.sigma, settings.Options.rho, settings.Options.rho);
 
 % Set all of the orientation vectors considered background to be zero. 
 orientim(actin_background == 0) = 0; 
