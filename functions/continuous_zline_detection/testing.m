@@ -19,6 +19,15 @@ angles = orientim;
 
 sec_skel_final = getRectSection(im_struct.skel_final_trimmed, r, false);
 positions = sec_skel_final; 
+
+%%
+orientim = im_struct.orientim; 
+orientim(isnan(orientim)) = 0; 
+angles = orientim; 
+
+positions = mat2gray(im_struct.im);
+BW = positions; 
+
 %%
 r2 = [2,5,5,3]; 
 r2 = round(r2);
@@ -318,7 +327,9 @@ title('Plotted Clustering', 'FontSize',16, 'FontWeight','bold' );
 
 
 %%
-
+%Cluster the values in order.  
+[ zline_clusters, cluster_tracker ] = cluster_neighbors( dp_rows, ...
+    dp_cols, m, n, false);
 %Calculate legnths and plot
 disp('Plotting and calculating the lengths of continuous z-lines...'); 
 [ distance_storage, rmCount, zline_clusters ] = ...

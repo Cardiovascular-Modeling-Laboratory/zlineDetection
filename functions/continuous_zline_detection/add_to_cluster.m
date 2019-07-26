@@ -73,9 +73,12 @@ if isnan( bin_clusters(3) ) &&  ~isnan(cluster_value_nan(3))
         primary_case = 2; 
 	end     
 end 
+
 % If it is none of the cases, do not add the temp_cluster to the current
 % cluster. 
 if ~isnan(cp)
+    
+    ignoreCase = false; 
     
     % Determine the position of the closest assigner. 
     % Get the assigner neighbor that is closest to the temp_cluster
@@ -87,13 +90,24 @@ if ~isnan(cp)
     
     % Initialize onTop boolean statement 
     atTop = NaN; 
-    
     % Determine the location of the nearest neighbor 
     if mp == 1
         atTop = true; 
     elseif mp == size(old_cluster,1)
         atTop = false; 
     end 
+    
+    if isnan(atTop)
+        atTop = false; 
+        ignoreCase = true; 
+%         disp('Class set'); 
+%         disp(class_set); 
+%         disp('Old Cluster'); 
+%         disp(old_cluster);
+%         disp('Temporary Cluster'); 
+%         disp(temp_cluster); 
+    end
+    
     
     % Initialize flipping logical statement 
     needsFlip = false; 
@@ -117,7 +131,7 @@ if ~isnan(cp)
    
    
     % Place the newest cluster
-    if atTop
+    if atTop && ~ignoreCase
         %Put the temporary cluster before the previously assigned cluster                      
         zline_clusters{unique_nz, 1} = ...
             [temp_cluster; zline_clusters{unique_nz, 1}];
@@ -125,14 +139,16 @@ if ~isnan(cp)
         cluster_tracker = update_tracker( zline_clusters, ...
             cluster_tracker, unique_nz );  
         
-    elseif ~atTop
+    elseif ~atTop && ~ignoreCase
         %Put the temporary cluster after the previously assigned cluster  
         zline_clusters{unique_nz, 1} = ...
             [zline_clusters{unique_nz, 1}; temp_cluster];
 
         %Update the cluster tracker 
         cluster_tracker = update_tracker( zline_clusters, ...
-            cluster_tracker, unique_nz );        
+            cluster_tracker, unique_nz );       
+    else
+        ignored_cases = ignored_cases + 1; 
     end 
     
     
