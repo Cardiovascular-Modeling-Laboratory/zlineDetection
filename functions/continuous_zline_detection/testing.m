@@ -272,6 +272,21 @@ disp(strcat('Accuracy:  ', num2str(acc_val), '%'));
 [ zline_clusters, cluster_tracker ] = cluster_neighbors( dp_rows, ...
     dp_cols, m, n, true);
 
+%% Check specific cluster
+k = 116; 
+% Create the new dp pairngs
+perm_dprows = zeros(size(dp_rows)); 
+perm_dpcols = zeros(size(dp_cols));
+
+% Loop through and order the dot prodcuts 
+for o = 1:num_nz
+    perm_dprows(o,:) = dp_rows(all_perms(k,o),:); 
+    perm_dpcols(o,:) = dp_cols(all_perms(k,o),:); 
+end 
+
+%Cluster the values in order.  
+[ zline_clusters, cluster_tracker ] = cluster_neighbors( perm_dprows, ...
+    perm_dpcols, m, n);
 
 %% Plot actual clusters
 BW = positions; 

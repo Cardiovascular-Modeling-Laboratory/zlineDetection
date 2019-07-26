@@ -1,7 +1,7 @@
 function [ cluster_tracker, zline_clusters, clusterCount, ...
     ignored_cases ] = ...
     combine_clusters( cluster_tracker, zline_clusters, clusterCount, ...
-    cluster_value, temp_cluster, ignored_cases, dp_rows, dp_cols )
+    cluster_value, temp_cluster, ignored_cases, current_dprows, current_dpcols )
 %This function will combine two clusters into one
 
 %Distance anonymous function 
@@ -13,76 +13,109 @@ cn = ones(1,4);
 
 %Store the first cluster and get the size
 d1_cval = cluster_value(1); 
-dir1_cluster = zline_clusters{ d1_cval, 1 };
-[cn(2), ~] = size(dir1_cluster); 
+dir1_clusterA = zline_clusters{ d1_cval, 1 };
+[cn(2), ~] = size(dir1_clusterA); 
 
 %Store the second cluster and get the size 
 d2_cval = cluster_value(end); 
-dir2_cluster = zline_clusters{ d2_cval, 1 };
-[cn(4), ~] = size(dir2_cluster); 
+dir2_clusterB = zline_clusters{ d2_cval, 1 };
+[cn(4), ~] = size(dir2_clusterB); 
 
-%Store sizes of the set neighbors
-dp = [1;length(dp_rows)]; 
-
-%Save the size of the temporary cluster
-temp_max = size(temp_cluster,1); 
-
-%Initialize a matrix to store the distances between both neighbors and the
-%start and stop positions of both neighboring clusters
-distances = zeros(2,4);
-
-%Calculating distance, which will be in the following form: 
-%   dir1_start dir2_end dir2_start dir2_end
-%dp1
-%dp2
-for d = 1:2
-    for c = 1:2
-        %Direction 1:
-        distances(d,c) = dist( dp_rows(dp(d)), dir1_cluster(cn(c), 1), ...
-             dp_cols(dp(d)), dir1_cluster(cn(c),2) );
-        %Direction 2:
-        distances(d,c+2) = ...
-            dist( dp_rows(dp(d)), dir2_cluster(cn(c+2), 1), ...
-            dp_cols(dp(d)), dir2_cluster(cn(c+2),2) );
-    end
+% For each value in the current dp_rows / columns, (1)determine which 
+% cluster they're in (2) its position in that cluster and (3) whether 
+% that's the top == 1 or bottom == 0
+relative_loc = zeros(3,length(current_dprows)); 
+for h = 1:length(current_dprows)
+    % Get the current cluster value
+    if cluster_value(h) == d1_cval
+        relative_loc(1,h) = 1; 
+        % Find the index 
+        relative_loc(2,h) = coordinatePosition( current_dprows(h),...
+            current_dpcols(h), dir1_clusterA(:,1), dir1_clusterA(:,2) ); 
+        % Determine if index is at top or bottom 
+        if relative_loc(2,h) == 1
+            relative_loc(3,h) = 1; 
+        elseif relative_loc(2,h) == size(dir1_clusterA,1) 
+            relative_loc(3,h) = 0; 
+        else
+            relative_loc(3,h) = NaN; 
+        end 
+    
+    elseif cluster_value(h) == d2_cval
+        % Set the current clusters 
+        relative_loc(1,h) = 2; 
+        % Find the index 
+        relative_loc(2,h) = coordinatePosition(current_dprows(h),...
+            current_dpcols(h), dir2_clusterB(:,1), dir2_clusterB(:,2) );
+        % Determine if index is at top or bottom 
+        if relative_loc(2,h) == 1
+            relative_loc(3,h) = 1; 
+        elseif relative_loc(2,h) == size(dir2_clusterB,1) 
+            relative_loc(3,h) = 0; 
+        else
+            relative_loc(3,h) = NaN; 
+        end 
+        
+    else
+        % Set all to NaN 
+        relative_loc(1,h) = NaN; 
+        relative_loc(2,h) = NaN; 
+        relative_loc(3,h) = NaN; 
+    end 
+    
 end 
 
+% Create logical to keep going if everything is okay
+dontIgnore = true; 
 
-%Check to make sure the middle cluster is not perpendicular on either side
-% Direction 1 
-if cn(2) > 1 && temp_max >= 1 
-    isPerpdir1 = check_perpendicular(...
-        [dir1_cluster(cn(2)-1, 1),dir1_cluster(cn(2)-1, 2)], ...
-        [temp_cluster(1,1),temp_cluster(1,2)] ); 
+% If dir0 is assigned to a cluster and it is not at the end, set don't
+% ignore equal to true
+if cluster_value(2) ~= 0 && isnan(relative_loc(3,2))
+    dontIgnore = false; 
+end
+
+% The second cluster will only be on top in the following three cases: 
+%(1) dir1: middle, dir0: top in A, dir2: bottom 
+bTop1 = ( isnan(relative_loc(3,1)) && ...
+        relative_loc(3,2) == 1 && relative_loc(1,2) == 1 &&...
+        relative_loc(3,3) == 0 ); 
+%(2) dir1: top, dir0: bottom in B, dir2: middle 
+bTop2 = ( relative_loc(3,1) == 1 && ...
+        relative_loc(3,2) == 0 && relative_loc(1,2) == 2 &&...
+        isnan(relative_loc(3,3)) ); 
+%(3) dir1: top, dir0: U, dir2: bottom
+bTop3 = ( relative_loc(3,1) == 1 && ...
+        cluster_value(2) == 0 &&...
+        relative_loc(3,3) == 0 ); 
+
+% Set bTop to be true if it was true for any of the other cases 
+bTop = bTop1 || bTop2 || bTop3; 
+    
+% Set the top cluster and the bottom cluster
+if bTop
+    top_cluster = dir2_clusterB; 
+    bottom_cluster = dir1_clusterA; 
 else
-    isPerpdir1 = false; 
+    top_cluster = dir1_clusterA; 
+    bottom_cluster = dir2_clusterB; 
+end  
+
+% Save the logical statement about location in an array 
+temp_tb = relative_loc(3,:);  
+
+% The first cluster should be flipped only if two directions are on top 
+if sum(temp_tb(:) == 1) == 2
+    top_cluster = flipud(top_cluster); 
+end 
+% The second cluster should be flipped only if two directions are on bottom
+if sum(temp_tb(:) == 0) == 2
+    bottom_cluster = flipud(bottom_cluster); 
 end 
 
-% Direction 2
-if cn(4) >= 2 && temp_max >= 1 
-    isPerpdir2 = check_perpendicular(...
-        [dir2_cluster(2, 1),dir2_cluster(2, 2)], ...
-            [temp_cluster(temp_max,1),temp_cluster(temp_max,2)] ); 
+% If there is an issue increase the number of ignored cases
+if ~dontIgnore
+    ignored_cases = ignored_cases + 1; 
 else
-    isPerpdir2 = false; 
-end 
-
-
-%NOTE: it is possible that some of the clusters should be sorted in
-%opposite direction (ex: cluster = cluster(end:1, :)) in order to optimize
-%the order. However the reason that the order is flipped is usually because
-%the lines are in different directions. 
-%For now set it to be a very simple case 
-
-
-%If the distances between (below) are nonzero don't combine the matrices
-%(1.) dir1 cluster (end) & dp_rows(1)dp_cols(1)
-%(2.) dir2 cluster (1) & dp_rows(end)dp_cols(end)
-
-% if distances(1,2) == 0 && distances(2,3) == 0
-if distances(1,2) <= sqrt(2) && distances(2,3) <= sqrt(2) ...
-        && ~isPerpdir1 && ~isPerpdir2
-
     %Increase clusterCount
     clusterCount = clusterCount + 1; 
 
@@ -91,10 +124,9 @@ if distances(1,2) <= sqrt(2) && distances(2,3) <= sqrt(2) ...
     %and order the new cluster based on the order of  
     %the cluster values
     zline_clusters{clusterCount, 1} = ...
-        [zline_clusters{ cluster_value(1), 1 }; ...
+        [top_cluster; ...
         temp_cluster; ...
-        zline_clusters{ cluster_value(end), 1 }]; 
-
+        bottom_cluster]; 
 
     %Set the previous clusters to NaN 
     zline_clusters{ cluster_value(1), 1 } = NaN; 
@@ -103,10 +135,10 @@ if distances(1,2) <= sqrt(2) && distances(2,3) <= sqrt(2) ...
     %Update the tracker 
     cluster_tracker = ...
         update_tracker( zline_clusters, ...
-        cluster_tracker, clusterCount ); 
-else
-    ignored_cases = ignored_cases + 1; 
-end 
+        cluster_tracker, clusterCount );  
+
+    
+end
 
 end
 
