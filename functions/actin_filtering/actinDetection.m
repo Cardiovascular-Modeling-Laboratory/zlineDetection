@@ -84,8 +84,11 @@ actin_anisodiffuse = mat2gray( actin_anisodiffuse );
 
 
 % Calculate orientation vectors
-[orientim, ~] = ridgeorient(actin_anisodiffuse, ...
+[orientim, reliability] = ridgeorient(actin_anisodiffuse, ...
     settings.Options.sigma, settings.Options.rho, settings.Options.rho);
+
+% Remove non reliable actin regions 
+orientim(reliability < 0.1) = 0; 
 
 % Set all of the orientation vectors considered background to be zero. 
 orientim(actin_background == 0) = 0; 
