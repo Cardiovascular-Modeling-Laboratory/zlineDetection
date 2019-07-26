@@ -1,32 +1,52 @@
-%% Initialize section of real tissue 
+% This script is for testing purposes. 
+% It contains code to analyze a specific section of a previously analyzed 
+% image (requiring orientation vectors and binary skeletons). 
+% It also contains synthetic data to test the code. 
 
+%% OPTION 1: TEST REGION OF A SPECIFIC ANALYZED IMAGE 
 % Load an im_struct for an image you'd like to test and display it 
 figure; imshow(im_struct.skel_final_trimmed); 
 
 % Select a section using the following command 
 r = round(getrect()); 
 
-%% 
-% Get the orientation vectors and skeleton in that region and get in the
-% correct format
-load('D:\NRVM_SingleCells_20190724\AR1_SD20150807_W10_w1mCherry\AR1_SD20150807_W10_w1mCherry_OrientationAnalysis.mat')
-
-r = [72,183,31,8]; 
+% Get only the orientation vectors in the selected section. 
 sec_orientim = im_struct.orientim(r(2):r(2)+r(4), r(1):r(1)+r(3)); 
 orientim = sec_orientim; 
 orientim(isnan(orientim)) = 0;
 angles = orientim; 
 
-sec_skel_final = getRectSection(im_struct.skel_final_trimmed, r, false);
+% Get the binary skeleton in the region 
+sec_skel_final = im_struct.skel_final_trimmed(r(2):r(2)+r(4), r(1):r(1)+r(3));
 positions = sec_skel_final; 
 
-%%
-orientim = im_struct.orientim; 
-orientim(isnan(orientim)) = 0; 
-angles = orientim; 
+% Get the image in that region 
+BW0 = mat2gray(im_struct.im); 
+BW = BW0(r(2):r(2)+r(4), r(1):r(1)+r(3));
 
-positions = mat2gray(im_struct.im);
-BW = positions; 
+
+
+% %% 
+% % Get the orientation vectors and skeleton in that region and get in the
+% % correct format
+% load('D:\NRVM_SingleCells_20190724\AR1_SD20150807_W10_w1mCherry\AR1_SD20150807_W10_w1mCherry_OrientationAnalysis.mat')
+% 
+% r = [72,183,31,8]; 
+% sec_orientim = im_struct.orientim(r(2):r(2)+r(4), r(1):r(1)+r(3)); 
+% orientim = sec_orientim; 
+% orientim(isnan(orientim)) = 0;
+% angles = orientim; 
+% 
+% sec_skel_final = getRectSection(im_struct.skel_final_trimmed, r, false);
+% positions = sec_skel_final; 
+% 
+% %%
+% orientim = im_struct.orientim; 
+% orientim(isnan(orientim)) = 0; 
+% angles = orientim; 
+% 
+% positions = mat2gray(im_struct.im);
+% BW = positions; 
 
 %%
 r2 = [2,5,5,3]; 
@@ -39,91 +59,6 @@ angles = orientim;
 sec_skel_final2 = getRectSection(sec_skel_final, r2, false);
 positions = sec_skel_final2; 
 
-%% Synthetic 1
-sc = 1; 
-
-sze = 7; 
-positions = zeros(sze,sze); 
-bnds = 1; 
-mid = sze/2 + 0.5; 
-positions((1+bnds):(sze-bnds), round(mid)) = 1; 
-BW = positions; 
-
-figure; imshow(positions); 
-orientim = (pi/2)*positions; 
-angles = orientim; 
-
-%% Synthetic 2
-sc = 2; 
-
-sze = 7; 
-positions = zeros(sze,sze); 
-bnds = 1; 
-mid = sze/2 + 0.5; 
-positions(round(mid),(1+bnds):(sze-bnds)) = 1; 
-BW = positions; 
-
-figure; imshow(positions); 
-orientim = (pi)*positions; 
-angles = orientim; 
-
-%% Synthetic 3
-sc = 3; 
- 
-sze = 7; 
-positions = zeros(sze,sze); 
-bnds = 1; 
-mid = sze/2 + 0.5; 
-vals = (1+bnds):(sze-bnds); 
-for k = 1:length(vals)
-    if mod(k,2) == 0
-        nn = 0;
-    else
-        nn = 1; 
-    end 
-    positions(round(mid)+nn,vals(k)) = 1; 
-end 
-
-BW = positions; 
-
-figure; imshow(positions); 
-orientim = (pi)*positions; 
-angles = orientim; 
-
-%% Synthetic 4
-clearvars -except im_struct r
-
-sc = 4; 
- 
-sze = 7; 
-positions = zeros(sze,sze); 
-bnds = 1; 
-mid = sze/2 + 0.5; 
-positions(round(mid)+1,(1+bnds)) = 1; 
-positions(round(mid),(2+bnds):(sze-bnds)) = 1; 
-
-BW = positions; 
-
-figure; imshow(positions); 
-orientim = (pi)*positions; 
-angles = orientim; 
-
-
-%% Synthetic 5
-sc = 5; 
- 
-sze = 7; 
-positions = zeros(sze,sze); 
-bnds = 1; 
-mid = sze/2 + 0.5; 
-positions(round(mid)-1,(1+bnds)) = 1; 
-positions(round(mid),(2+bnds):(sze-bnds)) = 1; 
-
-BW = positions; 
-
-figure; imshow(positions); 
-orientim = (pi)*positions; 
-angles = orientim; 
 
 
 %% Compute neighbors and the dot product values 
@@ -334,3 +269,6 @@ title('Plotted Clustering', 'FontSize',16, 'FontWeight','bold' );
 disp('Plotting and calculating the lengths of continuous z-lines...'); 
 [ distance_storage, rmCount, zline_clusters ] = ...
     calculate_lengths( BW, zline_clusters);
+
+
+
