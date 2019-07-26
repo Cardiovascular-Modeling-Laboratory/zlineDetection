@@ -65,6 +65,18 @@ for h = 1:length(current_dprows)
     
 end 
 
+
+disp('Rows'); 
+disp(current_dprows); 
+disp('Cols'); 
+disp(current_dpcols);
+disp('Cluster 1'); 
+disp(dir1_clusterA); 
+disp('Cluster 2'); 
+disp(dir2_clusterB); 
+disp('Relative Locations'); 
+disp(relative_loc); 
+
 % Create logical to keep going if everything is okay
 dontIgnore = true; 
 
@@ -74,7 +86,7 @@ if cluster_value(2) ~= 0 && isnan(relative_loc(3,2))
     dontIgnore = false; 
 end
 
-% The second cluster will only be on top in the following three cases: 
+% The second cluster will only be on top in the following five cases: 
 %(1) dir1: middle, dir0: top in A, dir2: bottom 
 bTop1 = ( isnan(relative_loc(3,1)) && ...
         relative_loc(3,2) == 1 && relative_loc(1,2) == 1 &&...
@@ -87,9 +99,19 @@ bTop2 = ( relative_loc(3,1) == 1 && ...
 bTop3 = ( relative_loc(3,1) == 1 && ...
         cluster_value(2) == 0 &&...
         relative_loc(3,3) == 0 ); 
+%(4) dir1: bottom, dir0: top in A , dir2: bottom, A is only 2 
+bTop4 = ( relative_loc(3,1) == 0 && ...
+        relative_loc(3,2) == 1 && relative_loc(1,2) == 1 && ...
+        relative_loc(3,3) == 0 &&...
+        size(dir1_clusterA,1) == 2); 
+%(5) dir1: top, dir0: bottom in B , dir2: top, B is only 2 
+bTop5 = ( relative_loc(3,1) == 1 && ...
+        relative_loc(3,2) == 0 && relative_loc(1,2) == 2 && ...
+        relative_loc(3,3) == 1 &&...
+        size(dir2_clusterB,1) == 2); 
 
 % Set bTop to be true if it was true for any of the other cases 
-bTop = bTop1 || bTop2 || bTop3; 
+bTop = bTop1 || bTop2 || bTop3 || bTop4 || bTop5; 
     
 % Set the top cluster and the bottom cluster
 if bTop
@@ -104,12 +126,22 @@ end
 temp_tb = relative_loc(3,:);  
 
 % The first cluster should be flipped only if two directions are on top 
-if sum(temp_tb(:) == 1) == 2
-    top_cluster = flipud(top_cluster); 
+if sum(temp_tb(:) == 1) == 2 && ~bTop
+    % One exception to this rule is if the first cluster only consists of
+    % dir1 and dir0 
+    dontFlip = relative_loc(1,2) == 1 && size(dir1_clusterA,1) == 2; 
+    if ~dontFlip  
+        top_cluster = flipud(top_cluster); 
+    end 
 end 
 % The second cluster should be flipped only if two directions are on bottom
-if sum(temp_tb(:) == 0) == 2
-    bottom_cluster = flipud(bottom_cluster); 
+if sum(temp_tb(:) == 0) == 2 && ~bTop
+    % One exception to this rule is if the second cluster only consists of
+    % dir2 and dir0 
+    dontFlip = relative_loc(1,2) == 2 && size(dir2_clusterB,1) == 2; 
+    if ~dontFlip  
+        bottom_cluster = flipud(bottom_cluster); 
+    end
 end 
 
 % If there is an issue increase the number of ignored cases

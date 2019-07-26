@@ -9,7 +9,7 @@ r = round(getrect());
 %% 
 % Get the orientation vectors and skeleton in that region and get in the
 % correct format
-%load('D:\NRVM_SingleCells_20190724\AR1_SD20150807_W10_w1mCherry\AR1_SD20150807_W10_w1mCherry_OrientationAnalysis.mat')
+load('D:\NRVM_SingleCells_20190724\AR1_SD20150807_W10_w1mCherry\AR1_SD20150807_W10_w1mCherry_OrientationAnalysis.mat')
 
 r = [72,183,31,8]; 
 sec_orientim = im_struct.orientim(r(2):r(2)+r(4), r(1):r(1)+r(3)); 
@@ -206,7 +206,7 @@ num_nz = sum(positions(:));
 if size(dp_cols,1) ~= num_nz
     disp('Sizes do not match.'); 
 end 
-
+BW = positions;
 sc = 4; 
 
 if sc == 3
@@ -273,7 +273,7 @@ disp(strcat('Accuracy:  ', num2str(acc_val), '%'));
     dp_cols, m, n, true);
 
 %% Check specific cluster
-k = 116; 
+k = 115; 
 % Create the new dp pairngs
 perm_dprows = zeros(size(dp_rows)); 
 perm_dpcols = zeros(size(dp_cols));
@@ -286,7 +286,7 @@ end
 
 %Cluster the values in order.  
 [ zline_clusters, cluster_tracker ] = cluster_neighbors( perm_dprows, ...
-    perm_dpcols, m, n);
+    perm_dpcols, m, n, true);
 
 %% Plot actual clusters
 BW = positions; 
