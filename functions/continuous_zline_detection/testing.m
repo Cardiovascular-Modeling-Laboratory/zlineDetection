@@ -207,6 +207,8 @@ if size(dp_cols,1) ~= num_nz
     disp('Sizes do not match.'); 
 end 
 
+sc = 4; 
+
 if sc == 3
     true_dist = (num_nz-1)*sqrt(2); 
 elseif sc == 4

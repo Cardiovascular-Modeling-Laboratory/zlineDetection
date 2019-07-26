@@ -12,11 +12,13 @@ dist = @(x1,x2,y1,y2) sqrt((x1-x2)^2 + (y1-y2)^2);
 cn = ones(1,4); 
 
 %Store the first cluster and get the size
-dir1_cluster = zline_clusters{ cluster_value(1), 1 };
+d1_cval = cluster_value(1); 
+dir1_cluster = zline_clusters{ d1_cval, 1 };
 [cn(2), ~] = size(dir1_cluster); 
 
 %Store the second cluster and get the size 
-dir2_cluster = zline_clusters{ cluster_value(end), 1 };
+d2_cval = cluster_value(end); 
+dir2_cluster = zline_clusters{ d2_cval, 1 };
 [cn(4), ~] = size(dir2_cluster); 
 
 %Store sizes of the set neighbors

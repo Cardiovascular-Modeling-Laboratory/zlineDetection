@@ -25,7 +25,7 @@ function [ zline_clusters , cluster_tracker, ignored_cases ] = ...
 
 %CASE 5: All three assigned 
 % CASE 5-1: a b b / a a b - Combine all into new cluster
-% CASE 5-2: b a b - Not sure how to handle this / Ignore
+% CASE 5-2: b a b - Ignore
 % CASE 5-3: a b c - Ignore 
 % CASE 5-4: a a a - Ignore
 

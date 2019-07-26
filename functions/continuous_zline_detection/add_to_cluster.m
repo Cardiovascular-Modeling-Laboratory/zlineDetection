@@ -82,14 +82,8 @@ if ~isnan(cp)
     closest_assigner = class_set(cp,:);
     
     % Find where the closest class set is in the old cluster
-    row_match = zeros(1,size(old_cluster,1)); 
-    row_match(old_cluster(:,1) == closest_assigner(1,1)) = 1; 
-    col_match = zeros(1,size(old_cluster,1));
-    col_match(old_cluster(:,2) == closest_assigner(1,2)) = 1; 
-    coord_match = row_match.*col_match; 
-    
-    % Get the position of the closest assginer 
-    mp = find(coord_match == 1); 
+    mp = coordinatePosition(closest_assigner(1,1), ...
+        closest_assigner(1,2), old_cluster(:,1), old_cluster(:,2));
     
     % Initialize onTop boolean statement 
     atTop = NaN; 
