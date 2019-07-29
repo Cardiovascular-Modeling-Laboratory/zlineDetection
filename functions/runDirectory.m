@@ -245,7 +245,11 @@ for k = 1:zn
         %Append summary file with OOP 
         save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
            '_OrientationAnalysis.mat')), 'oop_struct', '-append');
+    else
+        oop_struct = NaN; 
     end 
+    
+    % If this is a single cell, create a summary pdf. 
     
     % Close all figures
     close all; 
