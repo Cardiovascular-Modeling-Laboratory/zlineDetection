@@ -106,12 +106,11 @@ for k = 1:zn
         if settings.tf_OOP && ~settings.exploration 
 
             %Calculate the OOP, director vector and director angle 
-            [ ACTINoop, oop_struct.ACTINdirectionAngle, ~, ...
+            [ oop_struct.ACTINoop, oop_struct.ACTINdirectionAngle, ~, ...
                 oop_struct.ACTINdirector ] = calculate_OOP( temp_angles ); 
 
             %Save the values in the the FOV matrix 
-            ACTINFOV_OOPs{1,k} = ACTINoop; 
-            oop_struct.oop = ACTINoop; 
+            ACTINFOV_OOPs{1,k} = oop_struct.ACTINoop;
             ACTINFOV_directors{1,k} = oop_struct.ACTINdirectionAngle; 
         end 
     end 
@@ -213,7 +212,7 @@ for k = 1:zn
         title(hist_name,'FontSize',18,'FontWeight','bold');
         xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
             'FontWeight','bold');
-        ylabel('Frequency','FontSize',18,'FontWeight','bold');
+        ylabel('Count','FontSize',18,'FontWeight','bold');
         
         %Save histogram as a tiff 
         fig_name = strcat( im_struct.im_name, '_CZLhistogram');

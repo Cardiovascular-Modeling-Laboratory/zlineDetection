@@ -107,7 +107,7 @@ if didAnalysis
         
         % Create orientation vector image 
         angles = insertSegment(zeros(tempd1,tempd2), im_struct.orientim, ...
-                    dim1, dim2, true);
+                    dim1, dim2, false);
         angles(isnan(angles)) = 0; 
         
          
@@ -142,15 +142,106 @@ if didAnalysis
         [ zline_clusters, cluster_tracker ] = cluster_neighbors( dp_rows, ...
             dp_cols, m, n, false);
         
+        figure; 
+        hold on; 
+        subplot(9,2,1:12)
          % Plot the z-lines images 
         [ distance_storage, rmCount, zline_clusters ] = ...
-            calculate_lengths( summary_image, zline_clusters);
+            calculate_lengths( summary_image, zline_clusters, true);
         
-    end 
+        % Add title 
+        if contains(im_struct.im_name,'AR') && ...
+                contains(im_struct.im_name,'_SD')
+            ar_pos = strfind(im_struct.im_name,'AR'); 
+            sd_pos = strfind(im_struct.im_name,'_SD'); 
+            title_string = im_struct.im_name; 
+            title_string = title_string((ar_pos+2):(sd_pos-1)); 
+            title_string = strrep(title_string,'p','.'); 
+            title_string = strcat('Aspect Ratio: ', {' '}, title_string); 
+        else
+            title_string = im_struct.im_name; 
+        end 
+        title(title_string{1}, 'fontsize',12,'FontWeight', 'bold');
+        
+        %Remove any nan from distances 
+        distances_no_nan = distance_storage; 
+        distances_no_nan(isnan(distances_no_nan)) = []; 
+
+        %Convert the distances from pixels to microns 
+        distances_um = distances_no_nan/settings.pix2um;
+        subplot(9,2,[13,15,17]);
+        hold on; 
+        histogram(distances_um); 
+        line([mean(distances_um), mean(distances_um)], ylim, ...
+            'LineStyle','--', 'LineWidth', 1, 'Color', 'k');
+        line([median(distances_um), median(distances_um)], ylim, ...
+            'LineWidth', 1, 'Color', 'k');
+        legend({'Hist','Mean', 'Median'}); 
+        
+        % Change the font size 
+        set(gca, 'fontsize',12,'FontWeight', 'bold');
+            
+        %Change the x and y labels 
+        ylabel('Count','FontSize', 12, 'FontWeight', 'bold');
+        xlabel('Continuous Z-line Lengths (\mu m)','FontSize',12,...
+            'FontWeight','bold');
+    end
     
+    if didOOPz
+        subplot(9,2,[14,16,18]);
+        hold on; 
+        x = 1; 
+        x_name{1} = 'Z-line OOP'; 
+        xwidth = 0.25; 
+        minx = x(1)-(xwidth/2);
+        miny = 0; 
+        maxx = x(1)+(xwidth/2);
+        maxy = oop_struct.oop; 
+        fill([minx, maxx, maxx, minx], [miny,miny,maxy,maxy], 'k', ...
+            'FaceAlpha', 1);
+        
+        if didActin
+            % Plot Actin OOP 
+            x(2) = 2; 
+            x_name{2} = 'Actin OOP'; 
+            xwidth = 0.25; 
+            minx = x(2)-(xwidth/2);
+            miny = 0; 
+            maxx = x(2)+(xwidth/2);
+            maxy = oop_struct.ACTINoop; 
+            fill([minx, maxx, maxx, minx], [miny,miny,maxy,maxy], 'k', ...
+                'FaceAlpha', 1);
+            
+            % Plot Z-line Fraction 
+            x(3) = 3; 
+            x_name{3} = 'Z-line Fraction'; 
+            xwidth = 0.25; 
+            minx = x(3)-(xwidth/2);
+            miny = 0; 
+            maxx = x(3)+(xwidth/2);
+            maxy = oop_struct.ACTINoop; 
+            fill([minx, maxx, maxx, minx], [miny,miny,maxy,maxy], 'b', ...
+                'FaceAlpha', 1);
+            
+        end
+        
+        %Change the x axis labels
+        set(gca,'XTick',x) 
+        %Set the font size 
+        set(gca, 'fontsize',12,'FontWeight', 'bold');
+            
+        set(gca,'XTickLabel',x_name,'fontsize',10,...
+            'FontWeight', 'bold'); 
+        set(gca,'XTickLabelRotation',20); 
+        ylim([0,1]); 
+        xlim([0,max(x)+1]); 
+
+    end 
+    new_filename = strcat(im_struct.im_name,'.pdf'); 
+    new_filename = appendFilename( im_struct.im_path, new_filename ); 
+    saveas(gcf, fullfile(im_struct.im_path, new_filename), 'pdf');
 end 
 
-%     save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
-%        '_OrientationAnalysis.mat')), 'CZL_struct', '-append');
+
 end
 

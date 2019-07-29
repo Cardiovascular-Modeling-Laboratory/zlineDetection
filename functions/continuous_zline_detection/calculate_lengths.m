@@ -1,7 +1,19 @@
 function [ distance_storage, rmCount, zline_clusters] = ...
-    calculate_lengths( processed_image, zline_clusters)
+    calculate_lengths( processed_image, zline_clusters, specialVis)
 %This function calculates the length and plotted the sarcomere 
-figure; 
+
+% Add a case where a figure isn't opened (for visualization and summary
+% purposes) 
+if nargin < 3
+    specialVis = false; 
+end 
+
+if ~specialVis 
+    figure; 
+    lin_val = 2; 
+else
+    lin_val = 0.5; 
+end 
 imshow(processed_image);
 hold on;
 
@@ -56,7 +68,7 @@ for k=1:length(zline_clusters)
         distance_storage(k) = coord_length; 
         
         %Plot boundaries (large LineWidth)
-        plot( boundary(:,2), boundary(:,1) , '-', 'LineWidth', 2);      
+        plot( boundary(:,2), boundary(:,1) , '-', 'LineWidth', lin_val);      
     
     end
     
