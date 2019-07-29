@@ -14,11 +14,15 @@ syn_angles = cell(num_cases,1);
 % Initalize true distancecs 
 true_distances = zeros(num_cases,1); 
 
-%% Synthetic Case 1: 
-% 5 vertical pixels all exactly 90 degrees with no variability
+% Initalize text description
+description_txt = cell(num_cases,1); 
 
+%% Synthetic Case 1: 
 % Set the case
-sc = 1; 
+sc = 1;
+% 5 vertical pixels all exactly 90 degrees with no variability
+description_txt{sc,1} = ...
+    'vertical pixels, no positional variability, no angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -44,10 +48,12 @@ syn_angles{sc,1} = orientim;
 clear positions orientim 
 
 %% Synthetic 2
-% 5 horizontal pixels all exactly 180 degrees with no variability
-
 % Set the case
 sc = sc + 1; 
+
+% 5 horizontal pixels all exactly 180 degrees with no variability
+description_txt{sc,1} = ...
+    'horizontal pixels, no positional variability, no angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -73,10 +79,12 @@ syn_angles{sc,1} = orientim;
 clear positions orientim 
 
 %% Synthetic 3
-% 5 horizontal pixels all exactly 180 degrees with variability in positions
-
 % Set the case
 sc = sc + 1; 
+
+% 5 horizontal pixels all exactly 180 degrees with variability in positions
+description_txt{sc,1} = ...
+    'horizontal pixels, positional variability, no angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -110,10 +118,12 @@ syn_angles{sc,1} = orientim;
 clear positions orientim 
 
 %% Synthetic 4
-% 5 vertical pixels all exactly 90 degrees with variability in positions
-
 % Set the case
 sc = sc + 1; 
+
+% 5 vertical pixels all exactly 90 degrees with variability in positions
+description_txt{sc,1} = ...
+    'vertical pixels, positional variability, no angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -147,10 +157,12 @@ syn_angles{sc,1} = orientim;
 clear positions orientim 
 
 %% Synthetic 5 
-% 5 vertical pixels all with variabiltiy around 90 degrees
-
 % Set the case
 sc = sc + 1; 
+
+% 5 vertical pixels all with variabiltiy around 90 degrees
+description_txt{sc,1} = ...
+    'vertical pixels, no positional variability, angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -161,14 +173,18 @@ mid = sze/2 + 0.5;
 % Create positions 
 positions((1+bnds):(sze-bnds), round(mid)) = 1; 
 
-% Variability between angles 
-var_min = 0;
-var_max = acos(0.92);
+% Variability between angles
+dp_val = 0.93; var_val = acos(dp_val)/2; 
+var_min = -var_val;
+var_max = var_val;
 rand_mat = (var_max-var_min).*rand(size(positions)) + var_min;
 
 % Create the orientation angles with variability in the vector 
 orientim = (pi/2) + rand_mat; 
 orientim = orientim.*positions; 
+
+% Correct the orientation anglse  
+orientim = correctAngles(orientim);
 
 % Calculate and store the true distance
 true_distances(sc,1) = sqrt( (mid - mid)^2 + ((1+bnds)-(sze-bnds))^2 ); 
@@ -183,10 +199,12 @@ clear positions orientim
 
 
 %% Synthetic 6
-% 5 horizontal pixels all with variabiltiy around 180 degrees
-
 % Set the case
 sc = sc + 1; 
+
+% 5 horizontal pixels all with variabiltiy around 180 degrees
+description_txt{sc,1} = ...
+    'horizontal pixels, no positional variability, angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -198,13 +216,17 @@ mid = sze/2 + 0.5;
 positions(round(mid),(1+bnds):(sze-bnds)) = 1; 
 
 % Variability between angles 
-var_min = 0;
-var_max = acos(0.92);
+dp_val = 0.93; var_val = acos(dp_val)/2; 
+var_min = -var_val;
+var_max = var_val;
 rand_mat = (var_max-var_min).*rand(size(positions)) + var_min;
 
 % Create the orientation angles with variability in the vector 
 orientim = (pi) + rand_mat; 
 orientim = orientim.*positions; 
+
+% Correct the orientation anglse  
+orientim = correctAngles(orientim);
 
 % Calculate and store the true distance
 true_distances(sc,1) = sqrt( (mid - mid)^2 + ((1+bnds)-(sze-bnds))^2 ); 
@@ -218,11 +240,13 @@ syn_angles{sc,1} = orientim;
 clear positions orientim 
 
 %% Synthetic 7
-% 5 horizontal pixels with variability around 180 degrees with variability 
-% in positions
-
 % Set the case
 sc = sc + 1; 
+
+% 5 horizontal pixels with variability around 180 degrees with variability 
+% in positions
+description_txt{sc,1} = ...
+    'horizontal pixels, positional variability, angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -242,13 +266,17 @@ for k = 1:length(vals)
 end 
 
 % Variability between angles 
-var_min = 0;
-var_max = acos(0.92);
+dp_val = 0.93; var_val = acos(dp_val)/2; 
+var_min = -var_val;
+var_max = var_val;
 rand_mat = (var_max-var_min).*rand(size(positions)) + var_min;
 
 % Create the orientation angles with variability in the vector 
 orientim = (pi) + rand_mat; 
-orientim = orientim.*positions; 
+orientim = orientim.*positions;  
+
+% Correct the orientation anglse  
+orientim = correctAngles(orientim);
 
 % Calculate and store the true distance
 true_distances(sc,1) = sqrt(2)*4; 
@@ -262,11 +290,13 @@ syn_angles{sc,1} = orientim;
 clear positions orientim 
 
 %% Synthetic 8
-% 5 vertical pixels with variability around 90 degrees with variability in
-% positions
-
 % Set the case
 sc = sc + 1; 
+
+% 5 vertical pixels with variability around 90 degrees with variability in
+% positions
+description_txt{sc,1} = ...
+    'vertical pixels, positional variability, angle variability';
 
 % Set the synthetic image to be 7x7 pixels
 sze = 7; 
@@ -286,13 +316,17 @@ for k = 1:length(vals)
 end 
 
 % Variability between angles 
-var_min = 0;
-var_max = acos(0.92);
+dp_val = 0.93; var_val = acos(dp_val)/2; 
+var_min = -var_val;
+var_max = var_val;
 rand_mat = (var_max-var_min).*rand(size(positions)) + var_min;
 
 % Create the orientation angles with variability in the vector 
 orientim = (pi/2) + rand_mat; 
 orientim = orientim.*positions; 
+
+% Correct the orientation anglse  
+orientim = correctAngles(orientim);
 
 % Calculate and store the true distance
 true_distances(sc,1) = sqrt(2)*4; 
@@ -322,5 +356,31 @@ save_name = strcat('czl_testcases',today_date,'.mat');
 
 % Save the data 
 save(fullfile(save_path, save_name), ...
-        'true_distances', 'syn_positions', 'syn_angles');
+        'true_distances', 'syn_positions', 'syn_angles','description_txt');
+    
+%% Create function to correct angles 
+
+function [theta_corrected] = correctAngles(theta_mat)
+% This function will either add or subtract pi if the angles are less than
+% 0 or greater than pi
+
+% Initialize too small or too great matrices
+tooGreat = zeros(size(theta_mat)); 
+tooSmall = zeros(size(theta_mat)); 
+
+% Create the too great and too small binary matrices
+tooGreat( theta_mat > pi ) = 1; 
+tooSmall( theta_mat < 0 ) = 1;
+
+% Multiple by the correction 
+tooGreat = -pi*tooGreat; 
+tooSmall = pi*tooSmall; 
+
+% Add the matrices to the theta matrix
+theta_corrected = theta_mat + tooGreat + tooSmall; 
+
+end
+
+
+
     
