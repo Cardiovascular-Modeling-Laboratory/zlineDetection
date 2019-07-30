@@ -150,18 +150,18 @@ if didAnalysis
             calculate_lengths( summary_image, zline_clusters, true);
         
         % Add title 
-        if contains(im_struct.im_name,'AR') && ...
-                contains(im_struct.im_name,'_SD')
+        if contains(im_struct.im_name,'AR')
             ar_pos = strfind(im_struct.im_name,'AR'); 
-            sd_pos = strfind(im_struct.im_name,'_SD'); 
+            sd_pos = strfind(im_struct.im_name,'_'); 
             title_string = im_struct.im_name; 
             title_string = title_string((ar_pos+2):(sd_pos-1)); 
             title_string = strrep(title_string,'p','.'); 
-            title_string = strcat('Aspect Ratio: ', {' '}, title_string); 
+            title_string = strcat('Aspect Ratio: ', {' '}, title_string);
+            title_string = title_string{1}; 
         else
             title_string = im_struct.im_name; 
         end 
-        title(title_string{1}, 'fontsize',12,'FontWeight', 'bold');
+        title(title_string, 'fontsize',12,'FontWeight', 'bold');
         
         %Remove any nan from distances 
         distances_no_nan = distance_storage; 
@@ -237,17 +237,11 @@ if didAnalysis
         xlim([0,max(x)+1]); 
 
     end 
-    
-    % Get today's date in string form.
-    date_format = 'yyyymmdd';
-    today_date = datestr(now,date_format);
-
-    % Save in a new directory 
-    temp = strcat('SingleCell_RESULTS',today_date); 
-    save_path= addDirectory( im_struct.im_path, temp, true ); 
+   
     new_filename = strcat(im_struct.im_name,'.pdf'); 
-    new_filename = appendFilename( save_path, new_filename ); 
-    saveas(gcf, fullfile(save_path, new_filename), 'pdf');
+    new_filename = appendFilename( im_struct.summary_path, new_filename ); 
+    saveas(gcf, fullfile(im_struct.summary_path, new_filename), 'pdf');
+    
 end 
 
 close all; 

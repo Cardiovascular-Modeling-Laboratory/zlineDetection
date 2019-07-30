@@ -47,6 +47,21 @@ ACTINFOV_OOPs = cell(1,zn);
 ACTINFOV_directors = cell(1,zn); 
 ACTINFOV_anglecount = cell(1,zn); 
 
+% Get today's date in string form.
+date_format = 'yyyymmdd';
+today_date = datestr(now,date_format);
+
+%>> Create a directory to save summaries (single cells only)
+if settings.cardio_type == 2
+    % Save in a new directory 
+    SCsubfolder_name = strcat('SingleCell_RESULTS_',today_date); 
+    % Create the new directory 
+    SCsubfolder_name = addDirectory( zline_path{1}, SCsubfolder_name, ...
+        true ); 
+    SC_summarypath = fullfile(zline_path{1}, SCsubfolder_name); 
+end 
+
+
 %%%%%%%%%%%%%%%%%%%%%% Loop through & Analyze Each FOV  %%%%%%%%%%%%%%%%%%%
 
 %Begin a timer 
@@ -257,6 +272,8 @@ for k = 1:zn
         
         % If this is a single cell, create a summary pdf. 
         if settings.cardio_type == 2
+            % Store the summary path 
+            im_struct.summary_path = SC_summarypath;
             singleCellSummarypdf(im_struct, settings, oop_struct); 
         end 
     
@@ -385,16 +402,15 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
     SC_results.ACTIN_anglecount = ACTINFOV_anglecount; 
     
     %Save the summary file 
-    if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
-        save(fullfile(zline_path{1}, summary_file_name), ...
+    if exist(fullfile(SC_summarypath, summary_file_name),'file') == 2
+        save(fullfile(SC_summarypath, summary_file_name), ...
             'SC_results', 'settings', '-append')
     else
-        save(fullfile(zline_path{1}, summary_file_name), ...
+        save(fullfile(SC_summarypath, summary_file_name), ...
             'SC_results', 'settings')
     end 
     
     % Store all of the important information about the single cells 
-    ImagePath = SC_results.zline_path';
     ImageName = SC_results.zline_images';
     MedianCZL = SC_results.medians';
     MeanCZL = SC_results.means'; 
@@ -403,7 +419,7 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
     NonZlineFraction = SC_results.nonzlinefrac';
     DirectorZline = SC_results.directors';
     DirectorActin = SC_results.ACTINdirectors';
-    OOPzline = SC_results.OOP';
+    OOPzline = SC_results.OOPs';
     OOPactin = SC_results.ACTINOOPs';
     TotalZline = SC_results.angle_count';
     TotalActin = SC_results.ACTIN_anglecount';
@@ -411,9 +427,11 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
     GridSize = SC_results.grid_sizes';    
     
     % Save the current date in a cell 
-    DateAnalyzed_YYYYMMDD = cell(size(ImagePath));
+    DateAnalyzed_YYYYMMDD = cell(size(ImageName));
+    ImagePath = cell(size(ImageName));
     for k=1:length(ImagePath) 
         DateAnalyzed_YYYYMMDD{k,1} = today_date; 
+        ImagePath{k,1} = SC_results.zline_path{1}; 
     end
     
     % Create a summary excel sheet
@@ -425,8 +443,8 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
 
     %Write the sheet to memory 
     filename = strrep(summary_file_name,'.mat','.xlsx'); 
-    filename = appendFilename( zline_path{1}, filename ); 
-    writetable(T,fullfile(zline_path{1},filename),...
+    filename = appendFilename( SC_summarypath, filename ); 
+    writetable(T,fullfile(SC_summarypath,filename),...
         'Sheet',1,'Range','A1');     
     
 else
