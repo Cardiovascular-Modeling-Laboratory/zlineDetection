@@ -31,6 +31,7 @@ FOV_postfiltered = cell(1,zn);
 %>>> Continuous Z-line Analysis
 FOV_lengths = cell(1,zn); 
 FOV_medians = cell(1,zn); 
+FOV_means = cell(1,zn); 
 FOV_sums = cell(1,zn);  
 %>>> Z-line Angle analysis
 FOV_angles = cell(1,zn);  
@@ -76,182 +77,190 @@ for k = 1:zn
     if settings.diffusion_explore
         diffusionExploreImage( filenames, settings ); 
     else 
-%>>>> ANALYZE IMAGE
-    % Perform the analysis including saving the image 
-    im_struct = analyzeImage( filenames, settings ); 
+    %>>>> ANALYZE IMAGE
+        % Perform the analysis including saving the image 
+        im_struct = analyzeImage( filenames, settings ); 
 
-%>>>> CALCULATE OOP 
-    %Create an OOP struct if the user requested. 
-    if settings.tf_OOP && ~settings.exploration 
-        %Create OOP_struct to save data 
-        oop_struct = struct(); 
-    end 
-    
-%>>>> FILTER WITH ACTIN 
-    %If the user is filtering with actin, save the actin orientation
-    %vectors and calculate FOV if requested 
-    if settings.actin_filt
-        ACTINFOV_angles{1,k} = im_struct.actin_struct.actin_orientim;
-        
-        %Save the orientation vectors as a new vairable
-        temp_angles = ACTINFOV_angles{1,k}; 
-        
-        %Remove any NaN values or zero values 
-        temp_angles(isnan(temp_angles)) = [];
-        temp_angles(temp_angles == 0) = []; 
-        
-        %Save length
-        ACTINFOV_anglecount{1,k} = length(temp_angles); 
-        
+    %>>>> CALCULATE OOP 
+        %Create an OOP struct if the user requested. 
         if settings.tf_OOP && ~settings.exploration 
+            %Create OOP_struct to save data 
+            oop_struct = struct(); 
+        end 
+    
+    %>>>> FILTER WITH ACTIN 
+        %If the user is filtering with actin, save the actin orientation
+        %vectors and calculate FOV if requested 
+        if settings.actin_filt
+            ACTINFOV_angles{1,k} = im_struct.actin_struct.actin_orientim;
+
+            %Save the orientation vectors as a new vairable
+            temp_angles = ACTINFOV_angles{1,k}; 
+
+            %Remove any NaN values or zero values 
+            temp_angles(isnan(temp_angles)) = [];
+            temp_angles(temp_angles == 0) = []; 
+
+            %Save length
+            ACTINFOV_anglecount{1,k} = length(temp_angles); 
+
+            if settings.tf_OOP && ~settings.exploration 
+
+                %Calculate the OOP, director vector and director angle 
+                [ oop_struct.ACTINoop, oop_struct.ACTINdirectionAngle, ~, ...
+                    oop_struct.ACTINdirector ] = calculate_OOP( temp_angles ); 
+
+                %Save the values in the the FOV matrix 
+                ACTINFOV_OOPs{1,k} = oop_struct.ACTINoop;
+                ACTINFOV_directors{1,k} = oop_struct.ACTINdirectionAngle; 
+            end 
+        end 
+
+    %>>>> EXPLORE FILTER WITH ACTIN 
+        % If the user wants to perform a parameter exploration for actin
+        % filtering
+        if settings.exploration
+            %Store the struct containing the actin parameters
+            actin_explore = settings.actin_explore; 
+
+            %Loop through the range and save the skeleton, continuous 
+            %z-line length and the non zline amount. 
+            actin_explore = ...
+                exploreFilterWithActin( im_struct, settings, actin_explore);
+
+            %Store Non zline Fraction Values 
+            FOV_nonzlinefrac{1,k} = actin_explore.non_zlinefracs; 
+            FOV_zlinefrac{1,k} = actin_explore.zlinefracs; 
+            FOV_prefiltered{1,k} = ...
+                actin_explore.pre_filt*ones(size(actin_explore.post_filt)); 
+            FOV_postfiltered{1,k} = actin_explore.post_filt;  
+
+            %>>> ACTIN FILTERING: Continuous z-line length 
+            FOV_lengths{1,k} = actin_explore.lengths; 
+            FOV_medians{1,k} = actin_explore.medians; 
+            FOV_sums{1,k} = actin_explore.sums; 
+
+            %>>> ACTIN FILTERING: OOP 
+            FOV_angles{1,k} = actin_explore.orientims; 
+
+            %>>> EXPLORATION PARAMETERS
+            FOV_thresholds{1,k} = actin_explore.thresholds;  
+            FOV_grid_sizes{1,k} = actin_explore.grid_sizes; 
+        else
+            %>>> STORE ORIENTATION VECTORS
+            FOV_angles{1,k} = im_struct.orientim; 
+
+            % get number of nonzero orientation vectors 
+            %Save the orientation vectors as a new vairable
+            temp_angles = FOV_angles{1,k}; 
+
+            %If there are any NaN values in the angles matrix, set them to 0.
+            temp_angles(isnan(temp_angles)) = [];
+            temp_angles(temp_angles == 0) = []; 
+
+            %Get the number of nonzero orientation angles 
+            FOV_anglecount{1,k} = length(temp_angles); 
+
+            %>>> EXPLORATION PARAMETERS
+            FOV_thresholds{1,k} = settings.actin_thresh; 
+            FOV_grid_sizes{1,k} = settings.grid_size(1);
+
+        end 
+
+    %>>>> FILTER WITH ACTIN     
+        %If the user filtered with actin, save the non_zline fraction
+        if settings.actin_filt && ~settings.exploration
+            %Fraction for each FOV 
+            FOV_nonzlinefrac{1,k} = im_struct.nonzlinefrac; 
+            FOV_zlinefrac{1,k} = im_struct.zlinefrac; 
+
+            %Get the post-filtered skeleton - used for CS calculation 
+            temp_post = im_struct.skel_final;
+            temp_post = temp_post(:);
+            temp_post(temp_post == 0) = []; 
+
+            %Get the pre filtering skeleton - used for CS calculation 
+            temp_pre = im_struct.skel_trim; 
+            temp_pre = temp_pre(:); 
+            temp_pre(temp_pre == 0) = []; 
+
+            %Store values for the CS calculation 
+            FOV_prefiltered{1,k} = length(temp_pre); 
+            FOV_postfiltered{1,k} = length(temp_post); 
+        end 
+
+    %>>>> CONTINUOUS Z-LINE LENGTH 
+        % If the user wants to calculate continuous z-line length 
+        if settings.tf_CZL && ~settings.exploration 
+
+            %Close all other figures so there isn't a chance of plotting
+            %over anything
+            close all; 
+
+            %Calculate the continuous z-line length 
+            FOV_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
+
+            %Compute the median
+            FOV_medians{1,k} = median( FOV_lengths{1,k} ); 
+
+            % Compute the mean 
+            FOV_means{1,k} = mean( FOV_lengths{1,k} ); 
+
+            %Compute the sum 
+            FOV_sums{1,k} = sum( FOV_lengths{1,k} ); 
+
+            %Create a histogram of the distances
+            figure; histogram(FOV_lengths{1,k});
+            set(gca,'fontsize',16)
+            hist_name = strcat('Median: ', num2str(FOV_medians{1,k}),' \mu m');
+            title(hist_name,'FontSize',18,'FontWeight','bold');
+            xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
+                'FontWeight','bold');
+            ylabel('Count','FontSize',18,'FontWeight','bold');
+
+            %Save histogram as a tiff 
+            fig_name = strcat( im_struct.im_name, '_CZLhistogram');
+            saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
+
+            %Close all of the images 
+            close all;    
+        end 
+
+    %>>>> OOP 
+        % If the user wants to calculate OOP. This is only useful when
+        % the user is analyzing single cells 
+        if settings.tf_OOP && ~settings.exploration 
+            %Save the orientation vectors as a new vairable
+            temp_angles = FOV_angles{1,k}; 
+
+            %If there are any NaN values in the angles matrix, set them to 0.
+            temp_angles(isnan(temp_angles)) = 0;
 
             %Calculate the OOP, director vector and director angle 
-            [ oop_struct.ACTINoop, oop_struct.ACTINdirectionAngle, ~, ...
-                oop_struct.ACTINdirector ] = calculate_OOP( temp_angles ); 
+            [ oop, oop_struct.directionAngle, ~, ...
+                oop_struct.director ] = calculate_OOP( temp_angles ); 
 
             %Save the values in the the FOV matrix 
-            ACTINFOV_OOPs{1,k} = oop_struct.ACTINoop;
-            ACTINFOV_directors{1,k} = oop_struct.ACTINdirectionAngle; 
+            FOV_OOPs{1,k} = oop; 
+            oop_struct.oop = oop; 
+            FOV_directors{1,k} = oop_struct.directionAngle; 
+
+            %Append summary file with OOP 
+            save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
+               '_OrientationAnalysis.mat')), 'oop_struct', '-append');
+        else
+            oop_struct = NaN; 
         end 
-    end 
-    
-%>>>> EXPLORE FILTER WITH ACTIN 
-    % If the user wants to perform a parameter exploration for actin
-    % filtering
-    if settings.exploration
-        %Store the struct containing the actin parameters
-        actin_explore = settings.actin_explore; 
-        
-        %Loop through the range and save the skeleton, continuous 
-        %z-line length and the non zline amount. 
-        actin_explore = ...
-            exploreFilterWithActin( im_struct, settings, actin_explore);
-        
-        %Store Non zline Fraction Values 
-        FOV_nonzlinefrac{1,k} = actin_explore.non_zlinefracs; 
-        FOV_zlinefrac{1,k} = actin_explore.zlinefracs; 
-        FOV_prefiltered{1,k} = ...
-            actin_explore.pre_filt*ones(size(actin_explore.post_filt)); 
-        FOV_postfiltered{1,k} = actin_explore.post_filt;  
 
-        %>>> ACTIN FILTERING: Continuous z-line length 
-        FOV_lengths{1,k} = actin_explore.lengths; 
-        FOV_medians{1,k} = actin_explore.medians; 
-        FOV_sums{1,k} = actin_explore.sums; 
-
-        %>>> ACTIN FILTERING: OOP 
-        FOV_angles{1,k} = actin_explore.orientims; 
-
-        %>>> EXPLORATION PARAMETERS
-        FOV_thresholds{1,k} = actin_explore.thresholds;  
-        FOV_grid_sizes{1,k} = actin_explore.grid_sizes; 
-    else
-        %>>> STORE ORIENTATION VECTORS
-        FOV_angles{1,k} = im_struct.orientim; 
-        
-        % get number of nonzero orientation vectors 
-        %Save the orientation vectors as a new vairable
-        temp_angles = FOV_angles{1,k}; 
-        
-        %If there are any NaN values in the angles matrix, set them to 0.
-        temp_angles(isnan(temp_angles)) = [];
-        temp_angles(temp_angles == 0) = []; 
-        
-        %Get the number of nonzero orientation angles 
-        FOV_anglecount{1,k} = length(temp_angles); 
-        
-        %>>> EXPLORATION PARAMETERS
-        FOV_thresholds{1,k} = settings.actin_thresh; 
-        FOV_grid_sizes{1,k} = settings.grid_size(1);
-           
-    end 
-    
-%>>>> FILTER WITH ACTIN     
-    %If the user filtered with actin, save the non_zline fraction
-    if settings.actin_filt && ~settings.exploration
-        %Fraction for each FOV 
-        FOV_nonzlinefrac{1,k} = im_struct.nonzlinefrac; 
-        FOV_zlinefrac{1,k} = im_struct.zlinefrac; 
-        
-        %Get the post-filtered skeleton - used for CS calculation 
-        temp_post = im_struct.skel_final;
-        temp_post = temp_post(:);
-        temp_post(temp_post == 0) = []; 
-        
-        %Get the pre filtering skeleton - used for CS calculation 
-        temp_pre = im_struct.skel_trim; 
-        temp_pre = temp_pre(:); 
-        temp_pre(temp_pre == 0) = []; 
-        
-        %Store values for the CS calculation 
-        FOV_prefiltered{1,k} = length(temp_pre); 
-        FOV_postfiltered{1,k} = length(temp_post); 
-    end 
-    
-%>>>> CONTINUOUS Z-LINE LENGTH 
-    % If the user wants to calculate continuous z-line length 
-    if settings.tf_CZL && ~settings.exploration 
-        
-        %Close all other figures so there isn't a chance of plotting
-        %over anything
+        % Close all figures
         close all; 
         
-        %Calculate the continuous z-line length 
-        FOV_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
-
-        %Compute the median
-        FOV_medians{1,k} = median( FOV_lengths{1,k} ); 
-        
-        %Compute the sum 
-        FOV_sums{1,k} = sum( FOV_lengths{1,k} ); 
-        
-        %Create a histogram of the distances
-        figure; histogram(FOV_lengths{1,k});
-        set(gca,'fontsize',16)
-        hist_name = strcat('Median: ', num2str(FOV_medians{1,k}),' \mu m');
-        title(hist_name,'FontSize',18,'FontWeight','bold');
-        xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
-            'FontWeight','bold');
-        ylabel('Count','FontSize',18,'FontWeight','bold');
-        
-        %Save histogram as a tiff 
-        fig_name = strcat( im_struct.im_name, '_CZLhistogram');
-        saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
-        
-        %Close all of the images 
-        close all;    
-    end 
-
-%>>>> OOP 
-    % If the user wants to calculate OOP. This is only useful when
-    % the user is analyzing single cells 
-    if settings.tf_OOP && ~settings.exploration 
-        %Save the orientation vectors as a new vairable
-        temp_angles = FOV_angles{1,k}; 
-        
-        %If there are any NaN values in the angles matrix, set them to 0.
-        temp_angles(isnan(temp_angles)) = 0;
-                
-        %Calculate the OOP, director vector and director angle 
-        [ oop, oop_struct.directionAngle, ~, ...
-            oop_struct.director ] = calculate_OOP( temp_angles ); 
-
-        %Save the values in the the FOV matrix 
-        FOV_OOPs{1,k} = oop; 
-        oop_struct.oop = oop; 
-        FOV_directors{1,k} = oop_struct.directionAngle; 
-        
-        %Append summary file with OOP 
-        save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
-           '_OrientationAnalysis.mat')), 'oop_struct', '-append');
-    else
-        oop_struct = NaN; 
-    end 
+        % If this is a single cell, create a summary pdf. 
+        if settings.cardio_type == 2
+            singleCellSummarypdf(im_struct, settings, oop_struct); 
+        end 
     
-    % If this is a single cell, create a summary pdf. 
     
-    % Close all figures
-    close all; 
     end 
     % Clear the file name 
     clear filename
@@ -359,6 +368,7 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
     %>>> Continuous z-line length
     SC_results.lengths = FOV_lengths;
     SC_results.medians = FOV_medians; 
+    SC_results.means = FOV_means; 
     SC_results.sums = FOV_sums; 
     %>>> Z-line Angle analysis
     SC_results.angles = FOV_angles;  
@@ -387,6 +397,7 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
     ImagePath = SC_results.zline_path';
     ImageName = SC_results.zline_images';
     MedianCZL = SC_results.medians';
+    MeanCZL = SC_results.means'; 
     TotalCZL = SC_results.sums';
     ZlineFraction = SC_results.zlinefrac';
     NonZlineFraction = SC_results.nonzlinefrac';
@@ -407,13 +418,14 @@ elseif settings.cardio_type == 2 && settings.analysis && ~settings.diffusion_exp
     
     % Create a summary excel sheet
     T = table(ImagePath, ImageName, DateAnalyzed_YYYYMMDD, ...
-        MedianCZL, TotalCZL, ZlineFraction, NonZlineFraction, ...
+        MedianCZL, MeanCZL, TotalCZL, ZlineFraction, NonZlineFraction, ...
         DirectorZline, DirectorActin, OOPzline, OOPactin, ...
         TotalZline, TotalActin, ActinThreshold, ...
         GridSize); 
 
     %Write the sheet to memory 
     filename = strrep(summary_file_name,'.mat','.xlsx'); 
+    filename = appendFilename( zline_path{1}, filename ); 
     writetable(T,fullfile(zline_path{1},filename),...
         'Sheet',1,'Range','A1');     
     

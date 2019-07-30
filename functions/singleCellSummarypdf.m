@@ -237,11 +237,20 @@ if didAnalysis
         xlim([0,max(x)+1]); 
 
     end 
+    
+    % Get today's date in string form.
+    date_format = 'yyyymmdd';
+    today_date = datestr(now,date_format);
+
+    % Save in a new directory 
+    temp = strcat('SingleCell_RESULTS',today_date); 
+    save_path= addDirectory( im_struct.im_path, temp, true ); 
     new_filename = strcat(im_struct.im_name,'.pdf'); 
-    new_filename = appendFilename( im_struct.im_path, new_filename ); 
-    saveas(gcf, fullfile(im_struct.im_path, new_filename), 'pdf');
+    new_filename = appendFilename( save_path, new_filename ); 
+    saveas(gcf, fullfile(save_path, new_filename), 'pdf');
 end 
 
+close all; 
 
 end
 
