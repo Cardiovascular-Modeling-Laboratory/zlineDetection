@@ -13,25 +13,8 @@ function [ cluster_tracker, zline_clusters, ignored_cases ] = ...
 % CASE 3-1: a a 0
 % CASE 3-2: 0 a a 
 
-
-%Check which direction has been assigned.
-%Check to make sure that the distance between the old & new clusters is 0. 
-
 %Store the values of the old cluster
 old_cluster = zline_clusters{unique_nz, 1};
-
-%Get the size of the old cluster, classifying cluster, and the temporary
-%cluster
-cc_max = size(class_set,1);
-oc_max = size(old_cluster,1);
-temp_max = size(temp_cluster,1); 
-% %Store the x and y values 
-% %[start, end]
-% new_dim1 = [ new_cluster(1,1), new_cluster(nc_max, 1)]; 
-% new_dim2 = [ new_cluster(1,2), new_cluster(nc_max, 2)]; 
-% 
-% old_dim1 = [ old_cluster(1,1), old_cluster(oc_max, 1)]; 
-% old_dim2 = [ old_cluster(1,2), old_cluster(oc_max, 2)]; 
 
 % Initialize the position of the assigned neighbor 
 cp = NaN; 
@@ -100,12 +83,6 @@ if ~isnan(cp)
     if isnan(atTop)
         atTop = false; 
         ignoreCase = true; 
-%         disp('Class set'); 
-%         disp(class_set); 
-%         disp('Old Cluster'); 
-%         disp(old_cluster);
-%         disp('Temporary Cluster'); 
-%         disp(temp_cluster); 
     end
     
     
@@ -128,7 +105,10 @@ if ~isnan(cp)
     if needsFlip 
         temp_cluster = flipud(temp_cluster); 
     end 
-   
+    
+    % Compare the temp_clutser to the existing cluster 
+    if ~ignoreCase
+    end 
    
     % Place the newest cluster
     if atTop && ~ignoreCase
