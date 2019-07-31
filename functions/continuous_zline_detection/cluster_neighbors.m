@@ -173,7 +173,7 @@ for k = 1:size(dp_rows, 1)
             if cluster_info.case_num == 2             
                 
 % CASE 2-3: 0 a 0 - Do not add to any cluster                                
-                if isnan( bin_clusters(2) )
+                if isnan( cluster_info.bin_clusters(2) )
                     
                     ignored_cases = ignored_cases + 1;   
                 
@@ -182,10 +182,10 @@ for k = 1:size(dp_rows, 1)
 % CASE 2-2: 0 0 a - Add to cluster
 
                     %Add to cluster 
-                    [ cluster_tracker, zline_clusters, ...
+                    [ cluster_tracker, zline_clusters, clusterCount, ...
                         ignored_cases ] = add_to_cluster( temp_cluster, ...
                         cluster_tracker, zline_clusters, ignored_cases,...
-                        cluster_info, dp_thresh, angles); 
+                        cluster_info, dp_thresh, angles, clusterCount); 
                 end 
 
 %CASE 3 or 4 
@@ -203,10 +203,10 @@ for k = 1:size(dp_rows, 1)
                     elseif cluster_info.second_case == 1
 
                         %Add to cluster 
-                        [ cluster_tracker, zline_clusters, ...
+                        [ cluster_tracker, zline_clusters, clusterCount, ...
                             ignored_cases ] = add_to_cluster( temp_cluster, ...
                             cluster_tracker, zline_clusters, ignored_cases,...
-                            cluster_info, dp_thresh, angles); 
+                            cluster_info, dp_thresh, angles, clusterCount); 
                     end 
                     
 %CASE 4: Two assigned different clusters

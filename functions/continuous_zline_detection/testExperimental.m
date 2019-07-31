@@ -173,8 +173,10 @@ title('Accepted Neighbors', 'FontSize',16, 'FontWeight','bold' );
 
 %% 
 %Cluster the values in order.  
-[ zline_clusters, cluster_tracker ] = cluster_neighbors( dp_rows, ...
-    dp_cols, m, n, true);
+[ zline_clusters , cluster_tracker, ignored_cases ] = ...
+    cluster_neighbors( dot_product_error, angles, dp_rows, dp_cols, true); 
+
+%%
 
 %Calculate legnths and plot
 disp('Plotting and calculating the lengths of continuous z-lines...'); 

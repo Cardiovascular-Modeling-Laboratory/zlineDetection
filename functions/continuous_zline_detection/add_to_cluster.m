@@ -1,6 +1,7 @@
-function [ cluster_tracker, zline_clusters, ignored_cases ] = ...
-    add_to_cluster( temp_cluster, cluster_tracker, zline_clusters,...
-    ignored_cases, cluster_info, dp_thresh, angles)
+function [ cluster_tracker, zline_clusters, clusterCount,...
+    ignored_cases ] = add_to_cluster( temp_cluster, cluster_tracker, ...
+    zline_clusters, ignored_cases, cluster_info, dp_thresh, angles, ...
+    clusterCount)
 %This function will add unassigned cluster (temp_cluster) to the existing
 %cluster (zline_clusters) at position unique_nz
 
@@ -111,12 +112,58 @@ if ~isnan(cp)
         temp_cluster = flipud(temp_cluster); 
     end 
     
-    % Compare the temp_clutser to the existing cluster 
+    % Compare the temp_cluster to the existing cluster 
     if ~ignoreCase
+        neigh2_struct = checkDistantNeighbor(temp_cluster, ...
+            atTop, angles, zline_clusters{unique_nz, 1});
+    end 
+    
+    % Set ignore case equal to true if the neigh2 struct is set to nan 
+    if neigh2_struct.shouldIgnore
+        ignoreCase = true;
+    end 
+    
+    
+    % Create a logical that states whether a new cluster for the current
+    % temporary array should be added 
+    addCluster = false; 
+    
+    if ~ignoreCase 
+        % The first value in the matrix dps is the closest value in the
+        % temporary cluster to the current cluster, compared to its second
+        % neighbor in the current cluster. If these two points are
+        % perpendicular, ignore the case. 
+        if neigh2_struct.tc_z1a < dp_thresh
+            ignoreCase = true; 
+        else
+            %If there is only one value in the temporary cluster, add it 
+            %to the other cluster, otherwise keep comparing the other 
+            %values in the cluster
+            if length(dps) > 1 
+                % Compare the closest value in the current cluster to its
+                % second neighbor in the temporary cluster. If it is
+                % perpendicular, add to the cluster normally 
+                if neigh2_struct.ta_z1c < dp_thresh
+                    % If the two values in the temporary cluster are more
+                    % parrallel to eachother than the closest value in the
+                    % temporary cluster is to the closest value in the
+                    % current cluser, add a cluster with just the temporary
+                    % cluster, otherwise, only add the closest temporary
+                    % value
+                    if neigh2_struct.tc_ta >=neigh2_struct.tc_z1c
+                        addCluster = true; 
+                    else
+                        placeholder_temp = temp_cluster; 
+                        clear temp_cluster; 
+                        temp_cluster = placeholder_temp(:,close_temp); 
+                    end 
+                end 
+            end 
+        end 
     end 
    
     % Place the newest cluster
-    if atTop && ~ignoreCase
+    if atTop && ~ignoreCase && ~addCluster
         %Put the temporary cluster before the previously assigned cluster                      
         zline_clusters{unique_nz, 1} = ...
             [temp_cluster; zline_clusters{unique_nz, 1}];
@@ -124,7 +171,9 @@ if ~isnan(cp)
         cluster_tracker = update_tracker( zline_clusters, ...
             cluster_tracker, unique_nz );  
         
-    elseif ~atTop && ~ignoreCase
+    end
+    
+    if ~atTop && ~ignoreCase && ~addCluster
         %Put the temporary cluster after the previously assigned cluster  
         zline_clusters{unique_nz, 1} = ...
             [zline_clusters{unique_nz, 1}; temp_cluster];
@@ -132,10 +181,24 @@ if ~isnan(cp)
         %Update the cluster tracker 
         cluster_tracker = update_tracker( zline_clusters, ...
             cluster_tracker, unique_nz );       
-    else
-        ignored_cases = ignored_cases + 1; 
+        
     end 
     
+    % If requested, create a new cluster of just the current temporary
+    % cluster
+    if ~ignoreCase && addCluster
+        clusterCount = clusterCount + 1; 
+        zline_clusters{clusterCount, 1} = temp_cluster; 
+        
+        % Update the cluster tracker
+        [ cluster_tracker ] = update_tracker( zline_clusters, ...
+            cluster_tracker, clusterCount ); 
+    end 
+    
+    % Update the number of ignoredCases
+    if ignoreCase
+        ignored_cases = ignored_cases + 1; 
+    end 
     
 else
     % Update ignored cases 
