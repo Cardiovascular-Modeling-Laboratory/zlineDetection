@@ -1,7 +1,7 @@
 function [ cluster_tracker, zline_clusters, clusterCount, ...
-    ignored_cases ] = ...
-    combine_clusters( cluster_tracker, zline_clusters, clusterCount, ...
-    cluster_value, temp_cluster, ignored_cases, current_dprows, current_dpcols )
+    ignored_cases ] = combine_clusters( cluster_tracker, ...
+    zline_clusters, clusterCount, cluster_value, temp_cluster, ...
+    ignored_cases, current_dprows, current_dpcols, angles, dp_thresh )
 %This function will combine two clusters into one
 
 %Store the first cluster and get the size
@@ -60,18 +60,6 @@ end
 % dir0 
 onlyA = relative_loc(1,2) == 1 && size(dir1_clusterA,1) == 2; 
 onlyB = relative_loc(1,2) == 2 && size(dir2_clusterB,1) == 2;  
-
-
-% disp('Rows'); 
-% disp(current_dprows); 
-% disp('Cols'); 
-% disp(current_dpcols);
-% disp('Cluster 1'); 
-% disp(dir1_clusterA); 
-% disp('Cluster 2'); 
-% disp(dir2_clusterB); 
-% disp('Relative Locations'); 
-% disp(relative_loc); 
 
 % Create logical to keep going if everything is okay
 dontIgnore = true; 
@@ -144,36 +132,74 @@ end
 if ~dontIgnore
     ignored_cases = ignored_cases + 1; 
 else
-    %Increase clusterCount
-    clusterCount = clusterCount + 1; 
-
-
-    %Create a new row in the cell array zline_clusters 
-    %and order the new cluster based on the order of  
-    %the cluster values
-    zline_clusters{clusterCount, 1} = ...
-        [top_cluster; ...
-        temp_cluster; ...
-        bottom_cluster]; 
-
-    %Set the previous clusters to NaN 
-    zline_clusters{ cluster_value(1), 1 } = NaN; 
-    zline_clusters{ cluster_value(end), 1 } = NaN; 
-
-    %Update the tracker 
-    cluster_tracker = ...
-        update_tracker( zline_clusters, ...
-        cluster_tracker, clusterCount );  
-    %Update the tracker 
-    cluster_tracker = ...
-        update_tracker( zline_clusters, ...
-        cluster_tracker, cluster_value(1) );  
-    %Update the tracker 
-    cluster_tracker = ...
-        update_tracker( zline_clusters, ...
-        cluster_tracker, cluster_value(end) );  
-
+    % Get information about the distant neighbor 
+    neigh2_struct = checkDistantNeighbor(dp_thresh, temp_cluster, ...
+        false, angles, top_cluster, bottom_cluster); 
     
+    % Check to see if all should be joined based on the secondary neighbor,
+    % if so join as done previously 
+    if neigh2_struct.joinAll
+        %Increase clusterCount
+        clusterCount = clusterCount + 1; 
+
+
+        %Create a new row in the cell array zline_clusters 
+        %and order the new cluster based on the order of  
+        %the cluster values
+        zline_clusters{clusterCount, 1} = ...
+            [top_cluster; ...
+            temp_cluster; ...
+            bottom_cluster]; 
+
+        %Set the previous clusters to NaN 
+        zline_clusters{ cluster_value(1), 1 } = NaN; 
+        zline_clusters{ cluster_value(end), 1 } = NaN; 
+
+        %Update the tracker 
+        cluster_tracker = ...
+            update_tracker( zline_clusters, ...
+            cluster_tracker, clusterCount );  
+        %Update the tracker 
+        cluster_tracker = ...
+            update_tracker( zline_clusters, ...
+            cluster_tracker, cluster_value(1) );  
+        %Update the tracker 
+        cluster_tracker = ...
+            update_tracker( zline_clusters, ...
+            cluster_tracker, cluster_value(end) );  
+    else
+        % If don't join is true, ignore this case 
+        if neigh2_struct.dontJoin
+            dontIgnore = false;
+        else
+            % Determine if either the top or bottom should be removed. This
+            % is onlt the case if there are two values in the cluster 
+            % Determine if either the top cluster should be removed. If so,
+            % remove it. 
+            if neigh2_struct.removeTop
+            end 
+            % Determine if either the bottom cluster should be removed. 
+            % If so, remove it. 
+            if neigh2_struct.removeBottom
+            end 
+            
+            % Add the temporary cluster to 
+            if neigh2_struct.joinTop
+            elseif neigh2_struct.joinBottom
+            elseif neigh2_struct.splitTemp 
+            else
+                disp('Missing some case.'); 
+                dontIgnore = false; 
+            end 
+            
+        end 
+            
+    end 
+
+    % If the case should be ignored, increase the amount of ignored cases
+    if ~dontIgnore
+        ignored_cases = ignored_cases + 1; 
+    end 
 
     
 end
