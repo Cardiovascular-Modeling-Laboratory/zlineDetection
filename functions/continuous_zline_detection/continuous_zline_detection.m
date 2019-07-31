@@ -38,22 +38,30 @@ function [ CZL_results, CZL_info ] = continuous_zline_detection( angles, BW, ...
 if nargin < 4
     % Set save results to false
     saveResults = false;
+    specialVis = false; 
 else
     % Set save results to true and store the image info  
-    saveResults = true;
+    saveResults = save_info.saveResults;
+    
+    % Determine if there should be special visibility 
+    if isfield(save_info,'specialVis')
+        specialVis = save_info.specialVis; 
+    else
+        specialVis = false; 
+    end 
     
     % Make sure the user provided a save name and save path 
-    if ~isfield(save_info,'save_path')
+    if ~isfield(save_info,'save_path') && saveResults
         disp('You must proide a path to save the results.'); 
         disp('save_info.save_path = ?'); 
         saveResults = false; 
     end 
-    if ~isfield(save_info,'save_name') && ~saveResults
+    if ~isfield(save_info,'save_name') && saveResults
         save_info.save_name = 'contZlineResults'; 
     end 
     % If the user did not provide an argument for saving as a figure, set
     % it to false
-    if ~isfield(save_info,'saveFig') && ~saveResults
+    if ~isfield(save_info,'saveFig') && saveResults
         save_info.saveFig = false; 
     end 
 end 
@@ -98,7 +106,7 @@ all_angles = get_values(nonzero_rows, nonzero_cols, ...
 %Calculate legnths and plot
 disp('Plotting and calculating the lengths of continuous z-lines...'); 
 [ distance_storage, rmCount, zline_clusters ] = ...
-    calculate_lengths( BW, zline_clusters);
+    calculate_lengths( BW, zline_clusters, specialVis);
 
 % If the results should be saved 
 if saveResults

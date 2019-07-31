@@ -213,8 +213,8 @@ for k = 1:zn
             close all; 
 
             %Calculate the continuous z-line length 
-            FOV_lengths{1,k} = continuous_zline_detection(im_struct, settings); 
-
+            FOV_lengths{1,k} = zlineCZL(im_struct, settings); 
+            
             %Compute the median
             FOV_medians{1,k} = median( FOV_lengths{1,k} ); 
 

@@ -259,8 +259,7 @@ for g = 1:gtot
             
             if settings.tf_CZL
                 % Calculate the continuous z-line lengths 
-                lengths{n,1} = ...
-                    continuous_zline_detection(im_struct, settings);
+                lengths{n,1} = zlineCZL(im_struct, settings);
 
                 %Clear the command line 
                 clc 

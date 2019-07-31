@@ -108,46 +108,21 @@ if didAnalysis
         % Create orientation vector image 
         angles = insertSegment(zeros(tempd1,tempd2), im_struct.orientim, ...
                     dim1, dim2, false);
-        angles(isnan(angles)) = 0; 
+        angles(isnan(angles)) = 0;
         
-         
-        %Set the dot prodcut threshold 
-        dot_product_error = settings.dp_threshold;        
+        % Set the save_info to false
+        save_info = struct(); 
+        save_info.saveResults;
+        save_info.specialVis; 
         
-        %Find the nonzero positions of this matrix and get their values. 
-        [ nonzero_rows, nonzero_cols] = find(angles);
-        [ all_angles ] = get_values(nonzero_rows, nonzero_cols, ...
-            angles);
-
-        %Find the boundaries of the edges
-        [m,n] = size(angles);
-
-        %Find the positions in the orientation matrix of the candidate neighbors
-        [ candidate_rows, candidate_cols ] = ...
-            neighbor_positions( all_angles , nonzero_rows, nonzero_cols);
-
-        %Correct for boundaries. If any of the neighbors are outside of the
-        %dimensions, their positions will be set to NaN 
-        [ corrected_rows, corrected_cols ] = ...
-            boundary_correction( candidate_rows, candidate_cols, m, n ); 
-
-
-        %Find the dot product and remove points that are less than the acceptable
-        %error. First set any neighbors that are nonzero in the orientation
-        %matrix equal to NaN
-        [ dp_rows, dp_cols] = compare_angles( dot_product_error,...
-            angles, nonzero_rows, nonzero_cols, corrected_rows, corrected_cols);
-        
-        % Cluster the neighbors 
-        [ zline_clusters, cluster_tracker ] = cluster_neighbors( dp_rows, ...
-            dp_cols, m, n, false);
-        
+        % Open a figure and subplot 
         figure; 
         hold on; 
         subplot(9,2,1:12)
-         % Plot the z-lines images 
-        [ distance_storage, rmCount, zline_clusters ] = ...
-            calculate_lengths( summary_image, zline_clusters, true);
+
+        % Calculate the continuous z-line lengths 
+        [ CZL_results, ~ ] = continuous_zline_detection( angles, ...
+            summary_image, settings.dp_threshold, save_info ); 
         
         % Add title 
         if contains(im_struct.im_name,'AR')
@@ -162,13 +137,12 @@ if didAnalysis
             title_string = im_struct.im_name; 
         end 
         title(title_string, 'fontsize',12,'FontWeight', 'bold');
-        
-        %Remove any nan from distances 
-        distances_no_nan = distance_storage; 
-        distances_no_nan(isnan(distances_no_nan)) = []; 
+     
 
         %Convert the distances from pixels to microns 
-        distances_um = distances_no_nan/settings.pix2um;
+        distances_um = CZL_results.distances_no_nan/settings.pix2um;
+        
+        % Plot a histogram 
         subplot(9,2,[13,15,17]);
         hold on; 
         histogram(distances_um); 
