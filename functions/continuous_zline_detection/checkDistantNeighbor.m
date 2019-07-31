@@ -7,13 +7,15 @@ if nargin < 6
     %Ignore the second cluster
     oneCluster = true; 
     cluster2 = NaN; 
+else
+    oneCluster = false; 
 end 
 
 % Create a struct to store all of the neighbor information 
 neigh2_struct = struct(); 
 
 % Get the size of the current cluster and the temp_cluster
-[~, temp_num ] = size(temp_cluster); 
+[ temp_num, ~ ] = size(temp_cluster); 
 
 % Initialize shouldIgnore
 shouldIgnore = false; 
@@ -25,7 +27,7 @@ if oneCluster && temp_num == 0
 end 
 
 % Get the size of the current cluter 
-[~, c1_num ] = size(cluster1); 
+[ c1_num, ~] = size(cluster1); 
 
 % If there is only one value in the cluster something is wrong 
 if c1_num < 2 
@@ -43,6 +45,9 @@ end
 % If there is only one cluster and there is no reason to ignore the
 % temporary cluster, find the positions of the neighbors 
 if  oneCluster && ~shouldIgnore 
+    % Store the number of positions in the temporary cluster
+    neigh2_struct.temp_num = temp_num; 
+    
     if ~atTop 
         % Find the positions of the closest and one away positions 
         close_temp = 1; 
@@ -58,10 +63,10 @@ if  oneCluster && ~shouldIgnore
     end
     
     % Get the angles 
-    theta_ct = angles(temp_cluster(1,close_temp), ...
-        temp_cluster(1,close_temp)); 
-    theta_a1c1 = angles(cluster1(1,away1_cluster1), ...
-        cluster1(1,away1_cluster1)); 
+    theta_ct = angles(temp_cluster(close_temp,1), ...
+        temp_cluster(close_temp,2)); 
+    theta_a1c1 = angles(cluster1(away1_cluster1,1), ...
+        cluster1(away1_cluster1,2));
     
     % Calculate the dot product 
     neigh2_struct.tc_z1a =sqrt(cos(theta_ct-theta_a1c1)^2);  
@@ -70,10 +75,10 @@ if  oneCluster && ~shouldIgnore
     % dot products 
     if temp_num > 1
         % Look up the oreientation vectors
-        theta_a1t = angles(temp_cluster(1,away1_temp), ...
-            temp_cluster(1,away1_temp)); 
-        theta_cc1 = angles(cluster1(1,close_cluster1), ...
-                cluster1(1,close_cluster1));
+        theta_a1t = angles(temp_cluster(away1_temp,1), ...
+            temp_cluster(away1_temp,2)); 
+        theta_cc1 = angles(cluster1(close_cluster1,1), ...
+                cluster1(close_cluster1,2));
                  
         % Compute the dot product. 
         neigh2_struct.ta_z1c  = sqrt(cos(theta_a1t-theta_cc1)^2); 
@@ -108,10 +113,10 @@ if  ~oneCluster && ~shouldIgnore
     neigh2_struct.joinBottom = false; 
     
     % Get the angle values for the two clusters
-    theta_z1c = angles(cluster1(1,c1_num), cluster1(1,c1_num));
-    theta_z1a = angles(cluster1(1,c1_num-1), cluster1(1,c1_num-1));
-    theta_z2c = angles(cluster2(1,1), cluster2(1,1));
-    theta_z2a = angles(cluster2(1,2),cluster2(1,2));
+    theta_z1c = angles(cluster1(c1_num,1), cluster1(c1_num,2));
+    theta_z1a = angles(cluster1(c1_num-1,1), cluster1(c1_num-1,2));
+    theta_z2c = angles(cluster2(1,1), cluster2(1,2));
+    theta_z2a = angles(cluster2(2,1),cluster2(2,2));
     
     % If there are no values in the temporary matrix compare:
     % (1) close cluster 1 and its second neighbor in cluster 2 
@@ -126,7 +131,7 @@ if  ~oneCluster && ~shouldIgnore
         end 
     else
         % Get the first value in the temporary cluster
-        theta_t = angles(temp_cluster(1,1), temp_cluster(1,1));
+        theta_t = angles(temp_cluster(1,1), temp_cluster(1,2));
         
         % Compare top temp with secondary neighbor in cluster 1
         dpt_z1a = sqrt(cos(theta_t-theta_z1a)^2); 

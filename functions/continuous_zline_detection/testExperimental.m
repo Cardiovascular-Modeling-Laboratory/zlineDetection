@@ -177,10 +177,39 @@ title('Accepted Neighbors', 'FontSize',16, 'FontWeight','bold' );
     cluster_neighbors( dot_product_error, angles, dp_rows, dp_cols, true); 
 
 %%
+% Remove any orientation vectors in which the neighbors are perpendicular 
+[  dp2_rows, dp2_cols ] = ...
+    check_perpendicular( dp_rows, dp_cols, angles, dp_thresh); 
 
+
+%%
+magnification = 1000; 
+imshow(positions, 'InitialMagnification', magnification); 
+hold on; 
+for h = 1:size(dp_rows, 1)
+    %Get coordinates temporarily
+    x = dp2_cols(h,:)'; 
+    y = dp2_rows(h,:)'; 
+    %Remove NaN values
+    x(isnan(x)) = []; 
+    y(isnan(y)) = []; 
+    plot(x,y,'o', 'color', col(h)); 
+    plot(x,y, '-', 'color', col(h));
+    
+    clear x y 
+end 
+title('Accepted Secondary Neighbors', 'FontSize',16, 'FontWeight','bold' );
+
+%% 
+%Cluster the values in order.  
+[ zline_clusters , cluster_tracker, ignored_cases ] = ...
+    cluster_neighbors( dot_product_error, angles, dp2_rows, dp2_cols, false); 
+
+
+%%
 %Calculate legnths and plot
 disp('Plotting and calculating the lengths of continuous z-lines...'); 
 [ distance_storage, rmCount, zline_clusters ] = ...
-    calculate_lengths( BW, zline_clusters);
+    calculate_lengths( positions, zline_clusters);
 
 

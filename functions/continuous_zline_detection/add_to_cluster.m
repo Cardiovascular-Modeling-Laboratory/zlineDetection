@@ -139,7 +139,7 @@ if ~isnan(cp)
             %If there is only one value in the temporary cluster, add it 
             %to the other cluster, otherwise keep comparing the other 
             %values in the cluster
-            if length(dps) > 1 
+            if neigh2_struct.temp_num > 1 
                 % Compare the closest value in the current cluster to its
                 % second neighbor in the temporary cluster. If it is
                 % perpendicular, add to the cluster normally 
