@@ -114,7 +114,7 @@ if ~isnan(cp)
     
     % Compare the temp_cluster to the existing cluster 
     if ~ignoreCase
-        neigh2_struct = checkDistantNeighbor(temp_cluster, ...
+        neigh2_struct = checkDistantNeighbor(dp_thresh, temp_cluster, ...
             atTop, angles, zline_clusters{unique_nz, 1});
     end 
     
