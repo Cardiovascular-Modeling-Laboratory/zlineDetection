@@ -101,9 +101,15 @@ bTop = bTop1 || bTop2 || bTop3 || bTop4 || bTop5;
 if bTop
     top_cluster = dir2_clusterB; 
     bottom_cluster = dir1_clusterA; 
+    % Set the top and bottom cluster values
+    top_cval = cluster_value(end); 
+    bott_cval = cluster_value(1); 
 else
     top_cluster = dir1_clusterA; 
     bottom_cluster = dir2_clusterB; 
+    % Set the top and bottom cluster values
+    top_cval = cluster_value(1); 
+    bott_cval = cluster_value(end); 
 end  
 
 % Save the logical statement about location in an array 
@@ -138,10 +144,9 @@ else
     
     % Check to see if all should be joined based on the secondary neighbor,
     % if so join as done previously 
-    if neigh2_struct.joinAll
+    if neigh2_struct.joinAll && ~neigh2_struct.dontJoin
         %Increase clusterCount
         clusterCount = clusterCount + 1; 
-
 
         %Create a new row in the cell array zline_clusters 
         %and order the new cluster based on the order of  
@@ -152,8 +157,8 @@ else
             bottom_cluster]; 
 
         %Set the previous clusters to NaN 
-        zline_clusters{ cluster_value(1), 1 } = NaN; 
-        zline_clusters{ cluster_value(end), 1 } = NaN; 
+        zline_clusters{ top_cval, 1 } = NaN; 
+        zline_clusters{ bott_cval, 1 } = NaN; 
 
         %Update the tracker 
         cluster_tracker = ...
@@ -162,37 +167,36 @@ else
         %Update the tracker 
         cluster_tracker = ...
             update_tracker( zline_clusters, ...
-            cluster_tracker, cluster_value(1) );  
+            cluster_tracker, top_cval );  
         %Update the tracker 
         cluster_tracker = ...
             update_tracker( zline_clusters, ...
-            cluster_tracker, cluster_value(end) );  
+            cluster_tracker, bott_cval ); 
+        
+    % Add the temporary array to the top 
+    elseif neigh2_struct.joinTop && ~neigh2_struct.joinBottom ...
+            && ~neigh2_struct.joinAll && ~neigh2_struct.dontJoin
+        
+        % Add the temporary cluster to the top cluster 
+        zline_clusters{top_cval, 1} = ...
+            [ top_cluster; temp_cluster ]; 
+        %Update the tracker 
+        cluster_tracker = update_tracker( zline_clusters, ...
+            cluster_tracker, top_cval );  
+        
+    % Add the temporary array to the bottom 
+    elseif neigh2_struct.joinBottom && ~neigh2_struct.joinTop ...
+            && ~neigh2_struct.joinAll && ~neigh2_struct.dontJoin
+        
+        % Add the temporary cluster to the bottom cluster
+        zline_clusters{bott_cval, 1} = ...
+            [temp_cluster; bottom_cluster]; 
+        %Update the tracker 
+        cluster_tracker = update_tracker( zline_clusters, ...
+            cluster_tracker, bott_cval ); 
     else
-        % If don't join is true, ignore this case 
-        if neigh2_struct.dontJoin
-            dontIgnore = false;
-        else
-            % Determine if either the top or bottom should be removed. This
-            % is onlt the case if there are two values in the cluster 
-            % Determine if either the top cluster should be removed. If so,
-            % remove it. 
-            if neigh2_struct.removeTop
-            end 
-            % Determine if either the bottom cluster should be removed. 
-            % If so, remove it. 
-            if neigh2_struct.removeBottom
-            end 
-            
-            % Add the temporary cluster to 
-            if neigh2_struct.joinTop
-            elseif neigh2_struct.joinBottom
-            elseif neigh2_struct.splitTemp 
-            else
-                disp('Missing some case.'); 
-                dontIgnore = false; 
-            end 
-            
-        end 
+        % Should be ignore 
+        dontIgnore = true; 
             
     end 
 
@@ -200,7 +204,6 @@ else
     if ~dontIgnore
         ignored_cases = ignored_cases + 1; 
     end 
-
     
 end
 
