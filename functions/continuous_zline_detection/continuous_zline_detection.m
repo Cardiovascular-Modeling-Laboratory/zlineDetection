@@ -76,8 +76,8 @@ BW = mat2gray(BW);
     angles, nonzero_rows, nonzero_cols, corrected_rows, corrected_cols);
 
 %Cluster the values in order.  
-[ zline_clusters, cluster_tracker ] = cluster_neighbors( dp_rows, ...
-    dp_cols, m, n);
+[ zline_clusters, cluster_tracker ] = ...
+    cluster_neighbors( dot_product_error, angles, dp_rows, dp_cols);
 
 %Calculate legnths and plot
 disp('Plotting and calculating the lengths of continuous z-lines...'); 

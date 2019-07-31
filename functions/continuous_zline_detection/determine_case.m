@@ -1,54 +1,71 @@
-function [ cluster_value_nan, bin_clusters, cluster_value, ...
-    unique_nz, case_num, second_case] = ...
-    determine_case( nan_positions, rows, cols, cluster_tracker )
-%Given an input set, this function will compute the important
-%information (below) about the set 
+% determine_case - This function will compute essential information to
+% group of set of nonzero orientation vectors (vi) and their nearest 
+% neighbors (ni1, ni2) into continuous lines. 
 %
-%INPUT: 
-%nan_positions: set values that are equal to NaN 
-%row & column positions of the set (ni1, vi, ni2)
-%cluster_tracker: m x n matrix that tracks the cluster assignment of each
-%pixel 
-%cluster_tracker(dp_rows(k,d), dp_cols(k,d)
+% An essential step is determining the case of a set (ni1, vi, ni2)
+%   CASE 1: No assigned clusters 
+%       0 0 0 
+%   CASE 2: One assigned cluster
+%       CASE 2-1: a 0 0 - Add to cluster 
+%       CASE 2-2: 0 0 a - Add to cluster  
+%       CASE 2-3: 0 a 0 - Ignore case 
+%   CASE 3: Two assigned same clusters
+%       CASE 3-1: a a 0 - Add to cluster 
+%       CASE 3-2: 0 a a - Add to cluster
+%       CASE 3-3: a 0 a - Ignore 
+%   CASE 4: Two assigned different clusters
+%       CASE 4-1: a b 0 - Ignore 
+%       CASE 4-2: 0 a b - Ignore 
+%       CASE 4-3: a 0 b - Combine all into new cluster
+%   CASE 5: All three assigned 
+%       CASE 5-1: a b b / a a b - Combine all into new cluster
+%       CASE 5-2: b a b - Ignore
+%       CASE 5-3: a b c - Ignore 
+%       CASE 5-4: a a a - Ignore
 %
-%OUTPUT: 
-%(1) cluster_value_nan:     The values of the cluster tracker at the
-%                           positions in the set 
-%(2) bin_clusters :         Positions that have already been assigned to a
+% Usage:
+%   [ cluster_info] = ...
+%       determine_case( nan_positions, rows, cols, cluster_tracker )
+%
+% Arguments:
+%   nan_positions       - positions in the set that 
+%                           Class Support: 3x1 logical
+%   rows                - the row position of the current set in the
+%                           original image 
+%                           Class Support: 3 x 1 matrix 
+%   cols                - the column position of the current set in the 
+%                           original image 
+%                           Class Support: 3 x 1 matrix 
+%   cluster_tracker     - matrix that tracks the cluster assignment of each
+%                           pixel
+%                           Class Support: m x n matrix
+% Returns:
+%   cluster_info        - struct which contains the following fields: 
+%                           Class Support: STRUCT
+%   cluster_value_nan   - the values of the cluster tracker at the
+%                           positions in the set
+%                           Class Support: 
+%   bin_clusters        - positions that have already been assigned to a
 %                           cluster are set to NaN, otherwise, they are 1
-%(3) cluster_value:         cluster values with no NaN values 
-%(4) assignedCount:         Number of assigned clusters (0 if none assigned)
-%(5) uniqueCount:           Number of unique clusters assigned 
-%(6) case_num
-
-
-%CASE 1: No assigned clusters 
-% 0 0 0 
-
-%CASE 2: One assigned cluster
-% CASE 2-1: a 0 0 - Add to cluster 
-% CASE 2-2: 0 0 a - Add to cluster  
-% CASE 2-3: 0 a 0 - Ignore case 
-
-%CASE 3: Two assigned same clusters
-% CASE 3-1: a a 0 - Add to cluster 
-% CASE 3-2: 0 a a - Add to cluster
-% CASE 3-3: a 0 a - Ignore 
-
-%CASE 4: Two assigned different clusters
-% CASE 4-1: a b 0 - Ignore 
-% CASE 4-2: 0 a b - Ignore 
-% CASE 4-3: a 0 b - Combine all into new cluster
-
-%CASE 5: All three assigned 
-% CASE 5-1: a b b / a a b - Combine all into new cluster
-% CASE 5-2: b a b - Not sure how to handle this / Ignore
-% CASE 5-3: a b c - Ignore 
-% CASE 5-4: a a a - Ignore
-
-
-%Check the value of the cluster_tracker tracker at dir 1, dir 0, 
-%and dir 2 positions for non nan values 
+%                           Class Support: 
+%   cluster_value       - cluster values with no NaN values 
+%                           Class Support: 
+%   case_num            - primary case number (see above)
+%                           Class Support: nonzero integer 
+%   second_case         - secondary case number (see above)
+%                           Class Support: nonzero integer
+%   unique_nz           - unique clusters 
+%                           Class Support: 
+%
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+% Tessa Morris
+% Advisor: Anna Grosberg, Department of Biomedical Engineering 
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
+function [ cluster_info] = ...
+    determine_case( nan_positions, rows, cols, cluster_tracker )
         
 %Find the value of the cluster tracker at each position that is a
 %number. If the value of either neighbor is NaN, set the cluster
@@ -155,7 +172,14 @@ else
     end 
 end 
 
-
+% Save all information in a struct called cluster info 
+cluster_info = struct(); 
+cluster_info.cluster_value_nan = cluster_value_nan;
+cluster_info.unique_nz = unique_nz;
+cluster_info.bin_clusters = bin_clusters;
+cluster_info.case_num = case_num;
+cluster_info.cluster_value = cluster_value;
+cluster_info.second_case = second_case;
 
 end
 
