@@ -98,41 +98,28 @@ orientim = sec_orientim3;
 orientim(isnan(orientim)) = 0;
 angles = orientim; 
 
-%%
-%Find the nonzero positions of this matrix and get their values. 
-[ nonzero_rows, nonzero_cols] = find(angles);
-[ all_angles ] = get_values(nonzero_rows, nonzero_cols, ...
-    angles);
+%% RUN CZL detection and get the relevant fields 
+[ CZL_results, CZL_info ] = continuous_zline_detection( angles, BW, ...
+    dot_product_error ); 
 
-%Find the boundaries of the edges
-[m,n] = size(angles);
+% Store the intermediate stages 
+candidate_rows = CZL_info.candidate_rows;
+candidate_cols = CZL_info. candidate_cols;
+corrected_rows = CZL_info. corrected_rows;
+corrected_cols = CZL_info. corrected_cols;
+dp_rows = CZL_info. dp_rows;
+dp_cols = CZL_info. dp_cols;
+dp2_rows = CZL_info. dp2_rows;
+dp2_cols = CZL_info. dp2_cols;
 
-%Find the positions in the orientation matrix of the candidate neighbors
-[ candidate_rows, candidate_cols ] = ...
-    neighbor_positions( all_angles , nonzero_rows, nonzero_cols);
 
-%Correct for boundaries. If any of the neighbors are outside of the
-%dimensions, their positions will be set to NaN 
-% [ corrected_nn_rows, corrected_nn_cols ] = ...
-%     boundary_correction( nn_angled_rows, nn_angled_cols, m, n ); 
-[ corrected_rows, corrected_cols ] = ...
-    boundary_correction( candidate_rows, candidate_cols, m, n ); 
-
-%Find the dot product and remove points that are less than the acceptable
-%error. First set any neighbors that are nonzero in the orientation
-%matrix equal to NaN
-[ dp_rows, dp_cols] = compare_angles( dot_product_error,...
-    angles, nonzero_rows, nonzero_cols, corrected_rows, corrected_cols);
-
-%% Visualize candidate neighbors and the accepted neighbors based on the 
-% dot product threshold 
+%% Visualize corrected neighbors 
 
 %Color options 
 col=['g', 'm', 'b', 'r'];
 col = repmat( col, [1 , ceil( size(corrected_cols, 1) / size(col, 2))] ); 
 
 figure;
-subplot(1,2,1); 
 magnification = 1000; 
 imshow(positions, 'InitialMagnification', magnification); 
 hold on; 
@@ -152,7 +139,9 @@ end
 
 title('Corrected Neighbors', 'FontSize',16, 'FontWeight','bold' );
 
-subplot(1,2,2); 
+%% The accepted neighbors based on the dot product threshold 
+
+figure; 
 magnification = 1000; 
 imshow(positions, 'InitialMagnification', magnification); 
 hold on; 
@@ -171,18 +160,9 @@ end
 
 title('Accepted Neighbors', 'FontSize',16, 'FontWeight','bold' );
 
-%% 
-%Cluster the values in order.  
-[ zline_clusters , cluster_tracker, ignored_cases ] = ...
-    cluster_neighbors( dot_product_error, angles, dp_rows, dp_cols, true); 
+%% The accepted secondary neighbors
 
-%%
-% Remove any orientation vectors in which the neighbors are perpendicular 
-[  dp2_rows, dp2_cols ] = ...
-    check_perpendicular( dp_rows, dp_cols, angles, dp_thresh); 
-
-
-%%
+figure; 
 magnification = 1000; 
 imshow(positions, 'InitialMagnification', magnification); 
 hold on; 
@@ -200,16 +180,12 @@ for h = 1:size(dp_rows, 1)
 end 
 title('Accepted Secondary Neighbors', 'FontSize',16, 'FontWeight','bold' );
 
-%% 
-%Cluster the values in order.  
+%% Visualize each stage of the clustering 
+
+% Cluster the values in order.  
 [ zline_clusters , cluster_tracker, ignored_cases ] = ...
-    cluster_neighbors( dot_product_error, angles, dp2_rows, dp2_cols, false); 
+    cluster_neighbors( dot_product_error, angles, dp_rows, dp_cols, true); 
 
-
-%%
-%Calculate legnths and plot
-disp('Plotting and calculating the lengths of continuous z-lines...'); 
+%% Plot the z-line clusters
 [ distance_storage, rmCount, zline_clusters ] = ...
-    calculate_lengths( positions, zline_clusters);
-
-
+    calculate_lengths( BW, zline_clusters );

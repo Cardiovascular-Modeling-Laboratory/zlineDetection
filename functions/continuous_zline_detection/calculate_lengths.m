@@ -35,15 +35,9 @@ for k=1:length(zline_clusters)
     %continue with analysis 
     if isnan(boundary)
         exclude = true; 
-    
-    %Additionally, if there are less than three detected edges, remove the
-    %boundary
-    elseif size(boundary,1) < 3
-        exclude = true; 
-        zline_clusters{k} = NaN; 
+   
     %If the boundary is not empty or NaN calculate the distance  
     else
-        
         %Calculate the distance between each boundary and its next neighbor
         [ between_coordinates ] = ...
             coordinate_distances( boundary(:,1), boundary(:,2) ); 
