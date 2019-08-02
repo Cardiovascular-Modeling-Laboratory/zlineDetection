@@ -99,7 +99,7 @@ if ~settings.actinthresh_explore
     orientim_zlines_accepted(mask == 0) = 0; 
     
     %Get the directors of the remaining orientation vectors
-    [ ~,~, ~, ~, ~, zline_dirmat ] = ...
+    [ zlinegrid_DIMS, zlinegrid_OOPs, ~, ~, ~, zline_dirmat ] = ...
         gridDirector( orientim_zlines_accepted, settings.grid_size );
     
     %Compare the director of the remaining orientation vecotrs with the

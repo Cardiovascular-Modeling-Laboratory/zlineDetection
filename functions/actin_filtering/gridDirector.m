@@ -107,6 +107,14 @@ for d1 = 1:grid_size(1):m1
             
             %Covert the director angle to radians
             directors(n,1) = deg2rad(director_angle); 
+            
+            % Only save the director if the grid is highly aligned (greater
+            % than 0.7 oop
+            if oops(n,1) < 0.3
+                %Covert the director angle to radians
+                directors(n,1) = NaN; 
+            end 
+            
         else
             % If there aren't any orientation vectors in the grid, set the
             % oop and director equal to zero. 
