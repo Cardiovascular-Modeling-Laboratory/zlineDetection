@@ -62,6 +62,9 @@ if  oneCluster && ~shouldIgnore
         away1_cluster1 = 2; 
     end
     
+    % Store the position of the closest neighbor in the temporary array 
+    neigh2_struct.close_temp = close_temp; 
+    
     % Get the angles 
     theta_ct = angles(temp_cluster(close_temp,1), ...
         temp_cluster(close_temp,2)); 

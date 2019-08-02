@@ -33,7 +33,8 @@
 % Irvine, CA  92697-2700
 
 
-function [ orientim, gray_im, actin_background, actin_anisodiffuse] = ...
+function [ orientim, gray_im, actin_background, actin_smoothed, ...
+    actin_bottomfilt] = ...
     actinDetection( filename, settings, disp_actin, save_path )
 
 %Get the file parts (path, name of the file, and the extension)
@@ -66,38 +67,41 @@ end
 
 
 % Use texture based masking to remove the background of the image 
-[actin_background, actin_im_background, actin_per_rem,...
-    actin_back_thresh_per] = ...
+[actin_background, ~, ~, ~] = ...
     textureBasedMasking( gray_im, settings.back_sigma, ...
     settings.back_blksze, settings.back_noisesze,...
     settings.disp_back ); 
 
-% Run diffusion filtering on actin image  
-[ actin_anisodiffuse, ~, ~ ] = ...
-    CoherenceFilter( gray_im, settings.Options );
-
-% Clear the command line 
-clc; 
-
 % Convert the matrix to be an intensity image 
-actin_anisodiffuse = mat2gray( actin_anisodiffuse );
+actin_smoothed = mat2gray( imgaussfilt( gray_im, settings.Options.rho ) );
 
+% Remove 
+actin_bottomfilt = imadjust(imbothat(actin_smoothed, ...
+    strel( 'disk', settings.tophat_size)));
+
+% Remove regions of the image that are dark 
+if exist('imbinarize.m','file') == 2 
+    bw_bottomfilt = imbinarize(actin_bottomfilt);
+else
+    bw_bottomfilt = im2bw(actin_bottomfilt, graythresh(actin_bottomfilt));
+end 
 
 % Calculate orientation vectors
-[orientim, reliability] = ridgeorient(actin_anisodiffuse, ...
+[orientim, ~] = ridgeorient(actin_smoothed, ...
     settings.Options.sigma, settings.Options.rho, settings.Options.rho);
 
-% Remove non reliable actin regions 
-orientim(reliability < 0.1) = 0; 
-
 % Set all of the orientation vectors considered background to be zero. 
-orientim(actin_background == 0) = 0; 
+orientim(actin_background == 0) = 0;
+
+% Remove all of the orientation vectors that are considered dark
+% striations. 
+orientim(bw_bottomfilt == 1) = 0; 
 
 % Save the diffusion filtered actin image if requested
 if disp_actin
     
-    imwrite( actin_anisodiffuse, fullfile(save_path, ...
-        strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
+    imwrite( actin_smoothed, fullfile(save_path, ...
+        strcat( actin_name, '_ActinGaussianFiltered.tif' ) ),...
         'Compression','none');
 end 
     

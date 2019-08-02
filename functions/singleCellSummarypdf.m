@@ -112,8 +112,8 @@ if didAnalysis
         
         % Set the save_info to false
         save_info = struct(); 
-        save_info.saveResults;
-        save_info.specialVis; 
+        save_info.saveResults = false;
+        save_info.specialVis = true; 
         
         % Open a figure and subplot 
         figure; 

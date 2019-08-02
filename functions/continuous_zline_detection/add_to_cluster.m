@@ -116,13 +116,13 @@ if ~isnan(cp)
     if ~ignoreCase
         neigh2_struct = checkDistantNeighbor(dp_thresh, temp_cluster, ...
             atTop, angles, zline_clusters{unique_nz, 1});
-    end 
+        
+        % Set ignore case equal to true if the neigh2 struct is set to nan 
+        if neigh2_struct.shouldIgnore
+            ignoreCase = true;
+        end 
     
-    % Set ignore case equal to true if the neigh2 struct is set to nan 
-    if neigh2_struct.shouldIgnore
-        ignoreCase = true;
     end 
-    
     
     % Create a logical that states whether a new cluster for the current
     % temporary array should be added 
@@ -155,7 +155,8 @@ if ~isnan(cp)
                     else
                         placeholder_temp = temp_cluster; 
                         clear temp_cluster; 
-                        temp_cluster = placeholder_temp(:,close_temp); 
+                        temp_cluster = ...
+                            placeholder_temp(neigh2_struct.close_temp, :); 
                     end 
                 end 
             end 

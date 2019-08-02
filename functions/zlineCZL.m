@@ -4,9 +4,6 @@
 
 function [ distances_um ] = zlineCZL(im_struct, settings)
 
-% Add the continuous z-line detection path to the current path 
-addpath(fullfile(pwd,'continuous_zline_detection')); 
-
 % Continuous Z-line Detection requires the orientation vectors, an input
 % image, and the dot product threshold. Extract this information from
 % z-line detection results matrices 
@@ -62,8 +59,6 @@ fig_name = strcat( output_filename, '_zlines.fig' );
 savefig(fullfile(save_path, fig_name));
 %Save as a .tif file
 saveas(gcf, fullfile(save_path, fig_name(1:end-4)), 'tiffn');
-
-
 
 % Store the information from the continuous z-line results that should
 % also be saved for z-line detection 

@@ -126,8 +126,7 @@ if saveResults
     if isfield(save_info,'save_type')
         new_filename = appendFilename( save_info.save_path, ...
             strcat(save_info.save_name,save_info.save_type) ); 
-        saveas(gcf, fullfile(save_info.save_path, new_filename),...
-            save_info.save_type);
+        saveas(gcf, fullfile(save_info.save_path, new_filename));
     end 
 end 
 

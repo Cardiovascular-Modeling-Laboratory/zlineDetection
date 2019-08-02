@@ -2,8 +2,8 @@
 
 function [ settings ] = recommendParameters()
 %%%%%%%%%%%%%%%%%%% Actin Filtering Parameteres %%%%%%%%%%%%%%%%%%%%%%%%
-settings.grid1 = 10; 
-settings.grid2 = 10; 
+settings.grid1 = 30; 
+settings.grid2 = 30; 
 settings.actin_thresh = 0.7; 
 
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%

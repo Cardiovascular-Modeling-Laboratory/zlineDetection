@@ -100,7 +100,7 @@ for d1 = 1:grid_size(1):m1
         
         % Calculate the OOP and director if there are orientation vecotrs
         % in the grid 
-        if grid_info(n,4) > 0 
+        if grid_info(n,4) > 0 && grid_info(n,4)/grid_info(n,3) > 0.25
             %Calculate the OOP and director 
             [ oops(n,1), director_angle, ~, ~] = ...
                 calculate_OOP( temp_array ); 
