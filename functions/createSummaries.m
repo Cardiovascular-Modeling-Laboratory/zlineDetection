@@ -66,10 +66,18 @@ if settings.num_cs > 1 && settings.analysis
         MultiCS_medians = ...
             concatCells( MultiCS_Data.MultiCS_medians, true );
         MultiCS_sums = concatCells( MultiCS_Data.MultiCS_sums, true );
+        MultiCS_means = concatCells( MultiCS_Data.MultiCS_means, true );
+        MultiCS_skewness = ...
+            concatCells( MultiCS_Data.MultiCS_skewness, true );
+        MultiCS_kurtosis = ...
+            concatCells( MultiCS_Data.MultiCS_kurtosis, true );
     else
         %Set to NaN if does not exist 
         MultiCS_medians = NaN*zeros(size(MultiCS_CSN));
         MultiCS_sums = NaN*zeros(size(MultiCS_CSN));
+        MultiCS_means = NaN*zeros(size(MultiCS_CSN));
+        MultiCS_skewness = NaN*zeros(size(MultiCS_CSN));
+        MultiCS_kurtosis = NaN*zeros(size(MultiCS_CSN));
     end 
     
     
@@ -126,7 +134,10 @@ if settings.num_cs > 1 && settings.analysis
     GridSize = MultiCS_grid_sizes';  
     ActinThreshold = MultiCS_actin_threshs';  
     MedianCZL = MultiCS_medians';   
-    TotalCZL = MultiCS_sums';  
+    TotalCZL = MultiCS_sums'; 
+    MeanCZL = MultiCS_means'; 
+    SkewnessCZL = MultiCS_skewness'; 
+    KurtosisCZL = MultiCS_kurtosis'; 
     NonZlineFraction = MultiCS_nonzlinefrac';  
     ZlineFraction = MultiCS_zlinefrac';  
     OOPzline = MultiCS_OOP';  
@@ -168,10 +179,11 @@ if settings.num_cs > 1 && settings.analysis
     T = table(ConditionValue,ConditionName,CoverslipName,...
         DateAnalyzed_YYYYMMDD,OOPzline,OOPactin,...
         DirectorZline, DirectorActin,... 
-        ZlineFraction,NonZlineFraction,TotalZline, ...
-        TotalActin, MedianCZL,...
-        TotalCZL,GridSize,ActinThreshold,CoverslipPath); 
-
+        ZlineFraction,NonZlineFraction, TotalZline, ...
+        TotalActin, MedianCZL, MeanCZL, ...
+        TotalCZL, SkewnessCZL, KurtosisCZL, ...
+        GridSize, ActinThreshold, CoverslipPath); 
+    
     %Write the sheet to memory 
     filename = strcat(settings.SUMMARY_name{1}, '.xlsx'); 
     writetable(T,fullfile(settings.SUMMARY_path,filename),...
@@ -351,6 +363,62 @@ if settings.num_cs > 1 && settings.analysis && settings.multi_cond
             plot_names.title = 'True Medians and \pm 50% Medians';
             plot_names.savename = 'MultiCSMultiMedianSummary'; 
         
+        %%>> CZL Mean:  Plot the mean, standard deviation, 
+        %   and data points
+        
+        plot_names.type = 'Means';
+        if ~settings.actinthresh_explore
+            plot_names.x = 'Conditions'; 
+        else 
+            plot_names.x = 'Actin Filtering Threshold'; 
+        end 
+        plot_names.y = 'Mean Continuous Z-line Lengths (\mu m)';
+        plot_names.title = 'Mean Continuous Z-line Lengths';
+        plot_names.savename = 'MultiCond_MeanSummary'; 
+        [ MultiCond.CondValues_Means, ...
+            MultiCond.CondValues_MeanMeans,...
+            MultiCond.CondValues_StdevMeans, MultiCond.IDs  ] =...
+        plotConditions(MultiCS_means, MultiCS_Cond, settings.cond_names,...
+        MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names); 
+
+    
+        %%>> CZL Skewness:  Plot the mean, standard deviation, 
+        %   and data points
+        
+        plot_names.type = 'Skewness';
+        if ~settings.actinthresh_explore
+            plot_names.x = 'Conditions'; 
+        else 
+            plot_names.x = 'Actin Filtering Threshold'; 
+        end 
+        plot_names.y = 'Skewness of Continuous Z-line Lengths';
+        plot_names.title = 'Skewness Continuous Z-line Lengths';
+        plot_names.savename = 'MultiCond_SkewnessSummary'; 
+        [ MultiCond.CondValues_Skewness, ...
+            MultiCond.CondValues_MeanSkewness,...
+            MultiCond.CondValues_StdevSkewness, MultiCond.IDs  ] =...
+        plotConditions(MultiCS_skewness, MultiCS_Cond, settings.cond_names,...
+        MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names); 
+
+        %%>> CZL Kurtosis:  Plot the mean, standard deviation, 
+        %   and data points
+        
+        plot_names.type = 'Kurtosis';
+        if ~settings.actinthresh_explore
+            plot_names.x = 'Conditions'; 
+        else 
+            plot_names.x = 'Actin Filtering Threshold'; 
+        end 
+        plot_names.y = 'Kurtosis of Continuous Z-line Lengths';
+        plot_names.title = 'Kurtosis Continuous Z-line Lengths';
+        plot_names.savename = 'MultiCond_KurtosisSummary'; 
+        [ MultiCond.CondValues_Kurtosis, ...
+            MultiCond.CondValues_MeanKurtosis,...
+            MultiCond.CondValues_StdevKurtosis, MultiCond.IDs  ] =...
+        plotConditions(MultiCS_kurtosis, MultiCS_Cond, settings.cond_names,...
+        MultiCS_grid_sizes, MultiCS_actin_threshs, plot_names); 
+
+    
         %%>> CZL CS LENGTHS:  Plot additional medians 
         [ MultiCS_Data.additionalMedianCond, ...
             MultiCS_Data.additionalMedianCondMean, ...

@@ -43,6 +43,9 @@ MultiCS_nonzlinefrac = cell(1,settings.num_cs);
 MultiCS_zlinefrac = cell(1,settings.num_cs);
 %>>> Continuous Z-line Analysis
 MultiCS_medians = cell(1,settings.num_cs); 
+MultiCS_means = cell(1,settings.num_cs);
+MultiCS_skewness = cell(1,settings.num_cs);
+MultiCS_kurtosis = cell(1,settings.num_cs);
 MultiCS_sums = cell(1,settings.num_cs); 
 MultiCS_lengths = cell(1,settings.num_cs);
 %>>> Z-line Angle analysis
@@ -203,6 +206,9 @@ for k = 1:settings.num_cs
         MultiCS_lengths{1,k} = CS_results.CS_lengths;
         MultiCS_medians{1,k} =CS_results.CS_medians;
         MultiCS_sums{1,k} = CS_results.CS_sums;
+        MultiCS_means{1,k} = CS_results.CS_means; 
+        MultiCS_skewness{1,k} = CS_results.CS_skewness;
+        MultiCS_kurtosis{1,k} = CS_results.CS_kurtosis; 
         MultiCS_nonzlinefrac{1,k} = CS_results.CS_nonzlinefrac;
         MultiCS_zlinefrac{1,k} = CS_results.CS_zlinefrac;
         MultiCS_grid_sizes{1,k} = CS_results.CS_gridsizes;
