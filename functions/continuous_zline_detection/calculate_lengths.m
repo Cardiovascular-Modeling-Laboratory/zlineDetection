@@ -38,18 +38,24 @@ for k=1:length(zline_clusters)
    
     %If the boundary is not empty or NaN calculate the distance  
     else
-        %Calculate the distance between each boundary and its next neighbor
-        [ between_coordinates ] = ...
-            coordinate_distances( boundary(:,1), boundary(:,2) ); 
+        % Check to make sure there are more than two boundaries 
+        if length(boundary) > 2
+            %Calculate the distance between each boundary and its next neighbor
+            [ between_coordinates ] = ...
+                coordinate_distances( boundary(:,1), boundary(:,2) ); 
 
-        %Find the length from one coordinate to the closest one. 
-        %Inialize coordinate length 
-        coord_length = 0; 
-        for h = 2:length( boundary(:,1) )
-            coord_length = coord_length +  between_coordinates(h, h-1); 
-        end
+            %Find the length from one coordinate to the closest one. 
+            %Inialize coordinate length 
+            coord_length = 0; 
+            for h = 2:length( boundary(:,1) )
+                coord_length = coord_length +  between_coordinates(h, h-1); 
+            end
+        else
+            exclude = true; 
+        end 
+                
     end 
-    
+   
     if exclude
         %Save the distance and coordinates as NaN.
         distance_storage(k) = NaN; 

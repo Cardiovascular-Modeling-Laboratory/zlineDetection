@@ -404,8 +404,8 @@ set( handles.back_blksze, 'String', ...
 set( handles.back_noisesze, 'String', ...
     num2str( settings.back_noisesze ) ); 
 %>> Threshold and Clean Parameters
-set( handles.bio_noise_area, 'String', ...
-    num2str( settings.bio_noise_area ) ); 
+set( handles.noise_area, 'String', ...
+    num2str( settings.noise_area ) ); 
 %>> Skeletonization Parameters (biological)
 set( handles.bio_branch_size, 'String', ...
     num2str( settings.bio_branch_size ) );
@@ -583,8 +583,6 @@ set( handles.sigma, 'String', num2str( settings.sigma ) );
 set( handles.rho, 'String', num2str( settings.rho ) ); 
 %>> Top Hat Filter Parameters
 set( handles.tophat_size, 'String', num2str( settings.tophat_size ) );   
-%>> Threshold and Clean Parameters
-set( handles.noise_area, 'String', num2str( settings.noise_area ) ); 
 %>> Skeletonization Parameters
 set( handles.branch_size, 'String', num2str( settings.branch_size ) ); 
 

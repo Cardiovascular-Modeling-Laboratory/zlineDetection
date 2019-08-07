@@ -37,7 +37,7 @@ settings.back_noisesze = 8;
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
-settings.bio_noise_area = 0; 
+settings.noise_area = 2; 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 

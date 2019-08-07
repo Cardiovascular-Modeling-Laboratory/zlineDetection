@@ -122,10 +122,7 @@ settings.back_noisesze = ...
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
-% Store biological user input 
-settings.bio_noise_area = str2double(get(handles.bio_noise_area, 'String')); 
-% Convert user input into pixels and then save in the structure array
-settings.noise_area= round( settings.bio_noise_area.*(pix2um.^2) ); 
+settings.noise_area= round(str2double(get(handles.noise_area, 'String'))); 
 
 % %Reliability threshold 
 % settings.reliability_thresh = ...
