@@ -38,11 +38,15 @@ actin_struct.filename = filenames.actin;
 % If not doing a grid parameter exploration comput the director for each
 % grid. If not then procceed to parameter exploration. 
 if ~settings.grid_explore 
+    
+    % Caclulate the oop of actin to use in the grid director 
+    [ actinOOP, ~, ~, ~ ] = calculate_OOP( actin_struct.actin_orientim ); 
     % Compute the director for each grid 
     [ actin_struct.dims, actin_struct.oop, actin_struct.director, ...
         actin_struct.grid_info, actin_struct.visualization_matrix, ...
         actin_struct.director_matrix] = ...
-        gridDirector( actin_struct.actin_orientim, settings.grid_size );
+        gridDirector( actin_struct.actin_orientim, settings.grid_size,...
+        actinOOP);
 
     % Save the image 
     if settings.disp_actin
@@ -64,7 +68,7 @@ if ~settings.grid_explore
     dp = sqrt(cos(im_struct.orientim - actin_struct.director_matrix).^2); 
     
 else
-    %Set grid director ouputs to not numbers
+    %Set  director ouputs to not numbers
     actin_struct.dims = NaN;
     actin_struct.oop = NaN;
     actin_struct.director = NaN; 
