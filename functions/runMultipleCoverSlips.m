@@ -262,6 +262,10 @@ if settings.cardio_type == 1 && settings.num_cs > 1 ...
     MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
     MultiCS_Data.MultiCS_medians=MultiCS_medians;
     MultiCS_Data.MultiCS_sums=MultiCS_sums;
+    MultiCS_Data.MultiCS_means=MultiCS_means; 
+    MultiCS_Data.MultiCS_skewness=MultiCS_skewness;
+    MultiCS_Data.MultiCS_kurtosis=MultiCS_kurtosis; 
+        
     %>>> Z-line Angle analysis
     MultiCS_Data.MultiCS_orientim = MultiCS_orientim; 
     MultiCS_Data.MultiCS_OOP=MultiCS_OOP;

@@ -124,19 +124,12 @@ settings.back_noisesze = ...
 % Size of small objects to be removed using bwareopen
 settings.noise_area= round(str2double(get(handles.noise_area, 'String'))); 
 
-% %Reliability threshold 
-% settings.reliability_thresh = ...
-%     str2double(get(handles.reliability_thresh, 'String')); 
-
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
 settings.bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
 % Convert user input into pixels and then save in the structure array 
 settings.branch_size = round( settings.bio_branch_size.*pix2um ); 
-
-% % If yes then use imbinarize to remove the background
-% settings.rm_background = get(handles.rm_background,'Value');
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -180,6 +173,15 @@ settings.actin_thresh = str2double(get(handles.actin_thresh, 'String'));
 settings.grid_explore = get(handles.grid_explore, 'Value'); 
 % Store settings for actin grid size exploration 
 settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
+
+%%%%%%%%%%%%%%%%%%%% Actin Detection Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Sigma of the derivative of Gaussian used to compute image gradients.
+settings.actin_gradientsigma = (1/6.22)*pix2um; 
+% Sigma of the Gaussian weighting used to sum the gradient moments.
+settings.actin_blocksigma = (3/6.22)*pix2um;  
+% Sigma of the Gaussian used to smooth the final orientation vector field.
+settings.actin_orientsmoothsigma = (3/6.22)*pix2um;  
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

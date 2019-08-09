@@ -88,7 +88,8 @@ end
 
 % Calculate orientation vectors
 [orientim, ~] = ridgeorient(actin_smoothed, ...
-    settings.Options.sigma, settings.Options.rho, settings.Options.rho);
+    settings.actin_gradientsigma, settings.actin_blocksigma, ...
+    settings.actin_orientsmoothsigma);
 
 % Set all of the orientation vectors considered background to be zero. 
 orientim(actin_background == 0) = 0;

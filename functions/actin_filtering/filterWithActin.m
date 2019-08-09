@@ -83,6 +83,9 @@ mask = ones(size(im_struct.orientim));
 % If the threshold is greater than 1 that means that the user would like to
 % do a parameter exploration 
 if ~settings.actinthresh_explore
+    % Set the mask equal to the actin mask 
+    mask = actin_struct.actin_background; 
+    
     %If dot product is closer to 1, the angles are more parallel and should 
     %be removed
     mask(dp >= settings.actin_thresh) = 0; 
