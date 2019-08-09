@@ -48,7 +48,7 @@ end
 
 % Equalize the image 
 % J = histeq(I);
-J = I; 
+J = mat2gray(I); 
 % Compute histogram of oriented graidents. 
 % sigma = 0.5; 
 % blk_size = 15; 
