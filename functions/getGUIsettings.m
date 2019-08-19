@@ -159,32 +159,56 @@ settings.actin_filt = get(handles.actin_filt, 'Value');
 % Display actin filtering
 settings.disp_actin = get(handles.disp_actin, 'Value');
 
+% Determine if actin grid size should be explored
+settings.grid_explore = get(handles.grid_explore, 'Value');
+
+% Determine if actin threshold value should be explored
+settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
+
+% Save the grid sizes for the rows and columns in an array 
+grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
+grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
+
+% Store the grid sizes
+settings.grid_size = grid_size; 
+
+% Store the threshold for actin filtering
+settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
+
 % If this is not a conversion, get the actin filtering parameters
 if ~conversionOnly && settings.actin_filt
-
-    % Save the grid sizes for the rows and columns in an array 
-    grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
-    grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
-
-    % Store the grid sizes
-    settings.grid_size = grid_size; 
-
-    % Store the threshold for actin filtering
-    settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
-
-    % Store settings for actin threshold exploration 
-    settings.grid_explore = get(handles.grid_explore, 'Value'); 
-    % Store settings for actin grid size exploration 
-    settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
-
-    %%%%%%%%%%%%%%%%%%%% Actin Detection Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+    %Prompt Questions
+    actin_prompt = {'Gaussian Filtering Sigma:',...
+        'Gaussian Filtering Kernel Size (Must be Odd):',...
+        'Background Removal Threshold (0.1-0.2):',...
+        'Orientation Calculation - Gradient Sigma:',...
+        'Orientation Calculation - Orientation Smoothing:',...
+        'Orientation Calculation - Block Sigma:',...
+        'Orientation Reliability Threshold:'};
+    %Title of prompt 
+    actin_title = 'Actin Detection Settings';
+    %Dimensions 
+    actin_dims = [1,60];
+    %Default inputs
+    actin_definput = {'3', '25','0.1','1','3','3','0.5'}; 
+    %Save answers
+    actin_answer = inputdlg(actin_prompt,actin_title,...
+    actin_dims,actin_definput);
+    
+    % ACTIN DETECTION: Sigma of gaussian filter 
+    settings.actin_sigma = str2double(actin_answer{1});
+    % ACTIN DETECTION: Kernel size of gaussian filter
+    settings.actin_kernelsize = str2double(actin_answer{2});
+    % ACTIN DETECTION: Segmentation threshold
+    settings.actin_backthresh = str2double(actin_answer{3});
     % Sigma of the derivative of Gaussian used to compute image gradients.
-    settings.actin_gradientsigma = (1/6.22)*pix2um; 
+    settings.actin_gradientsigma = str2double(actin_answer{4});
     % Sigma of the Gaussian weighting used to sum the gradient moments.
-    settings.actin_blocksigma = (3/6.22)*pix2um;  
+    settings.actin_blocksigma = str2double(actin_answer{5});
     % Sigma of the Gaussian used to smooth the final orientation vector field.
-    settings.actin_orientsmoothsigma = (3/6.22)*pix2um;  
+    settings.actin_orientsmoothsigma = str2double(actin_answer{6});
+    % ACTIN DETECTION: Reliability threshold 
+    settings.actin_reliablethresh = str2double(actin_answer{7});
 end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
