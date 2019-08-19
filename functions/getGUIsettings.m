@@ -159,29 +159,33 @@ settings.actin_filt = get(handles.actin_filt, 'Value');
 % Display actin filtering
 settings.disp_actin = get(handles.disp_actin, 'Value');
 
-% Save the grid sizes for the rows and columns in an array 
-grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
-grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
+% If this is not a conversion, get the actin filtering parameters
+if ~conversionOnly && settings.actin_filt
 
-% Store the grid sizes
-settings.grid_size = grid_size; 
+    % Save the grid sizes for the rows and columns in an array 
+    grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
+    grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
 
-% Store the threshold for actin filtering
-settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
+    % Store the grid sizes
+    settings.grid_size = grid_size; 
 
-% Store settings for actin threshold exploration 
-settings.grid_explore = get(handles.grid_explore, 'Value'); 
-% Store settings for actin grid size exploration 
-settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
+    % Store the threshold for actin filtering
+    settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
 
-%%%%%%%%%%%%%%%%%%%% Actin Detection Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Store settings for actin threshold exploration 
+    settings.grid_explore = get(handles.grid_explore, 'Value'); 
+    % Store settings for actin grid size exploration 
+    settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
 
-% Sigma of the derivative of Gaussian used to compute image gradients.
-settings.actin_gradientsigma = (1/6.22)*pix2um; 
-% Sigma of the Gaussian weighting used to sum the gradient moments.
-settings.actin_blocksigma = (3/6.22)*pix2um;  
-% Sigma of the Gaussian used to smooth the final orientation vector field.
-settings.actin_orientsmoothsigma = (3/6.22)*pix2um;  
+    %%%%%%%%%%%%%%%%%%%% Actin Detection Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    % Sigma of the derivative of Gaussian used to compute image gradients.
+    settings.actin_gradientsigma = (1/6.22)*pix2um; 
+    % Sigma of the Gaussian weighting used to sum the gradient moments.
+    settings.actin_blocksigma = (3/6.22)*pix2um;  
+    % Sigma of the Gaussian used to smooth the final orientation vector field.
+    settings.actin_orientsmoothsigma = (3/6.22)*pix2um;  
+end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
