@@ -2,17 +2,16 @@
 
 function [ settings ] = recommendParameters()
 %%%%%%%%%%%%%%%%%%% Actin Filtering Parameteres %%%%%%%%%%%%%%%%%%%%%%%%
-settings.grid1 = 30; 
-settings.grid2 = 30; 
+settings.grid = 30; 
 settings.actin_thresh = 0.7; 
 
 %%%%%%%%%%%%%%%%%%% Coherence Filter Parameteres %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set the sigma of gaussian smoothing before calculation of the image 
 % Hessian.
-settings.bio_sigma = 0.1608;
+settings.sigma = 1;
 
 % Set the sigma of the Gaussian smoothing of the Hessian.
-settings.bio_rho = 0.2251; 
+settings.rho = 1.4; 
 
 % Total Diffusion Time 
 settings.diffusion_time = 1.5; 
@@ -21,7 +20,7 @@ settings.diffusion_time = 1.5;
 
 % Radius of the flat disk-shaped structuring element used for the top hat
 % filter
-settings.bio_tophat_size = 0.5; 
+settings.tophat_size = 3; 
 
 %%%%%%%%%%%%%%%%%%% Background Removal Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -42,7 +41,7 @@ settings.noise_area = 2;
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
-settings.bio_branch_size = 0.6; 
+settings.branch_size = 4; 
 
 end
 

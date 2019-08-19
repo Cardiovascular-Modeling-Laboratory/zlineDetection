@@ -57,18 +57,12 @@ pix2um = settings.pix2um;
 Options = struct();
 
 % Set the sigma of gaussian smoothing before calculation of the image 
-% Hessian. The user input a value in microns, which should be converted
-% into pixels before using
-% Store biological user input 
-settings.bio_sigma = str2double(get(handles.bio_sigma,'String'));
-% Convert user input into pixels and then save in the structure array
-Options.sigma = settings.bio_sigma.*pix2um; 
+% Hessian. The user input a value in pixels
+Options.sigma = str2double(get(handles.sigma,'String'));
 
 % Rho gives the sigma of the Gaussian smoothing of the Hessian.
-% Store biological user input 
-settings.bio_rho = str2double(get(handles.bio_rho,'String'));
-% Convert user input into pixels and then save in the structure array
-Options.rho = settings.bio_rho.*pix2um;
+% The user input a value in pixels
+Options.rho = str2double(get(handles.rho,'String'));
 
 % Get the total diffusion time from the GUI
 Options.T = str2double(get(handles.diffusion_time,'String'));
@@ -101,12 +95,8 @@ settings.diffusion_explore = get(handles.diffusion_explore,'Value');
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Radius of the flat disk-shaped structuring element used for the top hat
-% filter
-
-% Store biological user input 
-settings.bio_tophat_size = str2double(get(handles.bio_tophat_size,'String'));
-% Convert user input into pixels and then save in the structure array
-settings.tophat_size = round( settings.bio_tophat_size.*pix2um ); 
+% filter in pixels 
+settings.tophat_size = round( str2double(get(handles.tophat_size,'String')) ); 
 
 %%%%%%%%%%%%%%%%%%% Background Removal Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -126,10 +116,8 @@ settings.noise_area= round(str2double(get(handles.noise_area, 'String')));
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Save the minimum branch size to be included in analysis 
-settings.bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
-% Convert user input into pixels and then save in the structure array 
-settings.branch_size = round( settings.bio_branch_size.*pix2um ); 
+% Save the minimum branch size to be included in analysis in pixels 
+settings.branch_size = round(str2double(get(handles.branch_size, 'String')));
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -138,9 +126,6 @@ settings.disp_df = get(handles.disp_df,'Value');
 
 % Display top hat filter
 settings.disp_tophat = get(handles.disp_tophat, 'Value'); 
-
-% % Display thresholding 
-% settings.disp_bw = get(handles.disp_bw, 'Value'); 
 
 % Display background  
 settings.disp_back = get(handles.disp_back, 'Value'); 
@@ -166,8 +151,8 @@ settings.grid_explore = get(handles.grid_explore, 'Value');
 settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
 
 % Save the grid sizes for the rows and columns in an array 
-grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
-grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
+grid_size(1) = round( str2double(get(handles.grid, 'String')) );
+grid_size(2) = round( str2double(get(handles.grid, 'String')) );
 
 % Store the grid sizes
 settings.grid_size = grid_size; 

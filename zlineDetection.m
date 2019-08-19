@@ -22,7 +22,7 @@ function varargout = zlineDetection(varargin)
 
 % Edit the above text to modify the response to help zlineDetection
 
-% Last Modified by GUIDE v2.5 08-Jul-2019 11:36:20
+% Last Modified by GUIDE v2.5 19-Aug-2019 16:01:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -82,17 +82,17 @@ varargout{1} = handles.output;
 
 
 function bio_sigma_Callback(hObject, eventdata, handles)
-% hObject    handle to bio_sigma (see GCBO)
+% hObject    handle to sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of bio_sigma as text
-%        str2double(get(hObject,'String')) returns contents of bio_sigma as a double
+% Hints: get(hObject,'String') returns contents of sigma as text
+%        str2double(get(hObject,'String')) returns contents of sigma as a double
 
 
 % --- Executes during object creation, after setting all properties.
 function bio_sigma_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to bio_sigma (see GCBO)
+% hObject    handle to sigma (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -105,17 +105,17 @@ end
 
 
 function bio_rho_Callback(hObject, eventdata, handles)
-% hObject    handle to bio_rho (see GCBO)
+% hObject    handle to rho (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of bio_rho as text
-%        str2double(get(hObject,'String')) returns contents of bio_rho as a double
+% Hints: get(hObject,'String') returns contents of rho as text
+%        str2double(get(hObject,'String')) returns contents of rho as a double
 
 
 % --- Executes during object creation, after setting all properties.
 function bio_rho_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to bio_rho (see GCBO)
+% hObject    handle to rho (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -174,17 +174,17 @@ end
 
 
 function bio_tophat_size_Callback(hObject, eventdata, handles)
-% hObject    handle to bio_tophat_size (see GCBO)
+% hObject    handle to tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of bio_tophat_size as text
-%        str2double(get(hObject,'String')) returns contents of bio_tophat_size as a double
+% Hints: get(hObject,'String') returns contents of tophat_size as text
+%        str2double(get(hObject,'String')) returns contents of tophat_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
 function bio_tophat_size_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to bio_tophat_size (see GCBO)
+% hObject    handle to tophat_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -302,17 +302,17 @@ end
 
 
 function bio_branch_size_Callback(hObject, eventdata, handles)
-% hObject    handle to bio_branch_size (see GCBO)
+% hObject    handle to branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of bio_branch_size as text
-%        str2double(get(hObject,'String')) returns contents of bio_branch_size as a double
+% Hints: get(hObject,'String') returns contents of branch_size as text
+%        str2double(get(hObject,'String')) returns contents of branch_size as a double
 
 
 % --- Executes during object creation, after setting all properties.
 function bio_branch_size_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to bio_branch_size (see GCBO)
+% hObject    handle to branch_size (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -388,14 +388,14 @@ settings = recommendParameters();
 
 % Set all of the parameters 
 %>> Coherence Filter Parameters
-set( handles.bio_sigma, 'String', num2str( settings.bio_sigma ) );
-set( handles.bio_rho, 'String', num2str( settings.bio_rho ) ); 
+set( handles.sigma, 'String', num2str( settings.sigma ) );
+set( handles.rho, 'String', num2str( settings.rho ) ); 
 %>> Coherence Filter Parameters
 set( handles.diffusion_time, 'String', ...
     num2str( settings.diffusion_time ) ); 
 %>> Top Hat Filter Parameters
-set( handles.bio_tophat_size, 'String', ...
-    num2str( settings.bio_tophat_size ) );
+set( handles.tophat_size, 'String', ...
+    num2str( settings.tophat_size ) );
 %>> Background Removal Parameters
 set( handles.back_sigma, 'String', ...
     num2str( settings.back_sigma ) ); 
@@ -407,15 +407,13 @@ set( handles.back_noisesze, 'String', ...
 set( handles.noise_area, 'String', ...
     num2str( settings.noise_area ) ); 
 %>> Skeletonization Parameters (biological)
-set( handles.bio_branch_size, 'String', ...
-    num2str( settings.bio_branch_size ) );
+set( handles.branch_size, 'String', ...
+    num2str( settings.branch_size ) );
 %>> Set actin filtering to be true
 set(handles.actin_filt,'Value',1);
 %>> Actin filtering parameters
-set( handles.grid1, 'String', ...
-    num2str( settings.grid1 ) );
-set( handles.grid2, 'String', ...
-    num2str( settings.grid2 ) );
+set( handles.grid, 'String', ...
+    num2str( settings.grid ) );
 set( handles.actin_thresh, 'String', ...
     num2str( settings.actin_thresh ) );
 
@@ -588,18 +586,18 @@ set( handles.branch_size, 'String', num2str( settings.branch_size ) );
 
 
 
-function grid1_Callback(hObject, eventdata, handles)
-% hObject    handle to grid1 (see GCBO)
+function grid_Callback(hObject, eventdata, handles)
+% hObject    handle to grid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of grid1 as text
-%        str2double(get(hObject,'String')) returns contents of grid1 as a double
+% Hints: get(hObject,'String') returns contents of grid as text
+%        str2double(get(hObject,'String')) returns contents of grid as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function grid1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to grid1 (see GCBO)
+function grid_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to grid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -809,3 +807,10 @@ function back_sigma_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in loadOLD.
+function loadOLD_Callback(hObject, eventdata, handles)
+% hObject    handle to loadOLD (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
