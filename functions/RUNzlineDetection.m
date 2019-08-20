@@ -217,12 +217,13 @@ if settings.num_cs == 1
     today_date = datestr(now,date_format);
     % Save in the z-line path 
     settings.SUMMARY_path = zline_path{1}; 
-    settings.SUMMARY_name = strcat(name_CS{1},'_',today_date); 
-
+    summary_name = strcat(name_CS{1},'_',today_date, '_Initialization.mat'); 
+else
+    % Save the summary name 
+    summary_name = strcat(settings.SUMMARY_name{1}, '_Initialization.mat'); 
 end 
 
-% Save the summary name 
-summary_name = strcat(settings.SUMMARY_name, '_Initialization.mat'); 
+
 
 %Save the data after making sure it is uniquely named (no overwritting)
 [ new_filename ] = appendFilename( settings.SUMMARY_path,...
