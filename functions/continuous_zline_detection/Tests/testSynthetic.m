@@ -1,7 +1,6 @@
-% Prompt the user to load the synthetic test cases
-[ syn_file, syn_path, ~ ] = ...
-    load_files( {'*czl_testcases*.mat'}, ...
-    'Select test cases .mat file ...', pwd,'off');
+% This script is for testing purposes. 
+% It contains code to run syntehtic test cases with known distances
+% multiple times with different permutations. 
 
 %Temporarily store the path of continuous z-line detection  
 temp_path = pwd; 
@@ -27,6 +26,11 @@ end
     
 % Add the previous path to use functions
 addpath(previous_path); 
+
+% Prompt the user to load the synthetic test cases
+[ syn_file, syn_path, ~ ] = ...
+    load_files( {'*czl_testcases*.mat'}, ...
+    'Select test cases .mat file ...', pwd,'off');
 
 % Clear command line
 clc; 
