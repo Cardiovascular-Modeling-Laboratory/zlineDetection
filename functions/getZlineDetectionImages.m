@@ -1,7 +1,40 @@
-% initializeInputs - has the user select
+% initializeZlineDetectionInput - Asks the use to select z-line images,
+% actin images, and declare conditions to use with z-line detection 
+%
+% Usage:
+%  [ files, path, n ] = load_files( filetype, disp_message, directory, 
+%               mult_select )
+%
+% Arguments:
+%   settings        - Contains settings for z-line detection 
+%                       Class Support: STRUCT 
+% Returns:
+%   zline_images    - Cell to hold z-line image name(s)
+%                       Class Support: Cell 
+%   zline_path      - Cell to hold z-line path name(s)
+%                       Class Support: Cell 
+%   name_CS         - Cell to hold the coverslip name(s) 
+%                       Class Support: Cell 
+%   actin_images    - Cell to hold actin image name(s)
+%                       Class Support: Cell 
+%   actin_path      - Cell to hold actin path name(s)
+%                       Class Support: Cell 
+%   cond            - Condition numbers
+%                       Class Support: settings.num_cs x 1 vector  
+%
+% 
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+%
+% Tessa Morris
+% Advisor: Anna Grosberg
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
-
-function [outputArg1,outputArg2] = initializeZlineDetectionInput(settings)
+function [zline_images, zline_path, name_CS,...
+        actin_images, actin_path, cond] ...
+        = getZlineDetectionImages(settings)
 %This function will be used to run multiple coverslips and obtain a summary
 %file
 
@@ -31,54 +64,22 @@ cond = zeros(settings.num_cs,1);
 %Set previous path equal to the current location if only one coverslip is
 %selected. Otherwise set it to the location where the CS summary should be
 %saved 
-if settings.num_cs >1 
+if settings.num_cs > 1 
     previous_path = settings.SUMMARY_path; 
 else 
     previous_path = pwd; 
 end 
 
-%Initialize matrices to hold analysis information for each coverslip
-%>>> IDs for the different coverslips and conditions 
-MultiCS_CSID = cell(1,settings.num_cs); 
-MultiCS_CONDID = cell(1,settings.num_cs); 
-%>>> Actin Filtering analysis 
-MultiCS_nonzlinefrac = cell(1,settings.num_cs);
-MultiCS_zlinefrac = cell(1,settings.num_cs);
-%>>> Continuous Z-line Analysis
-MultiCS_medians = cell(1,settings.num_cs); 
-MultiCS_means = cell(1,settings.num_cs);
-MultiCS_skewness = cell(1,settings.num_cs);
-MultiCS_kurtosis = cell(1,settings.num_cs);
-MultiCS_sums = cell(1,settings.num_cs); 
-MultiCS_lengths = cell(1,settings.num_cs);
-%>>> Z-line Angle analysis
-MultiCS_orientim = cell(1,settings.num_cs); 
-MultiCS_OOP = cell(1,settings.num_cs);
-MultiCS_anglecount = cell(1,settings.num_cs); 
-MultiCS_directors = cell(1,settings.num_cs); 
-%>>> EXPLORATION Parameters
-MultiCS_grid_sizes = cell(1,settings.num_cs);
-MultiCS_actin_threshs = cell(1,settings.num_cs);
-%>>> Actin angle analysis
-MultiCS_ACTINorientim = cell(1,settings.num_cs); 
-MultiCS_ACTINOOP = cell(1,settings.num_cs);
-MultiCS_ACTINanglecount = cell(1,settings.num_cs); 
-MultiCS_ACTINdirectors = cell(1,settings.num_cs); 
-
-
-%Save the orientation angles of actin and zlines for each CS 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Select Files %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Close anything tha tis open 
 close all; 
 
 %Start counting variable
 k = 1; 
+
 while k < settings.num_cs + 1 
 
     %Boolean statement to keep going unless there is an issue
     keepGoing = true; 
-% %Have the user select the different directories for the coverslips
-% for k = 1:settings.num_cs 
     
     %Display message telling the user which coverslip they're on 
     disp_message = strcat('Selecting Coverslip',{' '}, num2str(k),...
@@ -183,6 +184,16 @@ while k < settings.num_cs + 1
         disp(disp_message{1}); 
     end 
     
+    % Check to make sure that the user does not want to reselect this
+    % coverslip 
+    acceptCoverslip = questdlg('Would you like to accept the selection and keep going?', ...
+        'Accept Input','Yes','No','Yes');
+    %Re select this coverslip
+    if strcmp('No',acceptCoverslip)
+        %Set keepGoing equal to false so they keep selecting. 
+        keepGoing = false; 
+    end
+    
     % Only increase the counter if there were no issues with the data
     % selection
     if keepGoing 
@@ -190,6 +201,6 @@ while k < settings.num_cs + 1
     else
         disp('Fix any errors and reselect coverslip.'); 
     end
-end 
+end
 end
 
