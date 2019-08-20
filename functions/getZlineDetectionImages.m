@@ -180,7 +180,8 @@ while k < settings.num_cs + 1
     if settings.multi_cond && keepGoing
         %Declare conditions for the selected coverslip 
         cond(k,1) = ...
-            declareCondition(settings.cond_names, k, settings.num_cs); 
+            declareCondition(settings.cond_names, k, settings.num_cs,...
+            name_CS{k,1}); 
         
         %Display the condition the user selected 
         disp_message = strcat('For Coverslip:',{' '},name_CS{k,1},...

@@ -26,14 +26,13 @@
 % Cardiovascular Modeling Laboratory 
 % University of California, Irvine 
 
-function [cond] = declareCondition(cond_names, k, num_cs)
+function [cond] = declareCondition(cond_names, k, num_cs, cs_name)
 %Create a pop up list for user to declare their conditions 
-
 % Loop through and create an array 
-list = cell(1,length(cond_names)); 
+condlist = cell(1,length(cond_names)); 
 for h = 1:length(cond_names)
     %Save the name 
-    list{1,h} = cond_names{h,1};
+    condlist{1,h} = cond_names{h,1};
 end 
 
 % Name of the list 
@@ -41,9 +40,41 @@ temp_list = strcat('Condition for CS',{' '}, num2str(k), ' of ',{' '},...
 num2str(num_cs)); 
 listname = temp_list{1,1};
 
-% Display the list 
-[cond,~] = listdlg('ListString',list,'SelectionMode','single', ...
-    'ListSize',[300,150], 'Name',listname);
+
+% Set one match to false
+oneMatch = false; 
+
+% If the coverslip name is provided,attempt to predict what the label is 
+if nargin == 4
+    nmatch = 0; 
+    % Loop through 
+    matches = zeros(size(cond_names,1),1); 
+    for h = 1:length(cond_names)
+        doesMatch = contains(cs_name, cond_names{h}, 'IgnoreCase',true);
+        if doesMatch 
+            matches(h,1) = h; 
+            nmatch = nmatch + 1; 
+        end 
+    end 
+    
+    if nmatch == 1
+        oneMatch = true; 
+        matchnum = matches; 
+        matchnum(matchnum == 0) = []; 
+    end
+    
+end
+
+if oneMatch 
+    % Display the list 
+    [cond,~] = listdlg('ListString',condlist,'SelectionMode','single', ...
+        'ListSize',[300,150], 'Name',listname,'InitialValue',matchnum);
+else
+    % Display the list 
+    [cond,~] = listdlg('ListString',condlist,'SelectionMode','single', ...
+        'ListSize',[300,150], 'Name',listname);
+
+end 
 
     
 end
