@@ -65,10 +65,12 @@ for k = 1:size(dp_rows,1)
                 % Determine if either of its neighbors are equal to the
                 % current vector
                 for g = [1,3]
-                    % Coordinate matches 
-                    if dp_rows(k,2) == dp_rows(val0,g) &&...
-                            dp_cols(k,2) == dp_cols(val0,g)
-                        matches = matches + 1; 
+                    if val0 > 1 && ~isnan(val0)
+                        % Coordinate matches 
+                        if dp_rows(k,2) == dp_rows(val0,g) &&...
+                                dp_cols(k,2) == dp_cols(val0,g)
+                            matches = matches + 1; 
+                        end 
                     end 
                 end 
                 % If there are no matches, remove the neighbors 
