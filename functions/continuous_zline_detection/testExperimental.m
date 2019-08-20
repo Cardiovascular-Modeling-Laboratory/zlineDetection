@@ -52,6 +52,7 @@ figure; imshow(mat2gray(im_struct.im));
 % Select a section using the following command 
 r = round(getrect()); 
 
+%%
 % Get only the orientation vectors in the selected section. 
 sec_orientim = im_struct.orientim(r(2):r(2)+r(4), r(1):r(1)+r(3)); 
 orientim = sec_orientim; 
@@ -104,13 +105,13 @@ angles = orientim;
 
 % Store the intermediate stages 
 candidate_rows = CZL_info.candidate_rows;
-candidate_cols = CZL_info. candidate_cols;
-corrected_rows = CZL_info. corrected_rows;
-corrected_cols = CZL_info. corrected_cols;
-dp_rows = CZL_info. dp_rows;
-dp_cols = CZL_info. dp_cols;
-dp2_rows = CZL_info. dp2_rows;
-dp2_cols = CZL_info. dp2_cols;
+candidate_cols = CZL_info.candidate_cols;
+corrected_rows = CZL_info.corrected_rows;
+corrected_cols = CZL_info.corrected_cols;
+dp_rows = CZL_info.dp_rows;
+dp_cols = CZL_info.dp_cols;
+dp2_rows = CZL_info.dp2_rows;
+dp2_cols = CZL_info.dp2_cols;
 
 
 %% Visualize corrected neighbors 
@@ -154,7 +155,6 @@ for h = 1:size(dp_rows, 1)
     y(isnan(y)) = []; 
     plot(x,y,'o', 'color', col(h)); 
     plot(x,y, '-', 'color', col(h));
-    
     clear x y 
 end 
 
@@ -179,6 +179,36 @@ for h = 1:size(dp_rows, 1)
     clear x y 
 end 
 title('Accepted Secondary Neighbors', 'FontSize',16, 'FontWeight','bold' );
+
+%% The recipricol neighbors 
+
+figure; 
+magnification = 1000; 
+imshow(positions, 'InitialMagnification', magnification); 
+hold on; 
+for h = 1:size(recip_cols, 1)
+    %Get coordinates temporarily
+    x = recip_cols(h,:)'; 
+    y = recip_rows(h,:)'; 
+    %Remove NaN values
+    x(isnan(x)) = []; 
+    y(isnan(y)) = []; 
+    plot(x,y,'o', 'color', col(h)); 
+    plot(x,y, '-', 'color', col(h));
+    disp(h); 
+    disp('x'); disp(x');
+    disp('y'); disp(y'); 
+    pause; 
+    
+    clear x y 
+end 
+title('Accepted Reciprocal Neighbors', 'FontSize',16, 'FontWeight','bold' );
+
+%% Visualize each stage of the clustering 
+
+% Cluster the values in order.  
+[ zline_clusters , cluster_tracker, ignored_cases ] = ...
+    cluster_neighbors( dot_product_error, angles, recip_rows, recip_cols, true); 
 
 %% Visualize each stage of the clustering 
 
