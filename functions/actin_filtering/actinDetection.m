@@ -12,6 +12,7 @@
 %               removal of non-sarcomeres for each image
 %
 %             *.actinOrientation.mat file containing actin alignment
+%
 % Adapted from:
 % Peter Kovesi
 % School of Computer Science & Software Engineering
@@ -25,8 +26,8 @@
 % School of Engineering and Applied Sciences
 % Havard University, Cambridge, MA 02138
 
-% Last updated Sept 25, 2018 by Tessa Morris
-% Last updated May 20, 2014 by Anna Grosberg
+% Updated August 2019 by Tessa Morris
+% Update May 20, 2014 by Anna Grosberg
 % The Edwards Lifesciences Center for Advanced Cardiovascular Technology
 % 2418 Engineering Hall
 % University of California, Irvine
@@ -54,17 +55,17 @@ actin_path = path;
 % Load the image
 [ im, ~ ] = imread( filename );
 
-if nargin == 3 
-    % Create a new folder in the image directory with the same name as the 
-    % image file if it does not exist. If it does exist, add numbers until 
-    % it no longer exists and then create it 
-    create = true; 
-    new_subfolder = ...
-        addDirectory( actin_path, actin_name, create ); 
-
-    % Save the name of the new path 
-    save_path = fullfile(actin_path, new_subfolder); 
-end 
+% if nargin == 3 
+%     % Create a new folder in the image directory with the same name as the 
+%     % image file if it does not exist. If it does exist, add numbers until 
+%     % it no longer exists and then create it 
+%     create = true; 
+%     new_subfolder = ...
+%         addDirectory( actin_path, actin_name, create ); 
+% 
+%     % Save the name of the new path 
+%     save_path = fullfile(actin_path, new_subfolder); 
+% end 
 
 %Create a grayscale version of the image (if it was not already in
 %grayscale) 
@@ -106,13 +107,13 @@ actin_background = mask.*reliability_binary;
 % Remove all orientation vectors in the background 
 orientim = orientim.*actin_background;
 
-% Save the diffusion filtered actin image if requested
-if disp_actin
-    
-    imwrite( actin_smoothed, fullfile(save_path, ...
-        strcat( actin_name, '_ActinGaussianFiltered.tif' ) ),...
-        'Compression','none');
-end 
+% % Save the diffusion filtered actin image if requested
+% if disp_actin
+%     
+%     imwrite( actin_smoothed, fullfile(save_path, ...
+%         strcat( actin_name, '_ActinGaussianFiltered.tif' ) ),...
+%         'Compression','none');
+% end 
     
 end
 

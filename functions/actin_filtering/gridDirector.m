@@ -24,21 +24,8 @@
 
 function [ dims, oops, directors, grid_info, ...
     visualization_matrix, dir_mat] = ...
-    gridDirector( orientation_matrix, grid_size, actinOOP)
+    gridDirector( orientation_matrix, grid_size )
 
-% If the user did not provide the actin OOP, set the minimum grid oop to be
-% zero 
-if nargin < 3
-    oop_min = 0; 
-else
-    % Remove grids that have an OOP value less than a threshold, but do not
-    % exceed 6.5 (If the OOP is very low, it will mean that almost no grid
-    % is accepted). 
-    abs_min = 6.5; 
-    % Calculate the minimum OOP 
-    oop_min = floor((1-actinOOP)*10)/10; 
-    oop_min(oop_min > abs_min) = abs_min;        
-end 
 
 %Get size of the matrix of orientation angles 
 [m1, m2] = size(orientation_matrix); 
@@ -120,14 +107,6 @@ for d1 = 1:grid_size(1):m1
             
             %Covert the director angle to radians
             directors(n,1) = deg2rad(director_angle); 
-            
-            
-            % Only save the director if the grid is highly aligned (greater
-            % than 0.7 oop
-            if oops(n,1) < oop_min
-                %Covert the director angle to radians
-                directors(n,1) = NaN; 
-            end 
             
         else
             % If there aren't any orientation vectors in the grid, set the
