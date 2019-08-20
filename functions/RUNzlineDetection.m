@@ -82,7 +82,7 @@ if loadSettings
             disp('Select a location to save summary analysis for all Coverslips'); 
             %Ask the user for the location of the summary file 
             settings.SUMMARY_path = ...
-                uigetdir(pwd,'Save Location for Summary Files'); 
+                uigetdir(previous_path,'Save Location for Summary Files'); 
 
             %Get the parts of the summary path 
             pathparts = strsplit(settings.SUMMARY_path,filesep); 
@@ -146,7 +146,7 @@ if loadImagePaths && ~dontContinue
     end 
 
     % Store the z-line image paths if it exist as a field.
-    if isfield(previous_images, 'zline_path') && ~loadImagePaths
+    if isfield(previous_images, 'zline_path') && loadImagePaths
         zline_path = previous_images.zline_path; 
     else
         loadImagePaths = false; 
@@ -154,7 +154,7 @@ if loadImagePaths && ~dontContinue
     end 
 
     % Store the coverslip name if it exist as a field.
-    if isfield(previous_images, 'name_CS') && ~loadImagePaths
+    if isfield(previous_images, 'name_CS') && loadImagePaths
         name_CS = previous_images.name_CS; 
     else
         loadImagePaths = false; 
@@ -162,7 +162,7 @@ if loadImagePaths && ~dontContinue
     end 
 
     % Check if the user did actin filtering if it exist as a field.
-    if settings.actin_filt && ~loadImagePaths
+    if settings.actin_filt && loadImagePaths
         % Store the z-line image names if it exist as a field.
         if isfield(previous_images, 'actin_images')
             actin_images = previous_images.actin_images; 
@@ -173,7 +173,7 @@ if loadImagePaths && ~dontContinue
         end 
 
         % Store the z-line image paths if it exist as a field.
-        if isfield(previous_images, 'actin_path') && ~loadImagePaths
+        if isfield(previous_images, 'actin_path') && loadImagePaths
             actin_path = previous_images.actin_path; 
         else
             loadImagePaths = false; 
@@ -187,7 +187,7 @@ if loadImagePaths && ~dontContinue
     end 
 
     % Check if the user selected conditions if it exist as a field.
-    if settings.multi_cond && ~loadImagePaths
+    if settings.multi_cond && loadImagePaths
         % Store the z-line conditiosn if it exist as a field.
         if isfield(previous_images, 'cond')
             cond = previous_images.cond; 
