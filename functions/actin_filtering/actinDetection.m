@@ -34,8 +34,13 @@
 
 
 function [ orientim, gray_im, actin_background, actin_smoothed, ...
-    actin_bottomfilt] = ...
+    actin_normalized] = ...
     actinDetection( filename, settings, disp_actin, save_path )
+
+% Convert 2 micron sarcomere spacing into pixels
+SarcSpacing = 2*settings.pix2um;
+% Maximum length of sarcomere spacing
+MaxSarcSpacing = round(1.5*SarcSpacing); 
 
 %Get the file parts (path, name of the file, and the extension)
 [ path, file, ext ] = fileparts( filename );
@@ -47,7 +52,7 @@ actin_name = file;
 actin_path = path; 
 
 % Load the image
-[ im, map ] = imread( filename );
+[ im, ~ ] = imread( filename );
 
 if nargin == 3 
     % Create a new folder in the image directory with the same name as the 
@@ -65,38 +70,41 @@ end
 %grayscale) 
 [ gray_im ] = makeGray( im ); 
 
-
-% Use texture based masking to remove the background of the image 
-[actin_background, ~, ~, ~] = ...
-    textureBasedMasking( gray_im, settings.back_sigma, ...
-    settings.back_blksze, settings.back_noisesze,...
-    settings.disp_back ); 
-
-% Convert the matrix to be an intensity image 
-actin_smoothed = mat2gray( imgaussfilt( gray_im, settings.Options.rho ) );
-
-% Remove 
-actin_bottomfilt = imadjust(imbothat(actin_smoothed, ...
-    strel( 'disk', settings.tophat_size)));
-
-% Remove regions of the image that are dark 
-if exist('imbinarize.m','file') == 2 
-    bw_bottomfilt = imbinarize(actin_bottomfilt);
+% If the user wants to smooth the actin image first before computing the
+% image gradients, do so 
+if settings.actin_sigma > 0 
+    gray_im = mat2gray(gray_im); 
+    if settings.actin_kernelsize > 0
+        if mod(settings.actin_kernelsize,2) == 0
+            settings.actin_kernelsize = settings.actin_kernelsize - 1;
+        end 
+        actin_smoothed = imgaussfilt(gray_im, settings.actin_sigma, ...
+            'FilterSize',settings.actin_kernelsize);
+    else
+        actin_smoothed = imgaussfilt(gray_im, settings.actin_sigma); 
+    end 
 else
-    bw_bottomfilt = im2bw(actin_bottomfilt, graythresh(actin_bottomfilt));
-end 
+    actin_smoothed = mat2gray(gray_im); 
+end
+
+% Identify ridge-like regions and normalise image
+[actin_normalized, mask] = ridgesegment(actin_smoothed, MaxSarcSpacing, ...
+    settings.actin_backthresh);
 
 % Calculate orientation vectors
-[orientim, ~] = ridgeorient(actin_smoothed, ...
+[orientim, reliability] = ridgeorient( actin_normalized, ...
     settings.actin_gradientsigma, settings.actin_blocksigma, ...
-    settings.actin_orientsmoothsigma);
+    settings.actin_orientsmoothsigma );
 
-% Set all of the orientation vectors considered background to be zero. 
-orientim(actin_background == 0) = 0;
+% Only keep orientation values with a reliability greater than 0.5
+reliability_binary = reliability > settings.actin_reliablethresh;
 
-% Remove all of the orientation vectors that are considered dark
-% striations. 
-orientim(bw_bottomfilt == 1) = 0; 
+% Multiply orientation angles by the binary mask image to remove
+% data where there are no cells
+actin_background = mask.*reliability_binary;
+
+% Remove all orientation vectors in the background 
+orientim = orientim.*actin_background;
 
 % Save the diffusion filtered actin image if requested
 if disp_actin

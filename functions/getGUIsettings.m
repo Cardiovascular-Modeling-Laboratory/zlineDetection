@@ -183,7 +183,7 @@ if ~conversionOnly && settings.actin_filt
     % ACTIN DETECTION: Sigma of gaussian filter 
     settings.actin_sigma = str2double(actin_answer{1});
     % ACTIN DETECTION: Kernel size of gaussian filter
-    settings.actin_kernelsize = str2double(actin_answer{2});
+    settings.actin_kernelsize = round(str2double(actin_answer{2}));
     % ACTIN DETECTION: Segmentation threshold
     settings.actin_backthresh = str2double(actin_answer{3});
     % Sigma of the derivative of Gaussian used to compute image gradients.
