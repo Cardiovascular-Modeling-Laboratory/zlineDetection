@@ -31,7 +31,7 @@ actin_struct.filename = filenames.actin;
 % Compute the orientation vectors for actin
 [ actin_struct.actin_orientim, actin_struct.actin_im, ...
     actin_struct.actin_background, actin_struct.actin_smoothed, ...
-    actin_struct.actin_normalized] = ...
+    actin_struct.actin_normalized, actin_struct.reliability] = ...
     actinDetection( filenames.actin, settings, settings.disp_actin, ...
     im_struct.save_path); 
 
@@ -98,38 +98,17 @@ if ~settings.actinthresh_explore
     %actin)
     mask(isnan(mask)) = 1; 
     
-    % Get the accepted z-lines 
-    orientim_zlines_accepted = im_struct.orientim; 
-    orientim_zlines_accepted(mask == 0) = 0; 
-    
-    %Get the directors of the remaining orientation vectors
-    [ zlinegrid_DIMS, zlinegrid_OOPs, ~, ~, ~, zline_dirmat ] = ...
-        gridDirector( orientim_zlines_accepted, settings.grid_size );
-    
-    %Compare the director of the remaining orientation vecotrs with the
-    %original orientation vectors. 
-    dp_zlines = sqrt(cos(im_struct.orientim - zline_dirmat).^2); 
-    
-    % Create a new mask, that is 1 where the old z-lines are parallel to
-    % the director of the accepted z-lines and zero other wise. 
-    mask2 = ones(size(dp_zlines)); 
-    mask2(dp_zlines > settings.actin_thresh) = 1; 
-    mask2(dp_zlines <= settings.actin_thresh) = 0; 
-    mask2(isnan(dp_zlines)) = 0; 
-
-    % Add back positions in the original skeleton that are parallel to the
-    % accepted skeleton 
-    addback_parallel = im_struct.skel_trim.*mask2.*~mask; 
-    mask( addback_parallel == 1 ) = 1; 
+    % Store the temporary skeleton 
+    temp_skel = im_struct.skel_trim; 
 
     % Add isolated z-lines back into the skeleton. 
-    skel_eliminated = im_struct.skel_trim.*~mask; 
+    skel_eliminated = temp_skel.*~mask; 
     skel_eliminated_noisolated = bwareaopen( skel_eliminated, 2 );
     isolated_eliminated = skel_eliminated - skel_eliminated_noisolated; 
     mask( isolated_eliminated == 1 ) = 1;
 
     % Remove any isolated z-line pixels 
-    zlineskel = im_struct.skel_trim.*mask; 
+    zlineskel = temp_skel.*mask; 
     zlineskel_noisolated = bwareaopen( zlineskel, 2 );
     isolated_accepted= zlineskel - zlineskel_noisolated; 
     mask( isolated_accepted == 1 ) = 0;

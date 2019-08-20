@@ -227,6 +227,8 @@ else
     % Trim again to get 
     im_struct.skel_final =  im_struct.skel_trim;
     im_struct.skel_final(im_struct.mask == 0) = 0; 
+    
+    
     im_struct.skel_final_trimmed = cleanSkel( im_struct.skel_final, ...
         settings.branch_size );
 end 

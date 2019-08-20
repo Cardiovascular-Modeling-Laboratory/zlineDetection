@@ -35,7 +35,7 @@
 
 
 function [ orientim, gray_im, actin_background, actin_smoothed, ...
-    actin_normalized] = ...
+    actin_normalized, reliability] = ...
     actinDetection( filename, settings, disp_actin, save_path )
 
 % Convert 2 micron sarcomere spacing into pixels
@@ -89,7 +89,7 @@ else
 end
 
 % Identify ridge-like regions and normalise image
-[actin_normalized, mask] = ridgesegment(actin_smoothed, MaxSarcSpacing, ...
+[actin_normalized, ~] = ridgesegment(actin_smoothed, MaxSarcSpacing, ...
     settings.actin_backthresh);
 
 % Calculate orientation vectors
@@ -102,7 +102,7 @@ reliability_binary = reliability > settings.actin_reliablethresh;
 
 % Multiply orientation angles by the binary mask image to remove
 % data where there are no cells
-actin_background = mask.*reliability_binary;
+actin_background = reliability_binary;
 
 % Remove all orientation vectors in the background 
 orientim = orientim.*actin_background;

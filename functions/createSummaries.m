@@ -212,6 +212,7 @@ if settings.num_cs > 1 && settings.analysis && settings.multi_cond
     %Plot the non-zline fraction for the conditions if user actin filtered 
     %and has more than one condition 
     if settings.actin_filt
+        
         %>> NON Z-LINE FRACTION:  Plot the mean, standard deviation, 
         %   and data points 
         plot_names.type = 'Non-Zline Fraction';

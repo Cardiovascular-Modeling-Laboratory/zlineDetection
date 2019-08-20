@@ -2,13 +2,15 @@ function [ condition_values, mean_condition, std_condition, id] =...
     plotConditions(data_points, cond_values, cond_names,...
     grid_sizes, actin_threshs, plot_names, extra_medians)
 
-%Get the number of unique grid sizes and threshold values 
+% Get the number of unique grid values 
 unique_grids = unique(grid_sizes); 
 gn = length(unique_grids); 
+% Get the number of unique threshold values 
 unique_thresh = unique(actin_threshs); 
 afn = length(unique_thresh); 
 
-%If the user is comparing the median to the 
+% Determine if the user wants a plot of the value at the 25,50,and 75
+% percentile 
 if nargin > 6
     v = size(extra_medians,2)+1; 
 else 
