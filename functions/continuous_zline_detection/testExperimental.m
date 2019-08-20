@@ -4,7 +4,7 @@
 % It also contains synthetic data to test the code. 
 
 
-%% Load an orientation anlsysis file 
+%% Load an orientation analysis file 
 
 %Temporarily store the path of continuous z-line detection  
 temp_path = pwd; 
@@ -52,6 +52,7 @@ figure; imshow(mat2gray(im_struct.im));
 % Select a section using the following command 
 r = round(getrect()); 
 
+disp('It is recomended to add this test case to the experimental test cases using addExperimentalTestCase.m'); 
 %%
 % Get only the orientation vectors in the selected section. 
 sec_orientim = im_struct.orientim(r(2):r(2)+r(4), r(1):r(1)+r(3)); 
@@ -112,7 +113,8 @@ dp_rows = CZL_info.dp_rows;
 dp_cols = CZL_info.dp_cols;
 dp2_rows = CZL_info.dp2_rows;
 dp2_cols = CZL_info.dp2_cols;
-
+recip_cols = CZL_info.recip_cols;
+recip_rows = CZL_info.recip_rows;
 
 %% Visualize corrected neighbors 
 
@@ -204,17 +206,12 @@ for h = 1:size(recip_cols, 1)
 end 
 title('Accepted Reciprocal Neighbors', 'FontSize',16, 'FontWeight','bold' );
 
+
 %% Visualize each stage of the clustering 
 
 % Cluster the values in order.  
 [ zline_clusters , cluster_tracker, ignored_cases ] = ...
     cluster_neighbors( dot_product_error, angles, recip_rows, recip_cols, true); 
-
-%% Visualize each stage of the clustering 
-
-% Cluster the values in order.  
-[ zline_clusters , cluster_tracker, ignored_cases ] = ...
-    cluster_neighbors( dot_product_error, angles, dp_rows, dp_cols, true); 
 
 %% Plot the z-line clusters
 [ distance_storage, rmCount, zline_clusters ] = ...

@@ -99,9 +99,12 @@ all_angles = get_values(nonzero_rows, nonzero_cols, ...
 [  dp2_rows, dp2_cols ] = ...
     check_perpendicular( dp_rows, dp_cols, angles, dot_product_error); 
 
+% Make sure that all neighbors have reciprocity
+[recip_rows,recip_cols] = neighborReciprocity(dp2_rows, dp2_cols); 
+
 %Cluster the values in order.  
 [ zline_clusters, cluster_tracker ] = ...
-    cluster_neighbors( dot_product_error, angles, dp2_rows, dp2_cols);
+    cluster_neighbors( dot_product_error, angles, recip_rows, recip_cols);
 
 %Calculate legnths and plot
 disp('Plotting and calculating the lengths of continuous z-lines...'); 
@@ -155,6 +158,8 @@ CZL_info.dp_rows = dp_rows;
 CZL_info.dp_cols = dp_cols;
 CZL_info.dp2_rows = dp2_rows;
 CZL_info.dp2_cols = dp2_cols;
+CZL_info.recip_rows = recip_rows; 
+CZL_info.recip_cols = recip_cols; 
 
 % Save .mat file if requested
 if saveResults

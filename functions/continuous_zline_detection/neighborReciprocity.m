@@ -37,10 +37,8 @@ recip_cols = dp_cols;
 % For each orientation vector, check to make sure it is also selected as a
 % neighbor of its neighbor 
 for k = 1:size(dp_rows,1)
-    disp(k); 
     % Check both neighbor positions 
     for h = [1,3]
-        disp(h); 
         % Only check the ID position if the pixel is not NaN 
         if ~isnan(dp_rows(k,h)) && ~isnan(dp_cols(k,h))  
             if ~isnan(IDmatd2(dp_rows(k,h), dp_cols(k,h))) && ...
@@ -54,23 +52,32 @@ for k = 1:size(dp_rows,1)
                     disp('Not listed.'); 
                 end 
             else
-                % Get the value in the orientation vector matrix 
+                % Identify the (position of the) orientation vector that 
+                % has been assigned as a neighbor to multiple orientation 
+                % vectors 
                 val0 = IDmat0(dp_rows(k,h), dp_cols(k,h)); 
                 
-                % Get the position of its neighbors 
-                if ~isnan(dp_rows(val0,h)) && ~isnan(dp_cols(val0,h))  
-                    vald1 = IDmatd2(dp_rows(val0,h), dp_cols(val0,h));
-                    vald2 = IDmatd1(dp_rows(val0,h), dp_cols(val0,h));
-                    if k ~= vald1 || k ~= vald2
-                        recip_rows(k,h) = NaN; 
-                        recip_cols(k,h) = NaN; 
-                        disp('Not the correct neighbor.');  
+                % Initialize Matches 
+                matches = 0; 
+                
+                % Find the neighbors of orientation vector val0
+                % Neighbor 1 dp_rows(val0,1), dp_cols(val0,1)
+                % Neighbor 2 dp_rows(val0,2), dp_cols(val0,3)
+                % Determine if either of its neighbors are equal to the
+                % current vector
+                for g = [1,3]
+                    % Coordinate matches 
+                    if dp_rows(k,2) == dp_rows(val0,g) &&...
+                            dp_cols(k,2) == dp_cols(val0,g)
+                        matches = matches + 1; 
                     end 
-                else
-                    recip_rows(k,h) = NaN; 
-                    recip_cols(k,h) = NaN; 
-                    disp('Not the correct neighbor, not listed.');  
                 end 
+                % If there are no matches, remove the neighbors 
+                if matches == 0 
+                    recip_rows(k,h) = NaN; 
+                    recip_cols(k,h) = NaN;                     
+                end 
+
             end 
         end 
     end 
