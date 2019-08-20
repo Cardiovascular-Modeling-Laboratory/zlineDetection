@@ -3,7 +3,32 @@
     load_files( {'*czl_testcases*.mat'}, ...
     'Select test cases .mat file ...', pwd,'off');
 
-%% Clear command line
+%Temporarily store the path of continuous z-line detection  
+temp_path = pwd; 
+
+%Get the parts of the path 
+pathparts = strsplit(temp_path,filesep);
+
+%Set previous path 
+previous_path = pathparts{1,1}; 
+
+%Go back one folder 
+for p =2:size(pathparts,2)-1
+    if ~isempty(pathparts{1,p+1})
+        previous_path = fullfile(previous_path, pathparts{1,p}); 
+    end 
+end 
+
+%Add a backslash to the beginning of the path in order to use if this
+%is a mac, otherwise do not
+if ~ispc
+    previous_path = strcat(filesep,previous_path);
+end 
+    
+% Add the previous path to use functions
+addpath(previous_path); 
+
+% Clear command line
 clc; 
 
 % Load the data
