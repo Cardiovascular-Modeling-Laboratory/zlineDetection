@@ -47,7 +47,7 @@ if loadSettings
     dispmsg = 'Select .mat file that contains settings...';
     % Have the user select a file that has settings that they would like to
     [ settings_filename, settings_pathname, ~ ] = load_files( ...
-        {'initialization*.mat;*OrientationAnalysis.mat'},...
+        {'*Initialization.mat;*OrientationAnalysis.mat'},...
         dispmsg, previous_path, 'off' );
     % Set the previous path just in case the user wants to load images too 
     previous_path = settings_pathname{1};
@@ -60,7 +60,7 @@ if loadImagePaths
     dispmsg = 'Select .mat file that contains image paths...';
     % Have the user select a file that has settings that they would like to
     [ images_filename, images_pathname, ~ ] = load_files( ...
-        {'initialization*.mat;*OrientationAnalysis.mat'},...
+        {'*Initialization.mat;*OrientationAnalysis.mat'},...
         dispmsg, previous_path, 'off' );
 end 
 
@@ -207,12 +207,34 @@ end
 if ~loadImagePaths && ~dontContinue 
     [zline_images, zline_path, name_CS,...
         actin_images, actin_path, cond] ...
-        = initializeZlineDetectionInput(settings); 
+        = getZlineDetectionImages(settings); 
 end
 
+%Save multiple coverslip data
+if settings.num_cs == 1
+    % Get today's date
+    date_format = 'yyyymmdd';
+    today_date = datestr(now,date_format);
+    % Save in the z-line path 
+    settings.SUMMARY_path = zline_path{1}; 
+    settings.SUMMARY_name = strcat(name_CS{1},'_',today_date); 
+
+end 
+
+% Save the summary name 
+summary_name = strcat(settings.SUMMARY_name, '_Initialization.mat'); 
+
+%Save the data after making sure it is uniquely named (no overwritting)
+[ new_filename ] = appendFilename( settings.SUMMARY_path,...
+    summary_name);
+
+save(fullfile(settings.SUMMARY_path, new_filename),...
+    'name_CS','zline_images','zline_path',...
+    'actin_images','actin_path','cond','settings'); 
+    
 % Run the multiple coverslips
 if ~dontContinue 
-    runMultipleCoverSlips(zline_images, zline_path, name_CS, ...
+    runMultipleCoverSlips(settings, zline_images, zline_path, name_CS, ...
         actin_images, actin_path, cond); 
 end 
 

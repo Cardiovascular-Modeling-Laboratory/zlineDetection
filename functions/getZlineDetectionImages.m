@@ -2,12 +2,16 @@
 % actin images, and declare conditions to use with z-line detection 
 %
 % Usage:
-%  [ files, path, n ] = load_files( filetype, disp_message, directory, 
-%               mult_select )
-%
+%  [zline_images, zline_path, name_CS,...
+%         actin_images, actin_path, cond] ...
+%         = getZlineDetectionImages(settings); 
+% 
 % Arguments:
 %   settings        - Contains settings for z-line detection 
 %                       Class Support: STRUCT 
+%   txt_exclude     - Optional argument of text to exclude from filenames
+%                       when comparing 
+%                       Class Support: Cell (of strings)
 % Returns:
 %   zline_images    - Cell to hold z-line image name(s)
 %                       Class Support: Cell 
@@ -34,16 +38,17 @@
 
 function [zline_images, zline_path, name_CS,...
         actin_images, actin_path, cond] ...
-        = getZlineDetectionImages(settings)
+        = getZlineDetectionImages(settings, txt_exclude)
 %This function will be used to run multiple coverslips and obtain a summary
 %file
 
-%Possible stains/wells that could included in filenames and should be
-%excluded in concatination of filenames
-string1 = {'w1','w2','w3','w4','w5'};
-string2 = {'Cy7','mCherry','GFP','DAPI'};
-txt_exclude = combineStrings(string1,string2);
-
+if nargin ==1 
+    %Possible stains/wells that could included in filenames and should be
+    %excluded in concatination of filenames
+    string1 = {'w1','w2','w3','w4','w5'};
+    string2 = {'Cy7','mCherry','GFP','DAPI'};
+    txt_exclude = combineStrings(string1,string2);
+end 
 %%%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Create a cell to hold the coverslip name 
 name_CS = cell(settings.num_cs,1);
