@@ -94,7 +94,6 @@ ignored_cases = 0;
 %Loop through all of the nonzero orientation angles and assign them to a
 %cluster. 
 for k = 1:size(dp_rows, 1)
-    
     %Determine the number and position of the nan values 
     %Row positions:
     [~, r_nan] = find( isnan( dp_rows(k,:) ) ); 

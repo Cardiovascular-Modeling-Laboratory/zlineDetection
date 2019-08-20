@@ -3,7 +3,7 @@
     load_files( {'*czl_testcases*.mat'}, ...
     'Select test cases .mat file ...', pwd,'off');
 
-% Clear command line
+%% Clear command line
 clc; 
 
 % Load the data
@@ -26,68 +26,41 @@ all_zlines = cell(num_cases,1);
 all_dps = cell(num_cases,2); 
 all_order = cell(num_cases,1); 
 
+% Start timer
+tic; 
+
 % Loop through all of the 
 for c = 1:num_cases
     % Store positions, orientation vectors
     positions = syn_positions{c,1}; 
     BW = positions; 
     orientim = syn_angles{c,1}; 
-    angles = orientim; 
-
-% >>> Get the neighbors of all of the orientation vectors 
-
-    %Find the nonzero positions of this matrix and get their values. 
-    [ nonzero_rows, nonzero_cols] = find(angles);
-    [ all_angles ] = get_values(nonzero_rows, nonzero_cols, ...
-        angles);
-
-    %Find the boundaries of the edges
-    [m,n] = size(angles);
-
-    %Find the positions in the orientation matrix of the candidate neighbors
-    [ candidate_rows, candidate_cols ] = ...
-        neighbor_positions( all_angles , nonzero_rows, nonzero_cols);
-
-    %Correct for boundaries. If any of the neighbors are outside of the
-    %dimensions, their positions will be set to NaN 
-    % [ corrected_nn_rows, corrected_nn_cols ] = ...
-    %     boundary_correction( nn_angled_rows, nn_angled_cols, m, n ); 
-    [ corrected_rows, corrected_cols ] = ...
-        boundary_correction( candidate_rows, candidate_cols, m, n ); 
-
-    %Find the dot product and remove points that are less than the acceptable
-    %error. First set any neighbors that are nonzero in the orientation
-    %matrix equal to NaN
-    [ dp_rows, dp_cols] = compare_angles( dot_product_error,...
-        angles, nonzero_rows, nonzero_cols, corrected_rows, corrected_cols);
-
-    % Store the dp rows and columns 
-    all_dps{c,1} = dp_rows;
-    all_dps{c,2} = dp_cols; 
+    angles = orientim;
     
-% >>> Get all permutations     
-    % Store the true distance and text desription 
-    true_dist = true_distances(c,1); 
-    descript_case = description_txt{c,1}; 
+    [ CZL_results, CZL_info ] = continuous_zline_detection( angles, BW, ...
+    dot_product_error ); 
     
-    % Get the number of nonzero positions 
-    num_nz = sum(positions(:)); 
-    % Make sure that the size of the dp_rows matches that 
-    if size(dp_cols,1) ~= num_nz
-        disp('Sizes do not match.'); 
-    end 
-
+    close all; 
+    
+    % Store the positiosn 
+    dp_rows = CZL_info.recip_rows; 
+    dp_cols = CZL_info.recip_cols; 
+    
+    % Get the number of non-zero pixles 
+    num_nz = size(dp_rows,1); 
+    
     % Create every possible ordering of the dp values 
     poss_comb = factorial(num_nz);
     v = 1:num_nz;
     all_perms = perms(v); 
 
-    % Initialize vector to store correct or incorrect
-    correctgroup = zeros(poss_comb,1); 
-    tic; 
-
+    % Initialize storage matrices
     all_zs = cell(poss_comb,1); 
-
+    correctgroup = zeros(poss_comb,1); 
+   
+    % Store the true distances
+    true_dist = true_distances(c,1); 
+    descript_case = description_txt{c,1}; 
     %  Create the dot product row and columns based on the current permutation 
     for k = 1:poss_comb
         % Create the new dp pairngs
@@ -99,12 +72,15 @@ for c = 1:num_cases
             perm_dprows(o,:) = dp_rows(all_perms(k,o),:); 
             perm_dpcols(o,:) = dp_cols(all_perms(k,o),:); 
         end 
-
+    
         %Cluster the values in order.  
-        [ zline_clusters, cluster_tracker ] = cluster_neighbors( perm_dprows, ...
-            perm_dpcols, m, n);
+        [ zline_clusters, cluster_tracker ] = ...
+            cluster_neighbors( dot_product_error, angles, ...
+            perm_dprows, perm_dpcols);
+        
         [ distance_storage, rmCount, all_zs{k,1} ] = ...
             calculate_lengths( BW, zline_clusters);
+        
         close all; 
         distance_storage_nonan = distance_storage; 
         distance_storage_nonan(isnan(distance_storage_nonan)) = []; 

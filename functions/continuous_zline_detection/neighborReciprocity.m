@@ -49,7 +49,6 @@ for k = 1:size(dp_rows,1)
                         IDmatd1(dp_rows(k,h), dp_cols(k,h)) ~= k
                     recip_rows(k,h) = NaN; 
                     recip_cols(k,h) = NaN; 
-                    disp('Not listed.'); 
                 end 
             else
                 % Identify the (position of the) orientation vector that 
