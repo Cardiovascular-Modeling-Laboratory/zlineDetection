@@ -553,23 +553,6 @@ if settings.num_cs > 1 && settings.analysis && settings.multi_cond
             ZlineFraction_stdev = NaN*zeros(size(ConditionName)); 
         end 
 
-        disp('ConditionValue');	disp(size(ConditionValue));
-        disp('ConditionName');	disp(size(ConditionName));
-        disp('NumberCoverSlips');	disp(size(NumberCoverSlips));
-        disp('OOPzline_mean');	disp(size(OOPzline_mean));
-        disp('OOPzline_stdev');	disp(size(OOPzline_stdev));
-        disp('OOPactin_mean');	disp(size(OOPactin_mean));
-
-        disp('OOPactin_stdev');	disp(size(OOPactin_stdev));
-        disp('ZlineFraction_mean');	disp(size(ZlineFraction_mean));
-        disp('ZlineFraction_stdev');	disp(size(ZlineFraction_stdev));
-
-        disp('MedianCZL_mean');	disp(size(MedianCZL_mean));
-        disp('MedianCZL_stdev');	disp(size(MedianCZL_stdev));
-        disp('TotalCZL_mean');	disp(size(TotalCZL_mean));
-        disp('TotalCZL_stdev');	disp(size(TotalCZL_stdev));
-
-
         %Save in table 
         T = table(ConditionValue,ConditionName,NumberCoverSlips,...
             OOPzline_mean,OOPzline_stdev,OOPactin_mean,...
