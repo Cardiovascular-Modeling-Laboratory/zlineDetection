@@ -3,6 +3,8 @@
 
 %% LOAD OLD DATA
 
+addpath(fullfile(pwd,'plottingFunctions')); 
+
 % Logical whether user wants to load old image paths 
 combineMultipleRuns = true;
 
