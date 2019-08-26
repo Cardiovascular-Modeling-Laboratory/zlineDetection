@@ -11,7 +11,7 @@ zlineDetection
 ```
 3. See userGuide.pdf for more information. 
 
-### System Requirements
+## System Requirements
 
 MATLAB Version >= 9.5 
 
