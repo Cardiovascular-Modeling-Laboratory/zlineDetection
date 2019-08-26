@@ -1,9 +1,10 @@
 % postAnalysisSummary - Asks the user whether they would like to (1) Load
 % settings & image paths (2) Load settings & select images 
 
-%% LOAD OLD DATA
+%% Add paths with relevant functions 
+addpath('plottingFunctions'); 
 
-addpath(fullfile(pwd,'plottingFunctions')); 
+%% LOAD OLD DATA
 
 % Logical whether user wants to load old image paths 
 combineMultipleRuns = true;
@@ -219,6 +220,7 @@ end
 
 
 %% Initialize Matrices to store all data 
+clc
 
 %Initialize matrices to hold analysis information for each coverslip
 %>>> IDs for the different coverslips and conditions 
@@ -321,6 +323,50 @@ for k = 1:numcs
 end 
  
 %%%%%%%%%%%%%%%%%%%%%%%% Summarize Coverslips %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Get the name and location of summary file if there is more than one
+%coverslip and the user wants to do any kind of analysis 
+if settings.num_cs > 1 && settings.analysis
+    %Display message to select path 
+    disp('Select a location to save summary analysis for all Coverslips'); 
+    %Ask the user for the location of the summary file 
+    settings.SUMMARY_path = ...
+        uigetdir(settings.SUMMARY_path,'Save Location for Summary Files'); 
+    
+    %Get the parts of the summary path 
+    pathparts = strsplit(settings.SUMMARY_path,filesep); 
+    
+    %Find the location of the current folder 
+    potential_end = size(pathparts,2); 
+    while isempty(pathparts{1,potential_end})
+        potential_end = potential_end -1; 
+    end 
+    
+    %Get the name of folder 
+    base_name = pathparts{1,potential_end}; 
+    
+    %Get today's date
+    date_format = 'yyyymmdd';
+    today_date = datestr(now,date_format);
+    
+    %Suggested suggested name for files  
+    suggested_name = strcat(base_name, '_MultiCondSummary_',today_date);
+    
+    %Ask the user for the summary name 
+    %Prompt Questions
+    sumname_prompt = ...
+        {'Name of Summary File for Multiple Coverslips (no extension):'};
+    %Title of prompt
+    sumname_title = 'Summary File Name';
+    %Dimensions
+    sumname_dims = [1 80];
+    %Default inputs
+    sumname_definput = {suggested_name};
+    %Save answers
+    settings.SUMMARY_name = inputdlg(sumname_prompt,sumname_title,...
+        sumname_dims,sumname_definput);
+end 
+
 
 % Store all of the Multi CS data in a struct if these are not single cells
 % and there is more than one CS 
