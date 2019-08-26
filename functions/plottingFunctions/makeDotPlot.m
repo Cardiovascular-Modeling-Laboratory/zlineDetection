@@ -138,15 +138,11 @@ mc = 0; % Marker fill color
 me = 0; % Marker edge color
 m = 0;  % Marker style 
 
-disp('counts'); 
-disp(counts); 
 % Loop through all of the unique labels 
 for k = 1:nlabel
     
     %Initialize plotting x and y for the current label. 
     dtot = sum(counts(k,:));
-    disp('dtot'); 
-    disp(dtot); 
     x = zeros(1,dtot); 
     y = zeros(1,dtot);     
 
@@ -182,9 +178,8 @@ for k = 1:nlabel
         
         end 
        
-    end 
-        disp(x); 
-    disp(y);
+    end  
+
     hold on; 
     plot(x,y, plot_settings.marks{m},...
         'MarkerSize', plot_settings.markersize,...
