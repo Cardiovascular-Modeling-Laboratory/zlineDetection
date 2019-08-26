@@ -24,7 +24,7 @@
 
 function [ dims, oops, directors, grid_info, ...
     visualization_matrix, dir_mat] = ...
-    gridDirector( orientation_matrix, grid_size)
+    gridDirector( orientation_matrix, grid_size )
 
 
 %Get size of the matrix of orientation angles 
@@ -93,20 +93,21 @@ for d1 = 1:grid_size(1):m1
         temp_array = temp_grid(:); 
         grid_info(n,3) = length(temp_array); 
         
-        %Remove all of the nonzero positions and count the number of
+        %Remove all of the zero positions and count the number of
         %points remaining 
         temp_array(temp_array == 0) = []; 
         grid_info(n,4) = length(temp_array); 
         
         % Calculate the OOP and director if there are orientation vecotrs
         % in the grid 
-        if grid_info(n,4) > 0 
+        if grid_info(n,4) > 0 && grid_info(n,4)/grid_info(n,3) > 0.1
             %Calculate the OOP and director 
             [ oops(n,1), director_angle, ~, ~] = ...
                 calculate_OOP( temp_array ); 
             
             %Covert the director angle to radians
             directors(n,1) = deg2rad(director_angle); 
+            
         else
             % If there aren't any orientation vectors in the grid, set the
             % oop and director equal to zero. 

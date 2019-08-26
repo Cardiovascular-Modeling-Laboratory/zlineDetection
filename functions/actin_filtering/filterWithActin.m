@@ -29,14 +29,16 @@ actin_struct = struct();
 actin_struct.filename = filenames.actin; 
 
 % Compute the orientation vectors for actin
-[ actin_struct.actin_orientim, actin_struct.actin_reliability, ...
-    actin_struct.actin_im ] = ...
+[ actin_struct.actin_orientim, actin_struct.actin_im, ...
+    actin_struct.actin_background, actin_struct.actin_smoothed, ...
+    actin_struct.actin_normalized, actin_struct.reliability] = ...
     actinDetection( filenames.actin, settings, settings.disp_actin, ...
     im_struct.save_path); 
 
 % If not doing a grid parameter exploration comput the director for each
 % grid. If not then procceed to parameter exploration. 
 if ~settings.grid_explore 
+    
     % Compute the director for each grid 
     [ actin_struct.dims, actin_struct.oop, actin_struct.director, ...
         actin_struct.grid_info, actin_struct.visualization_matrix, ...
@@ -63,7 +65,7 @@ if ~settings.grid_explore
     dp = sqrt(cos(im_struct.orientim - actin_struct.director_matrix).^2); 
     
 else
-    %Set grid director ouputs to not numbers
+    %Set  director ouputs to not numbers
     actin_struct.dims = NaN;
     actin_struct.oop = NaN;
     actin_struct.director = NaN; 
@@ -82,6 +84,9 @@ mask = ones(size(im_struct.orientim));
 % If the threshold is greater than 1 that means that the user would like to
 % do a parameter exploration 
 if ~settings.actinthresh_explore
+    % Set the mask equal to the actin mask 
+    mask = actin_struct.actin_background; 
+    
     %If dot product is closer to 1, the angles are more parallel and should 
     %be removed
     mask(dp >= settings.actin_thresh) = 0; 
@@ -92,6 +97,22 @@ if ~settings.actinthresh_explore
     %The NaN postitions should be set equal to 1 (meaning no director for
     %actin)
     mask(isnan(mask)) = 1; 
+    
+    % Store the temporary skeleton 
+    temp_skel = im_struct.skel_trim; 
+
+    % Add isolated z-lines back into the skeleton. 
+    skel_eliminated = temp_skel.*~mask; 
+    skel_eliminated_noisolated = bwareaopen( skel_eliminated, 2 );
+    isolated_eliminated = skel_eliminated - skel_eliminated_noisolated; 
+    mask( isolated_eliminated == 1 ) = 1;
+
+    % Remove any isolated z-line pixels 
+    zlineskel = temp_skel.*mask; 
+    zlineskel_noisolated = bwareaopen( zlineskel, 2 );
+    isolated_accepted= zlineskel - zlineskel_noisolated; 
+    mask( isolated_accepted == 1 ) = 0;
+     
 else
     disp('Parameter Exploration for actin detect threshold...'); 
 end 

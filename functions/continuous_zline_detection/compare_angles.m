@@ -1,5 +1,5 @@
 function [ dp_rows, dp_cols] = compare_angles( dot_product_error,...
-    angles, nonzero_rows, nonzero_cols, candidate_rows, candidate_cols)
+    angles, nonzero_rows, nonzero_cols, corrected_rows, corrected_cols)
 %Compute the dot product between the nonzero orientation angle and their
 %candidate rows and columns 
 
@@ -20,10 +20,10 @@ dir2_neighbors = zeros(size(nonzero_rows,1),3);
 
 for k = 1:3
     dir1_neighbors(:,k) = ...
-        get_values(candidate_rows(:,k), candidate_cols(:,k), angles);
+        get_values(corrected_rows(:,k), corrected_cols(:,k), angles);
 
     dir2_neighbors(:,k) = ...
-        get_values(candidate_rows(:,k+3), candidate_cols(:,k+3), angles);
+        get_values(corrected_rows(:,k+3), corrected_cols(:,k+3), angles);
 end 
 
 %Set all zeros equal to NaN because they mess up the calculation for the
@@ -49,14 +49,14 @@ dir2_dot_product(dir2_dot_product < dot_product_error) = NaN;
 
 %Set the positions that are less than the dot product error equal to NaN
 %   Direction 1: 
-candidate_dp_rows_dir1 = candidate_rows(:,1:3); 
-candidate_dp_cols_dir1 = candidate_cols(:,1:3); 
+candidate_dp_rows_dir1 = corrected_rows(:,1:3); 
+candidate_dp_cols_dir1 = corrected_cols(:,1:3); 
 candidate_dp_rows_dir1( isnan(dir1_dot_product) ) = NaN; 
 candidate_dp_cols_dir1( isnan(dir1_dot_product) ) = NaN; 
 
 %   Direction 2: 
-candidate_dp_rows_dir2 = candidate_rows(:,4:6); 
-candidate_dp_cols_dir2 = candidate_cols(:,4:6); 
+candidate_dp_rows_dir2 = corrected_rows(:,4:6); 
+candidate_dp_cols_dir2 = corrected_cols(:,4:6); 
 candidate_dp_rows_dir2( isnan(dir2_dot_product) ) = NaN; 
 candidate_dp_cols_dir2( isnan(dir2_dot_product) ) = NaN; 
 

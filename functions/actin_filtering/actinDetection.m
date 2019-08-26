@@ -12,6 +12,7 @@
 %               removal of non-sarcomeres for each image
 %
 %             *.actinOrientation.mat file containing actin alignment
+%
 % Adapted from:
 % Peter Kovesi
 % School of Computer Science & Software Engineering
@@ -25,16 +26,22 @@
 % School of Engineering and Applied Sciences
 % Havard University, Cambridge, MA 02138
 
-% Last updated Sept 25, 2018 by Tessa Morris
-% Last updated May 20, 2014 by Anna Grosberg
+% Updated August 2019 by Tessa Morris
+% Update May 20, 2014 by Anna Grosberg
 % The Edwards Lifesciences Center for Advanced Cardiovascular Technology
 % 2418 Engineering Hall
 % University of California, Irvine
 % Irvine, CA  92697-2700
 
 
-function [ orientim, reliability, grayIM ] = ...
+function [ orientim, gray_im, actin_background, actin_smoothed, ...
+    actin_normalized, reliability] = ...
     actinDetection( filename, settings, disp_actin, save_path )
+
+% Convert 2 micron sarcomere spacing into pixels
+SarcSpacing = 2*settings.pix2um;
+% Maximum length of sarcomere spacing
+MaxSarcSpacing = round(1.5*SarcSpacing); 
 
 %Get the file parts (path, name of the file, and the extension)
 [ path, file, ext ] = fileparts( filename );
@@ -46,78 +53,67 @@ actin_name = file;
 actin_path = path; 
 
 % Load the image
-[ im, map ] = imread( filename );
+[ im, ~ ] = imread( filename );
 
-if nargin == 3 
-    % Create a new folder in the image directory with the same name as the 
-    % image file if it does not exist. If it does exist, add numbers until 
-    % it no longer exists and then create it 
-    create = true; 
-    new_subfolder = ...
-        addDirectory( actin_path, actin_name, create ); 
+% if nargin == 3 
+%     % Create a new folder in the image directory with the same name as the 
+%     % image file if it does not exist. If it does exist, add numbers until 
+%     % it no longer exists and then create it 
+%     create = true; 
+%     new_subfolder = ...
+%         addDirectory( actin_path, actin_name, create ); 
+% 
+%     % Save the name of the new path 
+%     save_path = fullfile(actin_path, new_subfolder); 
+% end 
 
-    % Save the name of the new path 
-    save_path = fullfile(actin_path, new_subfolder); 
-end 
+%Create a grayscale version of the image (if it was not already in
+%grayscale) 
+[ gray_im ] = makeGray( im ); 
 
-% Compute the actin orientation and reliability
-[ grayIM, CEDgray, CEDtophat, orientim, reliability ] = ...
-    orientInfo( im, settings.Options, settings.tophat_size);
+% If the user wants to smooth the actin image first before computing the
+% image gradients, do so 
+if settings.actin_sigma > 0 
+    gray_im = mat2gray(gray_im); 
+    if settings.actin_kernelsize > 0
+        if mod(settings.actin_kernelsize,2) == 0
+            settings.actin_kernelsize = settings.actin_kernelsize - 1;
+        end 
+        actin_smoothed = imgaussfilt(gray_im, settings.actin_sigma, ...
+            'FilterSize',settings.actin_kernelsize);
+    else
+        actin_smoothed = imgaussfilt(gray_im, settings.actin_sigma); 
+    end 
+else
+    actin_smoothed = mat2gray(gray_im); 
+end
 
-% % Only keep orientation values with a reliability greater than 0.5
-% reliability_binary = reliability > settings.reliability_thresh;
-% 
-% % Multiply orientation angles by the binary mask image to remove
-% % data where there are no cells
-% orientim = orientim.*reliability_binary;
+% Identify ridge-like regions and normalise image
+[actin_normalized, ~] = ridgesegment(actin_smoothed, MaxSarcSpacing, ...
+    settings.actin_backthresh);
 
-%%%%%%%%%
-% 
-% %Create a grayscale version of the image (if it was not already in
-% %grayscale) 
-% [ grayIM ] = makeGray( im ); 
-% 
-% % Run Diffusion Filter:
-% % Coherence-Enhancing Anisotropic Diffusion Filtering, which enhances
-% % contrast and calculates the orientation vectors for later usage. 
-% % The parameters (supplied by the GUI) are (1) Orientation Smoothing and
-% % (2) Diffusion Time 
-% Options = settings.Options; 
-% % Inputs are the grayscale image and the Options struct from settings. 
-% % The output is the diffusion filtered image and eigenvectors - Not sure
-% % why this is important, but... 
-% [ CEDgray, ~, ~ ] = CoherenceFilter( grayIM, Options );
-% 
-% % Clear the command line 
-% clc; 
-% 
-% % Convert the matrix to be an intensity image 
-% CEDgray = mat2gray( CEDgray );
-% 
-% % Binaize 
-% BW = imbinarize(CEDgray); 
-% 
-% % Calculate orientation vectors
-% [orientim, reliability] = ridgeorient(CEDgray, ...
-%     Options.sigma, Options.rho, Options.rho);
-% 
-% % % Only keep orientation values with a reliability greater than 0.5
-% % reliability_binary = reliability > settings.reliability_thresh;
-% %
-% % orientim = orientim.*reliability_binary;
-% 
-% % Multiply orientation angles by the binary mask image to remove
-% % data where there are no cells
-% orientim(~BW) = 0; 
+% Calculate orientation vectors
+[orientim, reliability] = ridgeorient( actin_normalized, ...
+    settings.actin_gradientsigma, settings.actin_blocksigma, ...
+    settings.actin_orientsmoothsigma );
 
-%%%%%%%%%%%%%%%%
+% Only keep orientation values with a reliability greater than 0.5
+reliability_binary = reliability > settings.actin_reliablethresh;
 
-if disp_actin
-    % Save the diffusion filtered actin image
-    imwrite( CEDgray, fullfile(save_path, ...
-        strcat( actin_name, '_ActinDiffusionFiltered.tif' ) ),...
-        'Compression','none');
-end 
+% Multiply orientation angles by the binary mask image to remove
+% data where there are no cells
+actin_background = reliability_binary;
+
+% Remove all orientation vectors in the background 
+orientim = orientim.*actin_background;
+
+% % Save the diffusion filtered actin image if requested
+% if disp_actin
+%     
+%     imwrite( actin_smoothed, fullfile(save_path, ...
+%         strcat( actin_name, '_ActinGaussianFiltered.tif' ) ),...
+%         'Compression','none');
+% end 
     
 end
 

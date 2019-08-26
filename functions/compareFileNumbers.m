@@ -107,7 +107,12 @@ else
         max_diff = max(abs(diff)); 
             
     else
-        disp('Not the same amount of numbers'); 
+        %Display results if requested
+        if dispmsg
+            disp('Not the same amount of numbers'); 
+        end
+        
+        % Set all of hte results equal to NaN 
         diff_values = NaN; 
         n_diff = NaN; 
         max_diff = NaN; 

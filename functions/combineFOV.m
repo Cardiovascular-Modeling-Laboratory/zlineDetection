@@ -15,6 +15,7 @@
 %
 % Dependencies: 
 %   MATLAB Version >= 9.5 
+%   Statistics and Machine Learning Toolbox Version 11.4
 %   Functions: 
 %       calculate_OOP.m
 %       combineFOV.m
@@ -58,7 +59,10 @@ end
 CS_results.CS_lengths = cell(1,tot); 
 CS_results.CS_medians = zeros(1,tot); 
 CS_results.CS_sums = zeros(1,tot);  
-
+CS_results.CS_means = zeros(1,tot);  
+CS_results.CS_skewness = zeros(1,tot);  
+CS_results.CS_kurtosis  = zeros(1,tot);  
+        
 %>>> Non Zline & Zline Fractions 
 CS_results.CS_nonzlinefrac = zeros(1,tot);
 CS_results.CS_zlinefrac = zeros(1,tot);
@@ -233,6 +237,11 @@ for t = 1:tot
     CS_results.CS_medians(1,t) = median(CS_results.CS_lengths{1,t}); 
     CS_results.CS_sums(1,t) = sum(CS_results.CS_lengths{1,t});   
     
+    % Calculate the mean, skewness, and kurtosis
+    CS_results.CS_means(1,t) = mean(CS_results.CS_lengths{1,t}); 
+    CS_results.CS_skewness(1,t) = skewness(CS_results.CS_lengths{1,t}); 
+    CS_results.CS_kurtosis(1,t) = kurtosis(CS_results.CS_lengths{1,t}); 
+
     %Store all of the z-line orientation angles 
     CS_results.CS_angles{1,t} = grouped_angles;
     %Calculate number of nonzero orientation vectors

@@ -57,18 +57,12 @@ pix2um = settings.pix2um;
 Options = struct();
 
 % Set the sigma of gaussian smoothing before calculation of the image 
-% Hessian. The user input a value in microns, which should be converted
-% into pixels before using
-% Store biological user input 
-settings.bio_sigma = str2double(get(handles.bio_sigma,'String'));
-% Convert user input into pixels and then save in the structure array
-Options.sigma = settings.bio_sigma.*pix2um; 
+% Hessian. The user input a value in pixels
+Options.sigma = str2double(get(handles.sigma,'String'));
 
 % Rho gives the sigma of the Gaussian smoothing of the Hessian.
-% Store biological user input 
-settings.bio_rho = str2double(get(handles.bio_rho,'String'));
-% Convert user input into pixels and then save in the structure array
-Options.rho = settings.bio_rho.*pix2um;
+% The user input a value in pixels
+Options.rho = str2double(get(handles.rho,'String'));
 
 % Get the total diffusion time from the GUI
 Options.T = str2double(get(handles.diffusion_time,'String'));
@@ -101,12 +95,8 @@ settings.diffusion_explore = get(handles.diffusion_explore,'Value');
 
 %%%%%%%%%%%%%%%%%%%%%% Top Hat Filter Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Radius of the flat disk-shaped structuring element used for the top hat
-% filter
-
-% Store biological user input 
-settings.bio_tophat_size = str2double(get(handles.bio_tophat_size,'String'));
-% Convert user input into pixels and then save in the structure array
-settings.tophat_size = round( settings.bio_tophat_size.*pix2um ); 
+% filter in pixels 
+settings.tophat_size = round( str2double(get(handles.tophat_size,'String')) ); 
 
 %%%%%%%%%%%%%%%%%%% Background Removal Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -122,24 +112,12 @@ settings.back_noisesze = ...
 %%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 % Size of small objects to be removed using bwareopen
-% Store biological user input 
-settings.bio_noise_area = str2double(get(handles.bio_noise_area, 'String')); 
-% Convert user input into pixels and then save in the structure array
-settings.noise_area= round( settings.bio_noise_area.*(pix2um.^2) ); 
-
-% %Reliability threshold 
-% settings.reliability_thresh = ...
-%     str2double(get(handles.reliability_thresh, 'String')); 
+settings.noise_area= round(str2double(get(handles.noise_area, 'String'))); 
 
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Save the minimum branch size to be included in analysis 
-settings.bio_branch_size = str2double(get(handles.bio_branch_size, 'String'));
-% Convert user input into pixels and then save in the structure array 
-settings.branch_size = round( settings.bio_branch_size.*pix2um ); 
-
-% % If yes then use imbinarize to remove the background
-% settings.rm_background = get(handles.rm_background,'Value');
+% Save the minimum branch size to be included in analysis in pixels 
+settings.branch_size = round(str2double(get(handles.branch_size, 'String')));
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Display Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -148,9 +126,6 @@ settings.disp_df = get(handles.disp_df,'Value');
 
 % Display top hat filter
 settings.disp_tophat = get(handles.disp_tophat, 'Value'); 
-
-% % Display thresholding 
-% settings.disp_bw = get(handles.disp_bw, 'Value'); 
 
 % Display background  
 settings.disp_back = get(handles.disp_back, 'Value'); 
@@ -169,9 +144,15 @@ settings.actin_filt = get(handles.actin_filt, 'Value');
 % Display actin filtering
 settings.disp_actin = get(handles.disp_actin, 'Value');
 
+% Determine if actin grid size should be explored
+settings.grid_explore = get(handles.grid_explore, 'Value');
+
+% Determine if actin threshold value should be explored
+settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
+
 % Save the grid sizes for the rows and columns in an array 
-grid_size(1) = round( str2double(get(handles.grid1, 'String')) );
-grid_size(2) = round( str2double(get(handles.grid2, 'String')) );
+grid_size(1) = round( str2double(get(handles.grid, 'String')) );
+grid_size(2) = round( str2double(get(handles.grid, 'String')) );
 
 % Store the grid sizes
 settings.grid_size = grid_size; 
@@ -179,10 +160,41 @@ settings.grid_size = grid_size;
 % Store the threshold for actin filtering
 settings.actin_thresh = str2double(get(handles.actin_thresh, 'String')); 
 
-% Store settings for actin threshold exploration 
-settings.grid_explore = get(handles.grid_explore, 'Value'); 
-% Store settings for actin grid size exploration 
-settings.actinthresh_explore = get(handles.actinthresh_explore, 'Value'); 
+% If this is not a conversion, get the actin filtering parameters
+if ~conversionOnly && settings.actin_filt
+    %Prompt Questions
+    actin_prompt = {'Gaussian Filtering Sigma:',...
+        'Gaussian Filtering Kernel Size (Must be Odd):',...
+        'Background Removal Threshold (0.1-0.2):',...
+        'Orientation Calculation - Gradient Sigma:',...
+        'Orientation Calculation - Orientation Smoothing:',...
+        'Orientation Calculation - Block Sigma:',...
+        'Orientation Reliability Threshold:'};
+    %Title of prompt 
+    actin_title = 'Actin Detection Settings';
+    %Dimensions 
+    actin_dims = [1,60];
+    %Default inputs
+    actin_definput = {'3', '25','0.1','1','3','3','0.5'}; 
+    %Save answers
+    actin_answer = inputdlg(actin_prompt,actin_title,...
+    actin_dims,actin_definput);
+    
+    % ACTIN DETECTION: Sigma of gaussian filter 
+    settings.actin_sigma = str2double(actin_answer{1});
+    % ACTIN DETECTION: Kernel size of gaussian filter
+    settings.actin_kernelsize = round(str2double(actin_answer{2}));
+    % ACTIN DETECTION: Segmentation threshold
+    settings.actin_backthresh = str2double(actin_answer{3});
+    % Sigma of the derivative of Gaussian used to compute image gradients.
+    settings.actin_gradientsigma = str2double(actin_answer{4});
+    % Sigma of the Gaussian weighting used to sum the gradient moments.
+    settings.actin_blocksigma = str2double(actin_answer{5});
+    % Sigma of the Gaussian used to smooth the final orientation vector field.
+    settings.actin_orientsmoothsigma = str2double(actin_answer{6});
+    % ACTIN DETECTION: Reliability threshold 
+    settings.actin_reliablethresh = str2double(actin_answer{7});
+end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Analysis Options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -201,7 +213,7 @@ settings.num_cs = str2double(get(handles.num_cs, 'String'));
 % Save type of image (single cell vs. tissue)
 settings.cardio_type = get(handles.cardio_type, 'Value'); 
 
-% Settings
+% Whether each has its own condition 
 settings.multi_cond = get(handles.multi_cond, 'Value'); 
 
 %%%%%%%%%%%%%%%%%% Check if the User Wants Any Analysis %%%%%%%%%%%%%%%%%%%

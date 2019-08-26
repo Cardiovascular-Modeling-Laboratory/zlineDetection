@@ -1,38 +1,40 @@
-function [] = runMultipleCoverSlips(settings)
-%This function will be used to run multiple coverslips and obtain a summary
-%file
+% runMultipleCoverSlips - Analyzes multiple coverlsips
+%
+% Usage:
+%  [zline_images, zline_path, name_CS,...
+%         actin_images, actin_path, cond] ...
+%         = getZlineDetectionImages(settings); 
+% 
+% Arguments:
+%   settings        - Contains settings for z-line detection 
+%                       Class Support: STRUCT 
+%   zline_images    - Cell to hold z-line image name(s)
+%                       Class Support: Cell 
+%   zline_path      - Cell to hold z-line path name(s)
+%                       Class Support: Cell 
+%   name_CS         - Cell to hold the coverslip name(s) 
+%                       Class Support: Cell 
+%   actin_images    - Cell to hold actin image name(s)
+%                       Class Support: Cell 
+%   actin_path      - Cell to hold actin path name(s)
+%                       Class Support: Cell 
+%   cond            - Condition numbers
+%                       Class Support: settings.num_cs x 1 vector  
+%
+% 
+% Dependencies: 
+%   MATLAB Version >= 9.5 
+%
+%
+% Tessa Morris
+% Advisor: Anna Grosberg
+% Cardiovascular Modeling Laboratory 
+% University of California, Irvine 
 
-%Possible stains/wells that could included in filenames and should be
-%excluded in concatination of filenames
-string1 = {'w1','w2','w3','w4','w5'};
-string2 = {'Cy7','mCherry','GFP','DAPI'};
-txt_exclude = combineStrings(string1,string2);
+function [] = runMultipleCoverSlips(settings, zline_images, zline_path, ...
+    name_CS, actin_images, actin_path, cond)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Create a cell to hold the coverslip name 
-name_CS = cell(settings.num_cs,1);
-
-%Create a cell for zlines
-zline_images = cell(settings.num_cs,1);
-zline_path = cell(settings.num_cs,1);
-zn = zeros(settings.num_cs,1);
-
-%Create a cell for actin
-actin_images = cell(settings.num_cs,1);
-actin_path = cell(settings.num_cs,1);
-an = zeros(settings.num_cs,1);
-
-%Save conditions 
-cond = zeros(settings.num_cs,1);
-
-%Set previous path equal to the current location if only one coverslip is
-%selected. Otherwise set it to the location where the CS summary should be
-%saved 
-if settings.num_cs >1 
-    previous_path = settings.SUMMARY_path; 
-else 
-    previous_path = pwd; 
-end 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Initialization %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Initialize matrices to hold analysis information for each coverslip
 %>>> IDs for the different coverslips and conditions 
@@ -43,6 +45,9 @@ MultiCS_nonzlinefrac = cell(1,settings.num_cs);
 MultiCS_zlinefrac = cell(1,settings.num_cs);
 %>>> Continuous Z-line Analysis
 MultiCS_medians = cell(1,settings.num_cs); 
+MultiCS_means = cell(1,settings.num_cs);
+MultiCS_skewness = cell(1,settings.num_cs);
+MultiCS_kurtosis = cell(1,settings.num_cs);
 MultiCS_sums = cell(1,settings.num_cs); 
 MultiCS_lengths = cell(1,settings.num_cs);
 %>>> Z-line Angle analysis
@@ -58,133 +63,6 @@ MultiCS_ACTINorientim = cell(1,settings.num_cs);
 MultiCS_ACTINOOP = cell(1,settings.num_cs);
 MultiCS_ACTINanglecount = cell(1,settings.num_cs); 
 MultiCS_ACTINdirectors = cell(1,settings.num_cs); 
-
-
-%Save the orientation angles of actin and zlines for each CS 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Select Files %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-close all; 
-
-%Start counting variable
-k = 1; 
-while k < settings.num_cs + 1 
-
-    %Boolean statement to keep going unless there is an issue
-    keepGoing = true; 
-% %Have the user select the different directories for the coverslips
-% for k = 1:settings.num_cs 
-    
-    %Display message telling the user which coverslip they're on 
-    disp_message = strcat('Selecting Coverslip',{' '}, num2str(k),...
-        {' '}, 'of', {' '}, num2str(settings.num_cs)); 
-    disp(disp_message); 
-    
-    % Prompt the user to select the images they would like to analyze. 
-    [ zline_images{k,1}, zline_path{k,1}, zn(k,1) ] = ...
-        load_files( {'*w1mCherry*.TIF;*w1mCherry*.tif;*w4Cy7*.tif;*w1Cy7*.tif;*Sarc*.tif;*w3mCherry*.TIF'}, ...
-        'Select images stained for z-lines...', previous_path);
-    
-    %Temporarily store the path 
-    temp_path = zline_path{k,1}; 
-
-    %Get the parts of the path 
-    pathparts = strsplit(temp_path{1},filesep);
-    
-    %Set previous path 
-    previous_path = pathparts{1,1}; 
-    
-    %Go back one folder 
-    for p =2:size(pathparts,2)-1
-        if ~isempty(pathparts{1,p+1})
-            previous_path = fullfile(previous_path, pathparts{1,p}); 
-        end 
-    end 
-    
-    %Add a backslash to the beginning of the path in order to use if this
-    %is a mac, otherwise do not
-    if ~ispc
-        previous_path = strcat(filesep,previous_path);
-    end 
-    
-    potential_end = size(pathparts,2); 
-    while isempty(pathparts{1,potential_end})
-        potential_end = potential_end -1; 
-    end 
-    %Save the name of the directory 
-    name_CS{k,1} = pathparts{1,potential_end}; 
-    
-    %If the user is actin filtering, have them select the files 
-    if settings.actin_filt
-        [ actin_images{k,1}, actin_path{k,1}, an(k,1) ] = ...
-            load_files( {'*GFP*.TIF;*GFP*.tif;*Actin*.tif'}, ...
-            'Select images stained for actin...',temp_path{1});
-
-        % If the number of actin and z-line files are not equal,
-        % warn the user
-        if an(k,1) ~= zn(k,1)
-            %Display message telling the user that they did not select the
-            %same number of files 
-            disp(['The number of z-line files does not equal',...
-                'the number of actin files.']); 
-            disp(strcat('Actin Images: ',{' '}, num2str(an), ...
-                'Z-line Images: ',{' '}, num2str(zn))); 
-            %Set keepGoing equal to false so they keep selecting. 
-            keepGoing = false; 
-        else 
-            % If there is more than one FOV, then sort the images 
-            if an(k,1) > 1 
-                %Sort the z-line and actin file names to make sure that they're
-                %matching
-                [zline_images{k,1}, actin_images{k,1}, ~, together_vis] = ...
-                    sortFilenames(zline_images{k,1}, actin_images{k,1}, ...
-                    txt_exclude);
-                %Display results for visualization together. 
-                disp(together_vis); 
-                disp('Please take a moment to make sure your files are properly sorted.'); 
-                disp('Press any key to continue.'); 
-                pause; 
-                sortedProperly = questdlg('Are your filenames sorted properly?', ...
-                        'File Sorting','Yes','No','Yes');
-                %Re select this coverslip
-                if strcmp('No',sortedProperly)
-                    %Set keepGoing equal to false so they keep selecting. 
-                    keepGoing = false; 
-                end
-            end 
-        end
-        
-
-     
-    else
-        %Set the actin image to NaN 
-        actin_images{k,1} = NaN; 
-        actin_path{k,1} = NaN; 
-        an(k,1) = NaN; 
-    end  
-    
-    %Display path the user selected 
-    disp(zline_path{k,1});
-    
-    if settings.multi_cond && keepGoing
-        %Declare conditions for the selected coverslip 
-        cond(k,1) = ...
-            declareCondition(settings.cond_names, k, settings.num_cs); 
-        
-        %Display the condition the user selected 
-        disp_message = strcat('For Coverslip:',{' '},name_CS{k,1},...
-            ', Condition Selected:',{' '}, ...
-            settings.cond_names{cond(k,1),1}); 
-        disp(disp_message{1}); 
-    end 
-    
-    % Only increase the counter if there were no issues with the data
-    % selection
-    if keepGoing 
-        k = k + 1; 
-    else
-        disp('Fix any errors and reselect coverslip.'); 
-    end
-end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Analyze all CS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Loop through and run each coverslip 
@@ -203,6 +81,9 @@ for k = 1:settings.num_cs
         MultiCS_lengths{1,k} = CS_results.CS_lengths;
         MultiCS_medians{1,k} =CS_results.CS_medians;
         MultiCS_sums{1,k} = CS_results.CS_sums;
+        MultiCS_means{1,k} = CS_results.CS_means; 
+        MultiCS_skewness{1,k} = CS_results.CS_skewness;
+        MultiCS_kurtosis{1,k} = CS_results.CS_kurtosis; 
         MultiCS_nonzlinefrac{1,k} = CS_results.CS_nonzlinefrac;
         MultiCS_zlinefrac{1,k} = CS_results.CS_zlinefrac;
         MultiCS_grid_sizes{1,k} = CS_results.CS_gridsizes;
@@ -237,7 +118,6 @@ for k = 1:settings.num_cs
 end 
 
 %%%%%%%%%%%%%%%%%%%%%%%% Summarize Coverslips %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % Store all of the Multi CS data in a struct if these are not single cells
 % and there is more than one CS 
 if settings.cardio_type == 1 && settings.num_cs > 1 ...
@@ -256,6 +136,10 @@ if settings.cardio_type == 1 && settings.num_cs > 1 ...
     MultiCS_Data.MultiCS_lengths=MultiCS_lengths;
     MultiCS_Data.MultiCS_medians=MultiCS_medians;
     MultiCS_Data.MultiCS_sums=MultiCS_sums;
+    MultiCS_Data.MultiCS_means=MultiCS_means; 
+    MultiCS_Data.MultiCS_skewness=MultiCS_skewness;
+    MultiCS_Data.MultiCS_kurtosis=MultiCS_kurtosis; 
+        
     %>>> Z-line Angle analysis
     MultiCS_Data.MultiCS_orientim = MultiCS_orientim; 
     MultiCS_Data.MultiCS_OOP=MultiCS_OOP;
@@ -273,7 +157,7 @@ if settings.cardio_type == 1 && settings.num_cs > 1 ...
     %Create summary information, including excel sheets and plots (when
     %applicable
     createSummaries(MultiCS_Data, name_CS, zline_images,...
-    zline_path, cond, settings);
+        zline_path, cond, settings);
     
 end 
 

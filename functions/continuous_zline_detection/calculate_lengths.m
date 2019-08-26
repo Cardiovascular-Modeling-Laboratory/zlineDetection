@@ -1,7 +1,19 @@
 function [ distance_storage, rmCount, zline_clusters] = ...
-    calculate_lengths( processed_image, zline_clusters)
+    calculate_lengths( processed_image, zline_clusters, specialVis)
 %This function calculates the length and plotted the sarcomere 
-figure; 
+
+% Add a case where a figure isn't opened (for visualization and summary
+% purposes) 
+if nargin < 3
+    specialVis = false; 
+end 
+
+if ~specialVis 
+    figure; 
+    lin_val = 2; 
+else
+    lin_val = 0.5; 
+end 
 imshow(processed_image);
 hold on;
 
@@ -23,27 +35,27 @@ for k=1:length(zline_clusters)
     %continue with analysis 
     if isnan(boundary)
         exclude = true; 
-    
-    %Additionally, if there are less than three detected edges, remove the
-    %boundary
-    elseif size(boundary,1) < 3
-        exclude = true; 
-        zline_clusters{k} = NaN; 
+   
     %If the boundary is not empty or NaN calculate the distance  
     else
-        
-        %Calculate the distance between each boundary and its next neighbor
-        [ between_coordinates ] = ...
-            coordinate_distances( boundary(:,1), boundary(:,2) ); 
+        % Check to make sure there are more than two boundaries 
+        if length(boundary) > 2
+            %Calculate the distance between each boundary and its next neighbor
+            [ between_coordinates ] = ...
+                coordinate_distances( boundary(:,1), boundary(:,2) ); 
 
-        %Find the length from one coordinate to the closest one. 
-        %Inialize coordinate length 
-        coord_length = 0; 
-        for h = 2:length( boundary(:,1) )
-            coord_length = coord_length +  between_coordinates(h, h-1); 
-        end
+            %Find the length from one coordinate to the closest one. 
+            %Inialize coordinate length 
+            coord_length = 0; 
+            for h = 2:length( boundary(:,1) )
+                coord_length = coord_length +  between_coordinates(h, h-1); 
+            end
+        else
+            exclude = true; 
+        end 
+                
     end 
-    
+   
     if exclude
         %Save the distance and coordinates as NaN.
         distance_storage(k) = NaN; 
@@ -56,7 +68,7 @@ for k=1:length(zline_clusters)
         distance_storage(k) = coord_length; 
         
         %Plot boundaries (large LineWidth)
-        plot( boundary(:,2), boundary(:,1) , '-', 'LineWidth', 2);      
+        plot( boundary(:,2), boundary(:,1) , '-', 'LineWidth', lin_val);      
     
     end
     

@@ -45,11 +45,6 @@ settings.rho = settings.bio_rho.*pix2um;
 % filter
 settings.tophat_size = round( settings.bio_tophat_size.*pix2um ); 
 
-%%%%%%%%%%%%%%%%%%% Threshold and Clean Parameters %%%%%%%%%%%%%%%%%%%%%%%%
-
-% Size of small objects to be removed using bwareopen
-settings.noise_area= round( settings.bio_noise_area.*(pix2um.^2) ); 
-
 %%%%%%%%%%%%%%%%%%%% Skeletonization Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save the minimum branch size to be included in analysis 
