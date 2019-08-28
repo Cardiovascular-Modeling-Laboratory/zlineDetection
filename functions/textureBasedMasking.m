@@ -46,23 +46,58 @@ if nargin < 5
     displayResults = false; 
 end 
 
-% Equalize the image 
-% J = histeq(I);
-J = mat2gray(I); 
-% Compute histogram of oriented graidents. 
-% sigma = 0.5; 
-% blk_size = 15; 
-[ohist,thresh_per] = hog( J, sigma , blk_size); 
+thresh_per = 0; 
+% Convert intensity to be between 0 and 1
+Igray = mat2gray(I); 
 
-% Calculate the average in each grid 
-ohist_avg = mean(ohist,3); 
+% Compute the gradient magnitude and orientation at each pixel.
+[ mag, ori ] = computeImageGradient( Igray, sigma ); 
 
-% Initial binarization 
-bw_ohist = zeros(size(ohist_avg)); 
-bw_ohist(ohist_avg > 0) = 1; 
+%Determine the size of the input image 
+[h,w] = size(I); 
+
+%Determine the size of the output. It will be the (rounded up) size of the
+%image divided by the block size ( 8 x 8 )
+h2 = ceil(h/blk_size); 
+w2 = ceil(w/blk_size);
+
+% Sum up the magnitude values over blk_sizexblk_size pixel blocks
+magchblock = im2col(mag,[blk_size blk_size],'distinct');  
+
+% Reshape summed magnitude to be size of compressed image                                    
+magblock = reshape( sum(magchblock,1), [h2 w2] ); 
+
+% Divide by the maximum magnitude 
+magblocknorm = magblock/max(magblock(:)); 
+
+% Entropy filter the normalized max magnitude
+magentropy = entropyfilt(magblocknorm);
+
+% Normalize the entropy filter
+magentropynorm = magentropy/max(magentropy(:)); 
+
+% Binarize the entropy filter 
+bw_magentropy = imbinarize(magentropynorm); 
+
+% Display the entropy results if requested. 
+if displayResults
+    figure; 
+    imagesc(magentropynorm)
+end 
+% % Compute histogram of oriented graidents. 
+% % sigma = 0.5; 
+% % blk_size = 15; 
+% [ohist,thresh_per] = hog( J, sigma , blk_size); 
+% 
+% % Calculate the average in each grid 
+% ohist_avg = mean(ohist,3); 
+% 
+% % Initial binarization 
+% bw_ohist = zeros(size(ohist_avg)); 
+% bw_ohist(ohist_avg > 0) = 1; 
 
 % Fill holes that are less than the noise size 
-bw_fill = ~bwareaopen(~bw_ohist, noise_size);
+bw_fill = ~bwareaopen(~bw_magentropy, noise_size);
 
 % Remove noise 
 %noise_size = 1*8;
@@ -73,10 +108,11 @@ disk_sze = 1;
 se = strel('disk',disk_sze);
 bw4 = imdilate(bw_nonoise, se); 
 
-% Display the figure if requested 
-if displayResults
-    figure; imshow(bw4); 
-end 
+
+% % Display the figure if requested 
+% if displayResults
+%     figure; imshow(bw4); 
+% end 
 
 % Resize the binary image to be the size of the original image 
 bw_final = imresize(bw4, size(I));
@@ -106,14 +142,19 @@ end
 
 
 % Get only the false parts of bw6
-background = I; 
+background = Igray; 
 background(bw_final == 1) = 0; 
-
+foreground = Igray; 
+foreground(bw_final == 0) = 0; 
 % If the user would like to display the results, display the background and
 % the percent remaining in the background 
 if displayResults
     % Display background
-    figure; imshow(background); 
+%     figure; imshow(background); 
+%     figure; imshow(foreground); 
+    figure; 
+    multi = cat(3,foreground,background);
+    montage(multi);
     % Display Percent remaining 
     disp_msg = strcat('Percent Image Remaining:', {' '}, ...
         num2str(round(per_rem,2)), '%'); 

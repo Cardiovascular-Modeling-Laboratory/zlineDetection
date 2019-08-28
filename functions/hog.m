@@ -67,6 +67,7 @@ step_thresh = 0.025;
 % Store the ratio of the image foreground/background intensities 
 threshes = min_thresh:step_thresh:max_thresh; 
 bfratio = zeros(length(threshes),1); 
+
 %Use a threshold to determine if a pixel is an edge.
 % Determine the value of the threshold 
 for tp = 1:length(threshes)
@@ -77,7 +78,7 @@ for tp = 1:length(threshes)
     temp_edges = mag; 
     temp_edges(mag > temp_thresh) = 1; 
     temp_edges(mag <= temp_thresh) = 0; 
-
+    figure; imshow(temp_edges); 
     % Compute average intensity of the foreground 
     Ifore = I; 
     Ifore(temp_edges == 0) = NaN; 
@@ -89,6 +90,8 @@ for tp = 1:length(threshes)
     Iback = Iback(:); 
     Iback(isnan(Iback)) = []; 
     
+    disp(median(Iback)); 
+    disp(size(Iback)); 
     % Calculate the ratio of the background/foreground 
     bfratio(tp,1) = median(Iback)/median(Ifore); 
 end 
