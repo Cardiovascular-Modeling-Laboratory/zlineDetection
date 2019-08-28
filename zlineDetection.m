@@ -390,45 +390,54 @@ function rec_params_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% If the user would like parameters, this function stores the
-% recommendations 
-settings = recommendParameters(); 
+% Check with the user that they would like to over write the settings
+doRecParams = questdlg('Recommend Settings will overwrite any analysis settings and parameters you have already set. Do you want zlineDetection to Recommend Settings?', ...
+        'Recommend Settings Overwrite Warning','Yes','No','Yes');
 
-% Set all of the parameters 
-%>> Coherence Filter Parameters
-set( handles.sigma, 'String', num2str( settings.sigma ) );
-set( handles.rho, 'String', num2str( settings.rho ) ); 
-%>> Coherence Filter Parameters
-set( handles.diffusion_time, 'String', ...
-    num2str( settings.diffusion_time ) ); 
-%>> Top Hat Filter Parameters
-set( handles.tophat_size, 'String', ...
-    num2str( settings.tophat_size ) );
-%>> Background Removal Parameters
-set( handles.back_sigma, 'String', ...
-    num2str( settings.back_sigma ) ); 
-set( handles.back_blksze, 'String', ...
-    num2str( settings.back_blksze ) ); 
-set( handles.back_noisesze, 'String', ...
-    num2str( settings.back_noisesze ) ); 
-%>> Threshold and Clean Parameters
-set( handles.noise_area, 'String', ...
-    num2str( settings.noise_area ) ); 
-%>> Skeletonization Parameters
-set( handles.branch_size, 'String', ...
-    num2str( settings.branch_size ) );
-%>> Set actin filtering to be true
-set(handles.actin_filt,'Value',1);
-%>> Actin filtering parameters
-set( handles.grid, 'String', ...
-    num2str( settings.grid ) );
-set( handles.actin_thresh, 'String', ...
-    num2str( settings.actin_thresh ) );
-%>> Continuous z-line detection 
-set(handles.tf_CZL, 'Value',1); 
-%>> Continuous z-line detection 
-set(handles.tf_OOP, 'Value',1); 
-guidata(hObject, handles);
+% Only recommend parameters if the user would like.
+if strcmp('Yes',doRecParams)
+    % If the user would like parameters, this function stores the
+    % recommendations 
+    settings = recommendParameters(); 
+
+    % Set all of the parameters 
+    %>> Coherence Filter Parameters
+    set( handles.sigma, 'String', num2str( settings.sigma ) );
+    set( handles.rho, 'String', num2str( settings.rho ) ); 
+    %>> Coherence Filter Parameters
+    set( handles.diffusion_time, 'String', ...
+        num2str( settings.diffusion_time ) ); 
+    %>> Top Hat Filter Parameters
+    set( handles.tophat_size, 'String', ...
+        num2str( settings.tophat_size ) );
+    %>> Background Removal Parameters
+    set( handles.back_sigma, 'String', ...
+        num2str( settings.back_sigma ) ); 
+    set( handles.back_blksze, 'String', ...
+        num2str( settings.back_blksze ) ); 
+    set( handles.back_noisesze, 'String', ...
+        num2str( settings.back_noisesze ) ); 
+    %>> Threshold and Clean Parameters
+    set( handles.noise_area, 'String', ...
+        num2str( settings.noise_area ) ); 
+    %>> Skeletonization Parameters
+    set( handles.branch_size, 'String', ...
+        num2str( settings.branch_size ) );
+    %>> Set actin filtering to be true
+    set(handles.actin_filt,'Value',1);
+    %>> Actin filtering parameters
+    set( handles.grid, 'String', ...
+        num2str( settings.grid ) );
+    set( handles.actin_thresh, 'String', ...
+        num2str( settings.actin_thresh ) );
+    %>> Continuous z-line detection 
+    set(handles.tf_CZL, 'Value',1); 
+    %>> Continuous z-line detection 
+    set(handles.tf_OOP, 'Value',1); 
+    guidata(hObject, handles);
+end
+                
+
 
 % --- Executes on selection change in cardio_type.
 function cardio_type_Callback(hObject, eventdata, handles)
