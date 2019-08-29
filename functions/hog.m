@@ -59,7 +59,7 @@ nori = 9;
 %at each pixel. This is based on how it was done in Homework 3  
 [ mag, ori ] = computeImageGradient( I, sigma ); 
 
-%
+% range of threshold values to store 
 min_thresh = 0.025; 
 max_thresh = 0.1; 
 step_thresh = 0.025; 
@@ -67,6 +67,7 @@ step_thresh = 0.025;
 % Store the ratio of the image foreground/background intensities 
 threshes = min_thresh:step_thresh:max_thresh; 
 bfratio = zeros(length(threshes),1); 
+
 %Use a threshold to determine if a pixel is an edge.
 % Determine the value of the threshold 
 for tp = 1:length(threshes)
@@ -79,7 +80,7 @@ for tp = 1:length(threshes)
     temp_edges(mag <= temp_thresh) = 0; 
 
     % Compute average intensity of the foreground 
-    Ifore = I; 
+    Ifore = I;
     Ifore(temp_edges == 0) = NaN; 
     Ifore = Ifore(:); 
     Ifore(isnan(Ifore)) = []; 
@@ -92,7 +93,8 @@ for tp = 1:length(threshes)
     % Calculate the ratio of the background/foreground 
     bfratio(tp,1) = median(Iback)/median(Ifore); 
 end 
-
+% Remove any exactly NaN positions 
+bfratio(bfratio == 0) = NaN; 
 % Get the index and the values of the minimum background/foreground 
 [~, idx] = min(bfratio); 
 

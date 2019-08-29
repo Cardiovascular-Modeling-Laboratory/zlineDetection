@@ -48,11 +48,11 @@ end
 
 % Equalize the image 
 % J = histeq(I);
-J = mat2gray(I); 
+Igray = mat2gray(I); 
 % Compute histogram of oriented graidents. 
 % sigma = 0.5; 
 % blk_size = 15; 
-[ohist,thresh_per] = hog( J, sigma , blk_size); 
+[ohist,thresh_per] = hog( Igray, sigma , blk_size); 
 
 % Calculate the average in each grid 
 ohist_avg = mean(ohist,3); 
@@ -79,26 +79,26 @@ if displayResults
 end 
 
 % Resize the binary image to be the size of the original image 
-bw_final = imresize(bw4, size(I));
+bw_final = imresize(bw4, size(Igray));
 % Set all of the values greater than 0 equal to 1 
 bw_final(bw_final > 0) = 1; 
 
 % Calculate the percentage of the image that is positive in the binary
 % image 
-per_rem = sum(bw_final(:))/(size(I,1)*size(I,2)); 
+per_rem = sum(bw_final(:))/(size(Igray,1)*size(Igray,2)); 
 per_rem = per_rem*100; 
 
 % If the percent remaining is equal to 0, then use matlab binarization to
 % create mask. 
 if per_rem == 0 
     if exist('imbinarize.m','file') == 2 
-        bw_final = imbinarize(I);
+        bw_final = imbinarize(Igray);
     else
-        bw_final = im2bw(I, graythresh(I));
+        bw_final = im2bw(Igray, graythresh(Igray));
     end 
     
     % Compute the new percentage remaining 
-    per_rem = sum(bw_final(:))/(size(I,1)*size(I,2)); 
+    per_rem = sum(bw_final(:))/(size(Igray,1)*size(Igray,2)); 
     per_rem = per_rem*100; 
     % Set thresh_per equal to NaN, indicating this method was not used
     thresh_per = NaN;     
@@ -106,14 +106,18 @@ end
 
 
 % Get only the false parts of bw6
-background = I; 
+background = Igray; 
 background(bw_final == 1) = 0; 
-
+% Get only the true parts of the image
+foreground = Igray; 
+foreground(bw_final == 0) = 0; 
 % If the user would like to display the results, display the background and
 % the percent remaining in the background 
 if displayResults
     % Display background
-    figure; imshow(background); 
+    figure; 
+    multi = cat(3,foreground,background);
+    montage(multi);
     % Display Percent remaining 
     disp_msg = strcat('Percent Image Remaining:', {' '}, ...
         num2str(round(per_rem,2)), '%'); 
