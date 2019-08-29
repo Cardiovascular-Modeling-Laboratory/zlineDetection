@@ -10,7 +10,7 @@ addpath('plottingFunctions');
 combineMultipleRuns = true;
 
 % Ask the user if they'd like to load the images or just the settings
-runType = questdlg('Would you like combine CS from different zlineDetection runs?', ...
+runType = questdlg('Would you like to combine coverslips from different zlineDetection runs?', ...
         'Post Analysis Summary','Combine Different Runs','One Run',...
         'Combine Different Runs');
     
@@ -21,12 +21,12 @@ end
 
 previous_path = pwd; 
 % Check what the user wants to only load settings 
-if ~combineMultipleRuns
+if combineMultipleRuns
     % Set the display message
     dispmsg = 'Select .mat file that contains settings...';
 else
     % Set the display message
-    dispmsg = 'Select .mat file that contains settings and iamge paths...';
+    dispmsg = 'Select .mat file that contains settings and image paths...';
 end 
 
 % Have the user select a file that has settings that they would like to
