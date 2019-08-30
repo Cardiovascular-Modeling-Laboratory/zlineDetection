@@ -120,7 +120,7 @@ if tf
     % Remove all of the elimated values 
     num_keep(isnan(num_keep)) = []; 
     % Check to make sur ethe numbers match 
-    if length(num_keep) ~= length(all_zlineimages)
+    if length(num_keep) ~= length(all_zlineimages)-numelim
         disp('Issue eliminating z-lines'); 
         dontCreate = true; 
     end 
@@ -157,7 +157,7 @@ if tf
         % Initialize zline images 
         zline_images = cell(1,zn); 
         % Store the z-line path 
-        zline_path = CS_results.zline_path; 
+        zline_path = CS_data.CS_results.zline_path; 
         
         % Loop through and get all of the data 
         for k = 1:length(num_keep)
@@ -166,43 +166,43 @@ if tf
              zline_images{1,k} = all_zlineimages{1,num_keep(k)};
 
             if isfield(CS_data.FOV_results,'FOV_prefiltered')	 
-                FOV_prefiltered{1,k} = FOV_results.FOV_prefiltered{1,num_keep(k)};	
+                FOV_prefiltered{1,k} = CS_data.FOV_results.FOV_prefiltered{1,num_keep(k)};	
             else
                 FOV_prefiltered{1,k} = [];	
             end
             
             if isfield(CS_data.FOV_results,'FOV_postfiltered')	 
-                FOV_postfiltered{1,k} = FOV_results.FOV_postfiltered{1,num_keep(k)};	
+                FOV_postfiltered{1,k} = CS_data.FOV_results.FOV_postfiltered{1,num_keep(k)};	
             else
                 FOV_postfiltered{1,k} = [];	
             end
             
-            if isfield(CS_data.FOV_results,' FOV_lengths')	 
+            if isfield(CS_data.FOV_results,'FOV_lengths')	 
                 FOV_lengths{1,k} = CS_data.FOV_results.FOV_lengths{1,num_keep(k)};	
             else
                 FOV_lengths{1,k} = [];
             end 
 
-            if isfield(CS_data.FOV_results,' FOV_angles')	 
+            if isfield(CS_data.FOV_results,'FOV_angles')	 
                 FOV_angles{1,k} = CS_data.FOV_results.FOV_angles{1,num_keep(k)};	
             else
                 FOV_angles{1,k} = [];
             end 
             
-            if isfield(CS_data.FOV_results,' ACTINFOV_angles')	 
+            if isfield(CS_data.FOV_results,'ACTINFOV_angles')	 
                 ACTINFOV_angles{1,k} = CS_data.FOV_results.ACTINFOV_angles{1,num_keep(k)};	
             else
                 ACTINFOV_angles{1,k} = [];
             end 
 
-            if isfield(CS_data.FOV_results,' FOV_thresholds')	 
+            if isfield(CS_data.FOV_results,'FOV_thresholds')	 
                 FOV_thresholds{1,k} = CS_data.FOV_results.FOV_thresholds{1,num_keep(k)};	
             else
                 FOV_thresholds{1,k} = [];
             end 
             
-            if isfield(CS_data.FOV_results,' FOV_grid_sizes')	 
-                FOV_grid_sizes{1,k} = FOV_results.FOV_grid_sizes{1,num_keep(k)};	
+            if isfield(CS_data.FOV_results,'FOV_grid_sizes')	 
+                FOV_grid_sizes{1,k} = CS_data.FOV_results.FOV_grid_sizes{1,num_keep(k)};	
             else
                 FOV_grid_sizes{1,k} = [];
             end 
@@ -270,6 +270,6 @@ if tf
     end 
     
     save(fullfile(CS_path{1},new_name{1}), 'settings','CS_results',...
-        'FOV_results'); 
+        'FOV_results','eliminated_results'); 
     
 end 
