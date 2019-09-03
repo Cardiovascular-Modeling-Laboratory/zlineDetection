@@ -205,8 +205,13 @@ if settings.num_cs > 1 && settings.analysis
     date_format = 'yyyymmdd';
     today_date = datestr(now,date_format);
     
-    %Suggested suggested name for files  
-    suggested_name = strcat(base_name, '_MultiCondSummary_',today_date);
+    if settings.multi_cond
+        %Suggested suggested name for files  
+        suggested_name = strcat(base_name, '_MultiCondSummary_',today_date);
+    else
+        %Suggested suggested name for files  
+        suggested_name = strcat(base_name, '_MultiCSSummary_',today_date);
+    end 
     
     %Ask the user for the summary name 
     %Prompt Questions

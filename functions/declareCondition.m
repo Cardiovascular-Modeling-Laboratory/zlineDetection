@@ -44,8 +44,8 @@ listname = temp_list{1,1};
 % Set one match to false
 oneMatch = false; 
 
-% If the coverslip name is provided,attempt to predict what the label is 
-if nargin == 4
+% If the coverslip name is provided, attempt to predict what the label is 
+if nargin == 4 && exist('contains','builtin')
     nmatch = 0; 
     % Loop through 
     matches = zeros(size(cond_names,1),1); 
@@ -73,7 +73,6 @@ else
     % Display the list 
     [cond,~] = listdlg('ListString',condlist,'SelectionMode','single', ...
         'ListSize',[300,150], 'Name',listname);
-
 end 
 
     
