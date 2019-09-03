@@ -45,7 +45,7 @@ listname = temp_list{1,1};
 oneMatch = false; 
 
 % If the coverslip name is provided, attempt to predict what the label is 
-if nargin == 4 && exist('contains','builtin')
+if nargin == 4 && exist('contains','builtin') == 5 
     nmatch = 0; 
     % Loop through 
     matches = zeros(size(cond_names,1),1); 
