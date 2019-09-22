@@ -272,12 +272,9 @@ for k = 1:numcs
         settings = data.settings; 
     end 
     
-    % Save the z-line image names and paths 
-    if ~combineMultipleRuns
-        % Store the z-line images and path 
-        zline_images{k,1} = CS_results.zline_images; 
-        zline_path{k,1} = CS_results.zline_path; 
-    end
+    % Store the z-line images and path 
+    zline_images{k,1} = CS_results.zline_images; 
+    zline_path{k,1} = CS_results.zline_path; 
     
     %Store the results from each coverslip if these are not single cells 
     if settings.cardio_type == 1 && settings.analysis && ...
