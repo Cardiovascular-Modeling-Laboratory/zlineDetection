@@ -22,7 +22,6 @@
 
 function [ labeled_im ] = labelSkeleton( im, skel )
 
-
 %Make sure image is mat2gray 
 im = mat2gray(im); 
 

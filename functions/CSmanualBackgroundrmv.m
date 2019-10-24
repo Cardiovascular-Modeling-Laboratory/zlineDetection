@@ -31,8 +31,13 @@ end
 % For each FOV display the image and ask if the user would like to
 % eliminate part of the background 
 
+% Save modified number and their ID 
+modn = 0; 
+modbin = zeros(n,1); 
+
 % Select the orientation analysis files 
-for k = 1:n
+% for k = 1:n
+for k = 1:1
     % Load the labeled image
     currentFOV = load(fullfile(FOV_paths{k,1},FOV_names{k,1}));
     % Load settings
@@ -43,9 +48,22 @@ for k = 1:n
     
     % Label the skeleton 
     [ labeled_im ] = ...
-        labelSkeleton( mat2gray(im_struct.im), im_struct.skel_final_trimmed ); 
+        labelSkeleton( mat2gray(im_struct.im), ...
+        im_struct.skel_final_trimmed ); 
     imshow(labeled_im); 
     
     % Ask the user if they'd like to remove parts of the background  
-    
+    answer = questdlg('Would you like to manually remove parts of the background?', ...
+	'Modify Image', ...
+	'Yes','No','Yes');
+
+    % Close image 
+    close; 
+    % Handle response
+    switch answer
+        case 'Yes'
+            mask = modifyROI( mat2gray(im_struct.im), ...
+                im_struct.skel_final_trimmed, false ); 
+    end
+   
 end
