@@ -44,18 +44,18 @@ while index < 1
             '(double-click to close the ROI)']);
     end 
     
-    % Generate the colormask 
-    color = [219, 3, 252]./255;
-    for h = 1:3
-        colorMask(:,:,h) = color(h).*~background;
-    end
-
-
+%     % Generate the colormask 
+%     colorMask = zeros(size(mask,1), size(mask,2), 3);
+%     color = [219, 3, 252]./255;
+%     for h = 1:3
+%         colorMask(:,:,h) = color(h).*~background;
+%     end
+% 
     %Plot the skeleton on top of the image
     labeled_im  = labelSkeleton( im, binim_skel ); 
     hold on; 
-    himage = imshow(colorMask);
-    himage.AlphaData = 0.2;
+%     himage = imshow(colorMask);
+%     himage.AlphaData = 0.2;
     
     %Select ROI and overlay the mask 
     BW = roipoly(labeled_im);

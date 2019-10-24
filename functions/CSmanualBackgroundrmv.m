@@ -63,7 +63,7 @@ for k = 1:1
     switch answer
         case 'Yes'
             mask = modifyROI( mat2gray(im_struct.im), ...
-                im_struct.skel_final_trimmed, false ); 
+                im_struct.skel_final_trimmed, false,im_struct.background); 
     end
    
 end
