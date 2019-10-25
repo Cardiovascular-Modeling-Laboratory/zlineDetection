@@ -44,26 +44,37 @@ while index < 1
             '(double-click to close the ROI)']);
     end 
     
-%     % Generate the colormask 
-%     colorMask = zeros(size(mask,1), size(mask,2), 3);
-%     color = [219, 3, 252]./255;
-%     for h = 1:3
-%         colorMask(:,:,h) = color(h).*~background;
-%     end
-% 
+
     %Plot the skeleton on top of the image
     labeled_im  = labelSkeleton( im, binim_skel ); 
     hold on; 
-%     himage = imshow(colorMask);
-%     himage.AlphaData = 0.2;
+
     
     %Select ROI and overlay the mask 
     BW = roipoly(labeled_im);
-
     
+    imshow(labeled_im); 
+    hold on; 
+     % Generate the colormask 
+     color_mask = zeros(size(mask,1), size(mask,2), 3);
+     color_old = [219, 3, 252]./255;
+     color_new = [83, 237, 109]./255;
+     for h = 1:3
+         % Set the old mask to be purple 
+         temp_mask = color_old(h).*~mask; 
+         temp_mask(background == 0) = color_old(h); 
+         % Set the new mask to be green 
+         temp_mask(BW == 1) = color_new(h); 
+         color_mask(:,:,h) = temp_mask;
+     end
+     himage = imshow(color_mask);
+     himage.AlphaData = 0.2;
+    title('Z-lines are yellow; Background is shaded purple; ROI is in green'); 
+
     % Ask the user if they'd like to remove parts of the background  
     answer = questdlg('Would you like to select the ROI?', ...
 	'ROI','Accept ROI','Reject ROI','Accept ROI');
+    close; 
 
     % Handle response
     switch answer
