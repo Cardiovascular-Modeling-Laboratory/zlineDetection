@@ -19,7 +19,7 @@ FOV_paths = cell(n,1);
 % Select the orientation analysis files 
 for k = 1:n
     clc; 
-    [p,f,e] = fileparts(fullfile(CS_path{1},zline_images{n})); 
+    [p,f,e] = fileparts(fullfile(CS_path{1},zline_images{k})); 
     likelypath = fullfile(p,f); 
     [ temp_name, temp_path,~ ] = load_files( {'*OrientationAnalysis*.mat'}, ...
         'Select the orientation analysis file...', likelypath);
@@ -42,6 +42,10 @@ today_date = datestr(now,date_format);
 
 % Select the orientation analysis files 
 for k = 1:n
+    % Update the user 
+    dmsg = strcat('Field of View', {' '}, num2str(k),{' '}, 'of', ...
+        {' '},num2str(n),'.'); 
+    disp(dmsg{1}); 
     % Load the labeled image
     currentFOV = load(fullfile(FOV_paths{k,1},FOV_names{k,1}));
     % Load settings
