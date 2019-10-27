@@ -146,6 +146,7 @@ end
 
 % Add path 
 addpath('actin_filtering'); 
+addpath('continuous_zline_detection'); 
 % Store the settings for the entire coverslip
 settings = CS_data.settings; 
 
@@ -178,16 +179,24 @@ ACTINFOV_anglecount = cell(1,n);
 
 %% Reanalyze the images, and compile 
 
+mc = 0; 
 % Loop through the number modified 
 for k = 1:n
     % Load the labeled image
-    currentFOV = load(fullfile(FOV_paths{k,1},FOV_names{k,1})); 
+    currentFOV = load(fullfile(FOV_paths{k,1},newFOV_names{k,1})); 
     
     % Store the image struct
     im_struct = currentFOV.im_struct; 
 
 % (1) BEGIN: recreate the orientation analysis 
     if modbin(k,1) == 1
+        % Clear the commadn line and update the user 
+        clc; 
+        mc = mc + 1; 
+        dmsg = strcat('Reanalyzing', {' '}, num2str(mc),{' '}, 'of', ...
+            {' '},num2str(modn),'.'); 
+        disp(dmsg{1}); 
+        
         % Recreate the image struct 
         [im_struct] = ...
             reanalyzeManualMask(currentFOV.im_struct,currentFOV.settings,...
@@ -268,12 +277,9 @@ for k = 1:n
         % >>>> ACTIN OOP  
         if settings.tf_OOP && ~settings.exploration
             
-            % Calculate OOP if need be, otherwise, store the OOP struct 
-            if modbin(k,1) == 1
-                [ oop_struct.ACTINoop, oop_struct.ACTINdirectionAngle, ~, ...
+            [ oop_struct.ACTINoop, oop_struct.ACTINdirectionAngle, ~, ...
                     oop_struct.ACTINdirector ] = calculate_OOP( temp_angles ); 
-            end 
-            
+                
             %Save the values in the the FOV matrix 
             ACTINFOV_OOPs{1,k} = oop_struct.ACTINoop;
             ACTINFOV_directors{1,k} = oop_struct.ACTINdirectionAngle; 
@@ -335,13 +341,15 @@ end
 
 
 %% Compile Coverslip Summary 
+clc; 
+disp('Creating coverslip summary file'); 
 
 %Declare the type of summary file 
 tp = {'CS', 'SC'}; 
 
+temp = CS_name{1}; 
 %Name of the summary file 
-summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
-    '_Summary',today_date,'.mat');
+summary_file_name = strcat(temp(1:end-12),today_date,'.mat');
 
 %Combine the FOV and save plots and .mat file  
 %If this is a tissue combine the FOV, otherwise save
@@ -350,8 +358,8 @@ if settings.cardio_type == 1 && settings.analysis && ...
     %Create a struct for the coverslip data  
     CS_results = struct(); 
     %>>> Files 
-    CS_results.zline_path = zline_path;
-    CS_results.zline_images = zline_images; 
+    CS_results.zline_path = CS_data.CS_results.zline_path;
+    CS_results.zline_images = CS_data.CS_results.zline_images; 
     %>>> Actin Filtering analysis 
     CS_results.FOV_prefiltered = FOV_prefiltered;
     CS_results.FOV_postfiltered = FOV_postfiltered;
@@ -371,8 +379,8 @@ if settings.cardio_type == 1 && settings.analysis && ...
     %Create new struct to hold FOV data 
     FOV_results = struct();
     %>>> Files 
-    FOV_results.zline_path = zline_path;
-    FOV_results.zline_images = zline_images;
+    FOV_results.zline_path = CS_data.CS_results.zline_path;
+    FOV_results.zline_images = CS_data.CS_results.zline_images; 
     %>>> Actin Filtering analysis 
     FOV_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
     FOV_results.FOV_zlinefrac = FOV_zlinefrac;
@@ -406,13 +414,11 @@ if settings.cardio_type == 1 && settings.analysis && ...
     CS_results = rmfield(CS_results, 'ACTINFOV_angles');
     
     %Save the summary file 
-    if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
-        save(fullfile(zline_path{1}, summary_file_name), ...
+    if exist(fullfile(CS_path{1}, summary_file_name),'file') == 2
+        save(fullfile(CS_path{1}, summary_file_name), ...
             'CS_results','FOV_results','settings','-append')
     else
-        save(fullfile(zline_path{1}, summary_file_name), ...
+        save(fullfile(CS_path{1}, summary_file_name), ...
             'CS_results','FOV_results','settings')
     end 
-end 
-    
-    
+end  
