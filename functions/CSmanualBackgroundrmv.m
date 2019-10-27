@@ -41,8 +41,7 @@ date_format = 'yyyymmdd';
 today_date = datestr(now,date_format);
 
 % Select the orientation analysis files 
-% for k = 1:n
-for k = 1:1
+for k = 1:n
     % Load the labeled image
     currentFOV = load(fullfile(FOV_paths{k,1},FOV_names{k,1}));
     % Load settings
@@ -176,7 +175,7 @@ ACTINFOV_anglecount = cell(1,n);
 %% Reanalyze the images, and compile 
 
 % Loop through the number modified 
-for k = 1:1
+for k = 1:n
     % Load the labeled image
     currentFOV = load(fullfile(FOV_paths{k,1},FOV_names{k,1})); 
     
@@ -204,38 +203,13 @@ for k = 1:1
             %Close all other figures so there isn't a chance of plotting
             %over anything
             close all; 
-
-            %Calculate the continuous z-line length 
-            FOV_lengths{1,k} = zlineCZL(im_struct, settings); 
             
-            %Compute the median
-            FOV_medians{1,k} = median( FOV_lengths{1,k} ); 
-
-            % Compute the mean 
-            FOV_means{1,k} = mean( FOV_lengths{1,k} ); 
-
-            %Compute the sum 
-            FOV_sums{1,k} = sum( FOV_lengths{1,k} ); 
-
-            %Create a histogram of the distances
-            figure; histogram(FOV_lengths{1,k});
-            set(gca,'fontsize',16)
-            hist_name = strcat('Median: ', num2str(FOV_medians{1,k}),' \mu m');
-            title(hist_name,'FontSize',18,'FontWeight','bold');
-            xlabel('Continuous Z-line Lengths (\mu m)','FontSize',18,...
-                'FontWeight','bold');
-            ylabel('Count','FontSize',18,'FontWeight','bold');
-
-            %Save histogram as a tiff 
-            fig_name = strcat( im_struct.im_name, '_CZLhistogram');
-            saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
-
-            %Close all of the images 
-            close all;    
+            %Calculate the continuous z-line length 
+            FOV_lengths{1,k} = zlineCZL(im_struct, settings, ...
+                currentFOV.manual_background_removal.savefullname); 
+            
         end 
-        
-        
-        
+                
     else
         % >>>> Store OOP struct 
         if settings.tf_OOP && ~settings.exploration
