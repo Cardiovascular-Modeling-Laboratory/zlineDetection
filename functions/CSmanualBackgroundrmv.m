@@ -181,8 +181,8 @@ for k = 1:n
     
     % Store the image struct
     im_struct = currentFOV.im_struct; 
-    
-    % Recreate the orientation analysis 
+
+% (1) BEGIN: recreate the orientation analysis 
     if modbin(k,1) == 1
         % Recreate the image struct 
         [im_struct] = ...
@@ -207,19 +207,28 @@ for k = 1:n
             %Calculate the continuous z-line length 
             FOV_lengths{1,k} = zlineCZL(im_struct, settings, ...
                 currentFOV.manual_background_removal.savefullname); 
+            % Close all figures 
+            close all; 
             
         end 
-                
+% (1) END: recreate the orientation analysis 
+
+% (2) BEGIN: storage of unmodified FOV 
     else
         % >>>> Store OOP struct 
         if settings.tf_OOP && ~settings.exploration
             oop_struct = currentFOV.oop_struct; 
         end 
+        %>>>> CONTINUOUS Z-LINE LENGTH 
+        if settings.tf_CZL && ~settings.exploration 
+            FOV_lengths{1,k} = currentFOV.CZL_struct.distances_um; 
+        end 
     end 
-    
-    %>>>> Store actin filter 
-    %If the user is filtering with actin, save the actin orientation
-    %vectors and calculate FOV if requested 
+% (2) END: storage of unmodified FOV 
+
+% Store values for coverslip summary 
+
+    %>>>> CS Z-LINE FRACTION AND ACTIN ORIENTATION ANALYSIS 
     if settings.actin_filt
         %Fraction for each FOV 
         FOV_nonzlinefrac{1,k} = im_struct.nonzlinefrac; 
@@ -252,7 +261,7 @@ for k = 1:n
         %Save length
         ACTINFOV_anglecount{1,k} = length(temp_angles); 
 
-        % >>>> Store actin OOP 
+        % >>>> ACTIN OOP  
         if settings.tf_OOP && ~settings.exploration
             
             % Calculate OOP if need be, otherwise, store the OOP struct 
@@ -267,7 +276,7 @@ for k = 1:n
         end 
     end 
     
-    %>>> STORE ORIENTATION VECTORS
+    %>>> Z-LINE OOP 
     FOV_angles{1,k} = im_struct.orientim; 
 
     % get number of nonzero orientation vectors 
@@ -281,13 +290,125 @@ for k = 1:n
     %Get the number of nonzero orientation angles 
     FOV_anglecount{1,k} = length(temp_angles); 
 
+    %Calculate the OOP, director vector and director angle 
+    if settings.tf_OOP && ~settings.exploration 
+        % Caclualate OOP 
+        if modbin(k,1) == 1
+            [ oop, oop_struct.directionAngle, ~, ...
+                oop_struct.director ] = calculate_OOP( temp_angles ); 
+             oop_struct.oop = oop; 
+             
+             %Append summary file with OOP 
+            save(currentFOV.manual_background_removal.savefullname, ...
+                'oop_struct', '-append');
+           
+        end
+        
+        %Save the values in the the FOV matrix 
+        FOV_OOPs{1,k} = oop_struct.oop; 
+        FOV_directors{1,k} = oop_struct.directionAngle; 
+            
+    end 
+                       
     %>>> EXPLORATION PARAMETERS
     FOV_thresholds{1,k} = settings.actin_thresh; 
     FOV_grid_sizes{1,k} = settings.grid_size(1);
+    
+    %>>>> CONTINUOUS Z-LINE LENGTH 
+    % If the user wants to calculate continuous z-line length 
+    if settings.tf_CZL && ~settings.exploration 
+        %Compute the median
+        FOV_medians{1,k} = median( FOV_lengths{1,k} ); 
+
+        % Compute the mean 
+        FOV_means{1,k} = mean( FOV_lengths{1,k} ); 
+
+        %Compute the sum 
+        FOV_sums{1,k} = sum( FOV_lengths{1,k} ); 
+    end 
             
-        
 end
 
 
+%% Compile Coverslip Summary 
+
+%Declare the type of summary file 
+tp = {'CS', 'SC'}; 
+
+%Name of the summary file 
+summary_file_name = strcat(name_CS, tp{settings.cardio_type},...
+    '_Summary',today_date,'.mat');
+
+%Combine the FOV and save plots and .mat file  
+%If this is a tissue combine the FOV, otherwise save
+if settings.cardio_type == 1 && settings.analysis && ...
+        ~settings.diffusion_explore
+    %Create a struct for the coverslip data  
+    CS_results = struct(); 
+    %>>> Files 
+    CS_results.zline_path = zline_path;
+    CS_results.zline_images = zline_images; 
+    %>>> Actin Filtering analysis 
+    CS_results.FOV_prefiltered = FOV_prefiltered;
+    CS_results.FOV_postfiltered = FOV_postfiltered;
+    %>>> Continuous Z-line Analysis 
+    CS_results.FOV_lengths = FOV_lengths;
+    %>>> Z-line Angle analysis  
+    CS_results.FOV_angles = FOV_angles; 
+    %>>> Actin angle analysis 
+    CS_results.ACTINFOV_angles = ACTINFOV_angles; 
+    %>>> EXPLORATION Parmaeters 
+    CS_results.FOV_thresholds = FOV_thresholds; 
+    CS_results.FOV_grid_sizes = FOV_grid_sizes; 
+    
+    %Combine the FOV 
+    CS_results = combineFOV( settings, CS_results ); 
+    
+    %Create new struct to hold FOV data 
+    FOV_results = struct();
+    %>>> Files 
+    FOV_results.zline_path = zline_path;
+    FOV_results.zline_images = zline_images;
+    %>>> Actin Filtering analysis 
+    FOV_results.FOV_nonzlinefrac = FOV_nonzlinefrac;
+    FOV_results.FOV_zlinefrac = FOV_zlinefrac;
+    FOV_results.FOV_prefiltered = FOV_prefiltered;
+    FOV_results.FOV_postfiltered = FOV_postfiltered;
+    %>>> Continuous Z-line Analysis 
+    FOV_results.FOV_lengths = FOV_lengths;
+    FOV_results.FOV_medians = FOV_medians;
+    FOV_results.FOV_sums = FOV_sums;
+    %>>> Z-line Angle analysis  
+    FOV_results.FOV_angles = FOV_angles;
+    FOV_results.FOV_OOPs = FOV_OOPs; 
+    FOV_results.FOV_directors = FOV_directors;
+    FOV_results.FOV_anglecount = FOV_anglecount;
+    %>>> Actin angle analysis 
+    FOV_results.ACTINFOV_angles = ACTINFOV_angles;
+    FOV_results.ACTINFOV_OOPs = ACTINFOV_OOPs; 
+    FOV_results.ACTINFOV_directors = ACTINFOV_directors; 
+    FOV_results.ACTINFOV_anglecount = ACTINFOV_anglecount; 
+    %>>> EXPLORATION Parameters 
+    FOV_results.FOV_thresholds = FOV_thresholds;
+    FOV_results.FOV_grid_sizes = FOV_grid_sizes;
+    
+    %Remove the appropriate data fields from the CS_results struct 
+    CS_results = rmfield(CS_results, 'FOV_prefiltered');
+    CS_results = rmfield(CS_results, 'FOV_postfiltered');
+    CS_results = rmfield(CS_results, 'FOV_lengths');
+    CS_results = rmfield(CS_results, 'FOV_angles');
+    CS_results = rmfield(CS_results, 'FOV_thresholds');
+    CS_results = rmfield(CS_results, 'FOV_grid_sizes');
+    CS_results = rmfield(CS_results, 'ACTINFOV_angles');
+    
+    %Save the summary file 
+    if exist(fullfile(zline_path{1}, summary_file_name),'file') == 2
+        save(fullfile(zline_path{1}, summary_file_name), ...
+            'CS_results','FOV_results','settings','-append')
+    else
+        save(fullfile(zline_path{1}, summary_file_name), ...
+            'CS_results','FOV_results','settings')
+    end 
+end 
     
     
