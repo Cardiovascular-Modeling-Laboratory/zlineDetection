@@ -19,35 +19,42 @@ if strcmp('One Run',runType)
     combineMultipleRuns = false;
 end
 
+% Can summarize
+canSummarize = true; 
+    
+
 previous_path = pwd; 
+pathname = {previous_path}; 
 % Check what the user wants to only load settings 
-if combineMultipleRuns
-    % Set the display message
-    dispmsg = 'Select .mat file that contains settings...';
-else
+if ~combineMultipleRuns
+%     % Set the display message
+%     dispmsg = 'Select .mat file that contains settings...';
+% else
     % Set the display message
     dispmsg = 'Select .mat file that contains settings and image paths...';
+    
+    % Have the user select a file that has settings that they would like to
+    [ filename, pathname, ~ ] = load_files( ...
+        {'*Initialization*.mat;*OrientationAnalysis*.mat'},...
+        dispmsg, previous_path, 'off' );
+
+    % Load the previous data
+    previous_data = load(fullfile(pathname{1}, filename{1})); 
+
+
+
+    % Check to make sure settings is a field 
+    if isfield(previous_data, 'settings')
+        % Store the settings 
+        settings = previous_data.settings;
+    else
+        disp('Settings not provided in .mat file.');
+        canSummarize = false; 
+    end  
+
 end 
 
-% Have the user select a file that has settings that they would like to
-[ filename, pathname, ~ ] = load_files( ...
-    {'*Initialization*.mat;*OrientationAnalysis*.mat'},...
-    dispmsg, previous_path, 'off' );
 
-% Load the previous data
-previous_data = load(fullfile(pathname{1}, filename{1})); 
-
-% Can summarize 
-canSummarize = true; 
-
-% Check to make sure settings is a field 
-if isfield(previous_data, 'settings')
-    % Store the settings 
-    settings = previous_data.settings;
-else
-    disp('Settings not provided in .mat file.');
-    canSummarize = false; 
-end  
 
 % Get the data paths from the struct according to settings, if the 
 % fields exist 
@@ -115,27 +122,29 @@ if ~combineMultipleRuns && canSummarize
     else
         % Set cond to empty if not setting conditions 
         cond = []; 
-    end     
+    end    
+    
+    numcs = settings.num_cs; 
 end
 
 %% Select Coverslip Summaries
 
 if combineMultipleRuns && canSummarize
-
+    settings = struct(); 
     %Prompt Questions
     numcs_prompt = {'Number of Coverslips to Summarize'};
     %Title of prompt 
     numcs_title = 'Post Analysis Coverslip Summary';
     %Dimensions 
     numcs_dims = [1,45];
-    %Default inputs
-    numcs_definput = {num2str(settings.num_cs)}; 
     %Save answers
     numcs_answer = inputdlg(numcs_prompt,numcs_title,...
-    numcs_dims,numcs_definput);
+    numcs_dims);
 
     numcs = str2double(numcs_answer{1});
-
+    % Save the number of coverslips 
+    settings.num_cs = numcs; 
+    
     previous_path = pathname{1}; 
     zline_images = cell(numcs,1);
     zline_path = cell(numcs,1);
@@ -143,15 +152,20 @@ if combineMultipleRuns && canSummarize
     actin_path = cell(numcs,1);
     cond = zeros(numcs,1); 
     name_CS = cell(numcs,1);
-else
-    numcs = settings.num_cs; 
+    
+    % Set multiple condtions to be true 
+    settings.multi_cond = true; 
+    % Settings defaults 
+    settings.diffusion_explore = false; 
+    settings.grid_explore = false; 
+    settings.actinthresh_explore = false; 
+    settings.analysis = true; 
+    settings = additionalUserInput(settings); 
 end 
 
 % Initialize CS path and names
 CS_path = cell(numcs,1); 
 CS_name = cell(numcs,1);
-
-
 
 %Start counting variable
 for k = 1:numcs
@@ -169,7 +183,7 @@ for k = 1:numcs
         % Prompt the user to select the images they would like to analyze. 
         [ CS_name{k,1}, CS_path{k,1},~ ] = ...
             load_files( {'*CS_Summary*.mat'}, ...
-            'Select CS summary file...', previous_path);
+            'Select CS summary file...', settings.SUMMARY_path);
         
         %Temporarily store the path 
         temp_path = CS_path{k,1}; 
@@ -269,8 +283,22 @@ for k = 1:numcs
     
     % If this is the first iteration use settings
     if k == 1
-        settings = data.settings; 
+        if ~combineMultipleRuns
+            settings = data.settings;
+            settings.num_cs = numcs; 
+        else
+            temp_settings = settings; 
+            settings = data.settings; 
+            settings.num_cs = temp_settings.num_cs; 
+            settings.multi_cond = temp_settings.multi_cond; 
+            settings.num_cond = temp_settings.num_cond; 
+            settings.cond_names = temp_settings.cond_names; 
+            settings.SUMMARY_path = temp_settings.SUMMARY_path; 
+            settings.SUMMARY_name = temp_settings.SUMMARY_name; 
+            
+        end 
     end 
+    
     
     % Store the z-line images and path 
     zline_images{k,1} = CS_results.zline_images; 
@@ -323,7 +351,7 @@ end
 
 %Get the name and location of summary file if there is more than one
 %coverslip and the user wants to do any kind of analysis 
-if settings.num_cs > 1 && settings.analysis
+if settings.num_cs > 1 && settings.analysis && ~combineMultipleRuns
     %Display message to select path 
     disp('Select a location to save summary analysis for all Coverslips'); 
     %Ask the user for the location of the summary file 
