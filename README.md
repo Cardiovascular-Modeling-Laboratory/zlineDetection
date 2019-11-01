@@ -30,7 +30,7 @@ ver
 
 | Version  | Date | Update Description |
 |---|---|---|
-| 1.0.004 | | Implemented semantic versioning. |
+| 1.0.004 | | Implemented semantic versioning. Change x-spacing of dots in dot plots. |
 | 1.0.003 | Oct 30, 2019 | Fixed bugs so post analysis, multiple runs can be combined. |
 | 1.0.002 | Oct 27, 2019 | Added script to manually remove regions of the background, which were missed by the background substraction. |
 | 1.0.001  |   |   |
