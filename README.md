@@ -28,10 +28,11 @@ ver
 
 ## Versioning
 
-| Version  | Date | Updates|
+| Version  | Date | Update Description |
 |---|---|---|
-| 1.0.003 | Oct 30, 2019 | Bug fixes to post analysis summary |
-| 1.0.002 | Oct 27, 2019 | Added script to manually remove regions of the background, which were missed by the background substraction  |
+| 1.0.004 | | Implemented semantic versioning. |
+| 1.0.003 | Oct 30, 2019 | Fixed bugs so post analysis, multiple runs can be combined. |
+| 1.0.002 | Oct 27, 2019 | Added script to manually remove regions of the background, which were missed by the background substraction. |
 | 1.0.001  |   |   |
 
 ZlineDetection uses semantic versioning where the version number follows the convention <Major>.<Minor>.<Patch>.
