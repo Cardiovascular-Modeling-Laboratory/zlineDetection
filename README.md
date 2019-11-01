@@ -28,7 +28,20 @@ ver
 
 ## Versioning
 
-## Authors
+| Version  | Date | Updates|
+|---|---|---|
+| 1.0.003 | Oct 30, 2019 | Bug fixes to post analysis summary |
+| 1.0.002 | Oct 27, 2019 | Added script to manually remove regions of the background, which were missed by the background substraction  |
+| 1.0.001  |   |   |
+
+ZlineDetection uses semantic versioning where the version number follows the convention <Major>.<Minor>.<Patch>.
+Major Release: new features break backwards compatibility/current features
+Minor Release: features don’t break any existing features and are compatible with old versions.
+Patch Release: bug/patch fixes
+
+
+
+##Authors
 
 ## License
 
