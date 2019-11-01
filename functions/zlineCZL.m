@@ -2,7 +2,7 @@
 % will format the output from continuous z-line detection in a maner that
 % can be analzed by continuous_zline_detection 
 
-function [ distances_um ] = zlineCZL(im_struct, settings)
+function [ distances_um ] = zlineCZL(im_struct, settings, savename)
 
 % Continuous Z-line Detection requires the orientation vectors, an input
 % image, and the dot product threshold. Extract this information from
@@ -37,6 +37,13 @@ else
     
     %Store the location to save all of the files 
     save_path = actin_explore.save_path; 
+end 
+
+% Append the savename with today's date and the background removal (this is
+% only for a very specific case). 
+if nargin == 3
+    [save_path, f, ~] = fileparts(savename);  
+    output_filename = strcat(output_filename, f(end-16:end)); 
 end 
 
 % Run continuous z-line detection 
@@ -86,9 +93,13 @@ else
     CZL_struct.distances_um = distances_um; 
     CZL_struct.rmCount = rmCount; 
 
-    %Append summary file with OOP 
-    save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
-       '_OrientationAnalysis.mat')), 'CZL_struct', '-append');
+    %Append summary file with CZL
+    if nargin == 3
+        save(savename, 'CZL_struct', '-append');
+    else
+        save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
+           '_OrientationAnalysis.mat')), 'CZL_struct', '-append');
+    end 
 end   
 
 end
