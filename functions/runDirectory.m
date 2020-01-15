@@ -20,10 +20,11 @@ function [ CS_results ] = ...
 %This function will take file names as an input and then loop through them,
 %calling the analyze function
 
-%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% Initialize & Preallocate Cells / Matrices  %%%%%%%%%%%%%%%%%%%%%
+% Get the number of z-line images 
 zn = length(zline_images); 
 
-%>>> Actin Filtering analysis 
+%>>> Actin Segmentation
 FOV_nonzlinefrac = cell(1,zn);
 FOV_zlinefrac = cell(1,zn);
 FOV_prefiltered = cell(1,zn); 
@@ -46,6 +47,8 @@ ACTINFOV_angles = cell(1,zn);
 ACTINFOV_OOPs = cell(1,zn); 
 ACTINFOV_directors = cell(1,zn); 
 ACTINFOV_anglecount = cell(1,zn); 
+%>>> Sarcomere Distances 
+FOV_sarcdistance = cell(1,zn);
 
 % Get today's date in string form.
 date_format = 'yyyymmdd';
@@ -81,7 +84,7 @@ for k = 1:zn
     filenames.zline = fullfile(zline_path{1}, zline_images{1,k});
 
 %>>>> ACTIN FILTERING, save filename 
-    %Store hte current actin filename (if we're doing actin filtering
+    %Store the current actin filename (if we're doing actin filtering
     if settings.actin_filt
         filenames.actin = fullfile(actin_path{1}, actin_images{1,k});
     else 

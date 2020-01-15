@@ -214,7 +214,10 @@ settings.num_cs = str2double(get(handles.num_cs, 'String'));
 settings.cardio_type = get(handles.cardio_type, 'Value'); 
 
 % Whether each has its own condition 
-settings.multi_cond = get(handles.multi_cond, 'Value'); 
+settings.multi_cond = get(handles.multi_cond, 'Value');
+
+% Set sarcomere distance calculation to be true
+settings.tf_sarcdist = true; 
 
 %%%%%%%%%%%%%%%%%% Check if the User Wants Any Analysis %%%%%%%%%%%%%%%%%%%
 
