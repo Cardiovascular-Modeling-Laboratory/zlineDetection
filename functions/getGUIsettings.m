@@ -218,6 +218,7 @@ settings.multi_cond = get(handles.multi_cond, 'Value');
 
 % Set sarcomere distance calculation to be true
 settings.tf_sarcdist = true; 
+settings.disp_sarcdist = false; 
 
 %%%%%%%%%%%%%%%%%% Check if the User Wants Any Analysis %%%%%%%%%%%%%%%%%%%
 

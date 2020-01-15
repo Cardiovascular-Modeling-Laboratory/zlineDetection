@@ -302,11 +302,15 @@ for k = 1:zn
             %Append summary file with the sarcomere distance struct  
             save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
                '_OrientationAnalysis.mat')), 'sarcdist_struct', '-append');
+           
+           % Only plot the sarcomere distances if requested by the user. 
+           if settings.disp_sarcdist 
            % Plot sarcomere length image
             plotSarcLengthIM(mat2gray(im_struct.im), x_0, y_0, x_np, ...
                y_np, allsarclengths_microns); 
             fig_name = strcat( im_struct.im_name, '_sarcdist');
             saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
+           end 
             % Plot sarcomere length histogram
             figure; plotSLhist(allnonzerosarclengths_microns, ...
                 sarclength_mean, sarclength_stdev)
