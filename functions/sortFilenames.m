@@ -57,7 +57,11 @@ else
                 compareFileNumbers(set1{p1},set2{p2}, false, ...
                     exclusions); 
            comp_matrix(p1,p2,1) = n_diff;
-           comp_matrix(p1,p2,2) = max_diff;
+           if ~isempty(max_diff)
+            comp_matrix(p1,p2,2) = max_diff;
+           else
+               comp_matrix(p1,p2,2) = 0; 
+           end 
        end 
    end 
 end 

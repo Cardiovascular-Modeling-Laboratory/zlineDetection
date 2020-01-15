@@ -28,6 +28,20 @@ ver
 
 ## Versioning
 
+| Version  | Date | Update Description |
+|---|---|---|
+| 1.0.004 | Jan 15, 2020 | Implemented semantic versioning. Change x-spacing of dots in dot plots. Enhance filenames comparison |
+| 1.0.003 | Oct 30, 2019 | Fixed bugs so post analysis, multiple runs can be combined. |
+| 1.0.002 | Oct 27, 2019 | Added script to manually remove regions of the background, which were missed by the background substraction. |
+| 1.0.001  |   |   |
+
+ZlineDetection uses semantic versioning where the version number follows the convention <Major>.<Minor>.<Patch>.
+Major Release: new features break backwards compatibility/current features
+Minor Release: features don’t break any existing features and are compatible with old versions.
+Patch Release: bug/patch fixes
+
+
+
 ## Authors
 
 ## License
