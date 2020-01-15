@@ -8,9 +8,9 @@
 %                           be in radians
 %   scale               - Scale of the image (pixels per micrometer)
 %   Dist_Max_Micron     - Maximum distance between neighboring sarcomeres 
-%                           in micrometers (suggested 10 um):
+%                           in micrometers (suggested 10 microns)
 %   Dist_Min_Micron     - Minimum distance between neighboring sarcomeres 
-%                           in micrometers (suggested 0.1 um)
+%                           in micrometers (suggested 0.1 microns)
 %   Delta_Angle_deg     - Myofibril possible bending angle 
 %                           (suggested 20 degrees)
 % 
@@ -18,6 +18,7 @@
 %   d_mean              - Average distance in microns
 %   d_stdev             - Standard deviation of distance in microns
 %   d_micron            - Distances in microns
+%   d_micron_NZ         - Distances in mirocns with no zero values 
 %   d                   - Distances in pixels 
 %   x_0                 - X coordinate of nonzero indices
 %   y_0                 - Y coordinate of nonzero indices
@@ -27,9 +28,10 @@
 %                           the direction theta_0
 %   d_micron_NZ         - Non-zero distances
 %
-% Suggested parameters: None
-% 
-
+% Suggested parameters: 
+%   Dist_Max_Micron     - 10 microns
+%   Dist_Min_Micron     - 0.1 microns
+%   Delta_Angle_deg     - 20 degrees
 
 function [d_mean, d_stdev, d_micron, d_micron_NZ, d, x_0, y_0, x_np, ...
     y_np] = calculateSarcLength(orientim_perp, scale, Dist_Max_Micron, ...
@@ -157,14 +159,12 @@ function [d_mean, d_stdev, d_micron, d_micron_NZ, d, x_0, y_0, x_np, ...
             x_np(pix) = x_i(Pix_ind);
             y_np(pix) = y_i(Pix_ind);
         end
-%         figure(1)
-%         hold on
-%         line([x_0(pix),x_np(pix)],[y_0(pix),y_np(pix)])
     end
     %The distance in microns
     d_micron = d./scale;
-    %The list of non-zero distances
-    d_micron_NZ = d_micron(find(d_micron));
+    %Remove zero distances 
+    d_micron_NZ = d_micron;
+    d_micron_NZ(d_micron_NZ == 0) = []; 
     %The mean distance
     d_mean = mean(d_micron_NZ);
     d_stdev = std(d_micron_NZ);

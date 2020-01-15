@@ -273,6 +273,34 @@ for k = 1:zn
         % Close all figures
         close all; 
         
+        %>>>> Sarcomere Distance
+        if settings.tf_sarcdist && ~settings.exploration
+            % Create a struct to store the sarcomere distances 
+            sarcdist_struct = struct(); 
+            % Get the perpendicular orientation vectors (sarcomere
+            % orientation vectors) 
+            orientim_perp = FOV_angles{1,k} + pi/2;
+            % Set all NaN values to 0 
+            orientim_perp(isnan(orientim_perp)) = 0; 
+            % Caclulate sarcomere distances 
+            [sarclength_mean, sarclength_stdev, ...
+                allsarclengths_microns, allnonzerosarclengths_microns, ...
+                ~, x_0, y_0, x_np, y_np] = ...
+                calculateSarcLength(orientim_perp, settings.pix2um); 
+            
+            % Store nonzero sarcomere lengths to be combined for the entire
+            % tissue 
+            FOV_sarcdistance{1,k} = allnonzerosarclengths_microns; 
+            % Store the sarcomere length mean, standard deviation, and
+            % lengths in the sarcdist_struct 
+            sarcdist_struct.sarclength_mean = sarclength_mean; 
+            sarcdist_struct.sarclength_stdev = sarclength_stdev; 
+            sarcdist_struct.allsarclengths = allsarclengths_microns; 
+            %Append summary file with the sarcomere distance struct  
+            save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
+               '_OrientationAnalysis.mat')), 'sarcdist_struct', '-append');
+        end 
+        
         % If this is a single cell, create a summary pdf. 
         if settings.cardio_type == 2
             % Store the summary path 
