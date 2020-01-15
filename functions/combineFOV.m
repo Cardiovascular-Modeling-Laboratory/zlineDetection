@@ -83,6 +83,8 @@ CS_results.ACTINangle_count = zeros(1,tot);
 CS_results.CS_thresholds = zeros(1,tot);
 CS_results.CS_gridsizes = zeros(1,tot);
 
+%>>> Sarcomere Distance 
+CS_results.CS_sarcomerelengths = zeros(1,tot); 
 
 %%%%%%%%%%%%%%%%%%% GROUP EXPLORATION VALUES  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Initialize cells to store grouped data so that all of the cells will be

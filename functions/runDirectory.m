@@ -366,6 +366,8 @@ if settings.cardio_type == 1 && settings.analysis && ~settings.diffusion_explore
     %>>> EXPLORATION Parmaeters 
     CS_results.FOV_thresholds = FOV_thresholds; 
     CS_results.FOV_grid_sizes = FOV_grid_sizes; 
+    % Sarcomere Distance
+    CS_results.FOV_sarcdistance = FOV_sarcdistance; 
     
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
