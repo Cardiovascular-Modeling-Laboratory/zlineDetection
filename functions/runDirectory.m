@@ -308,7 +308,8 @@ for k = 1:zn
             fig_name = strcat( im_struct.im_name, '_sarcdist');
             saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
             % Plot sarcomere length histogram
-            figure; plotSLhist(d_micron_NZ,d_mean,d_stdev)
+            figure; plotSLhist(allnonzerosarclengths_microns, ...
+                sarclength_mean, sarclength_stdev)
             fig_name = strcat( im_struct.im_name, '_sarcdisthistogram');
             saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
         end 
