@@ -20,10 +20,11 @@ function [ CS_results ] = ...
 %This function will take file names as an input and then loop through them,
 %calling the analyze function
 
-%%%%%%%%%%%%%%%%%%%%%%%% Initialize Matrices  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% Initialize & Preallocate Cells / Matrices  %%%%%%%%%%%%%%%%%%%%%
+% Get the number of z-line images 
 zn = length(zline_images); 
 
-%>>> Actin Filtering analysis 
+%>>> Actin Segmentation
 FOV_nonzlinefrac = cell(1,zn);
 FOV_zlinefrac = cell(1,zn);
 FOV_prefiltered = cell(1,zn); 
@@ -46,6 +47,8 @@ ACTINFOV_angles = cell(1,zn);
 ACTINFOV_OOPs = cell(1,zn); 
 ACTINFOV_directors = cell(1,zn); 
 ACTINFOV_anglecount = cell(1,zn); 
+%>>> Sarcomere Distances 
+FOV_sarcdistance = cell(1,zn);
 
 % Get today's date in string form.
 date_format = 'yyyymmdd';
@@ -81,7 +84,7 @@ for k = 1:zn
     filenames.zline = fullfile(zline_path{1}, zline_images{1,k});
 
 %>>>> ACTIN FILTERING, save filename 
-    %Store hte current actin filename (if we're doing actin filtering
+    %Store the current actin filename (if we're doing actin filtering
     if settings.actin_filt
         filenames.actin = fullfile(actin_path{1}, actin_images{1,k});
     else 
@@ -270,6 +273,52 @@ for k = 1:zn
         % Close all figures
         close all; 
         
+        %>>>> Sarcomere Distance
+        if settings.tf_sarcdist && ~settings.exploration
+            % Create a struct to store the sarcomere distances 
+            sarcdist_struct = struct(); 
+            % Get the perpendicular orientation vectors (sarcomere
+            % orientation vectors) 
+            orientim_perp = FOV_angles{1,k} + pi/2;
+            % Set all NaN values to 0 
+            orientim_perp(isnan(orientim_perp)) = 0; 
+            % Calculate sarcomere distances 
+            [sarclength_mean, sarclength_stdev, ...
+                allsarclengths_microns, allnonzerosarclengths_microns, ...
+                ~, x_0, y_0, x_np, y_np] = ...
+                calculateSarcLength(orientim_perp, settings.pix2um); 
+            % Store nonzero sarcomere lengths to be combined for the entire
+            % tissue 
+            FOV_sarcdistance{1,k} = allnonzerosarclengths_microns; 
+            % Store the sarcomere length mean, standard deviation, and
+            % lengths in the sarcdist_struct 
+            sarcdist_struct.sarclength_mean = sarclength_mean; 
+            sarcdist_struct.sarclength_stdev = sarclength_stdev; 
+            sarcdist_struct.allsarclengths = allsarclengths_microns;
+            sarcdist_struct.x_0 = x_0; 
+            sarcdist_struct.y_0 = y_0; 
+            sarcdist_struct.x_np = x_np; 
+            sarcdist_struct.y_np = y_np; 
+            %Append summary file with the sarcomere distance struct  
+            save(fullfile(im_struct.save_path, strcat(im_struct.im_name,...
+               '_OrientationAnalysis.mat')), 'sarcdist_struct', '-append');
+           
+           % Only plot the sarcomere distances if requested by the user. 
+           if settings.disp_sarcdist
+               % Plot sarcomere length image
+                plotSarcLengthIM(mat2gray(im_struct.im), x_0, y_0, x_np, ...
+                   y_np, allsarclengths_microns); 
+                fig_name = strcat( im_struct.im_name, '_sarcdist');
+                saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
+           end 
+            % Plot sarcomere length histogram
+            figure; plotSLhist(allnonzerosarclengths_microns, ...
+                sarclength_mean, sarclength_stdev)
+            fig_name = strcat( im_struct.im_name, '_sarcdisthistogram');
+            saveas(gcf, fullfile(im_struct.save_path, fig_name), 'tiffn');
+        end 
+        close all; 
+        
         % If this is a single cell, create a summary pdf. 
         if settings.cardio_type == 2
             % Store the summary path 
@@ -317,6 +366,8 @@ if settings.cardio_type == 1 && settings.analysis && ~settings.diffusion_explore
     %>>> EXPLORATION Parmaeters 
     CS_results.FOV_thresholds = FOV_thresholds; 
     CS_results.FOV_grid_sizes = FOV_grid_sizes; 
+    % Sarcomere Distance
+    CS_results.FOV_sarcdistance = FOV_sarcdistance; 
     
     %Combine the FOV 
     CS_results = combineFOV( settings, CS_results ); 
