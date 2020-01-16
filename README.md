@@ -30,6 +30,7 @@ ver
 
 | Version  | Date | Update Description |
 |---|---|---|
+| 1.2.001 | Jan 15, 2020 | Added functions to save video frames as separate .tifs and a function that can summarize the video data. The user guide has also been updated with instructions to analyze videos, and descriptions of where the results of measuring the sarcomere length can be found |
 | 1.1.001 | Jan 15, 2020 | Added sarcomere length (distance) calculation for each image. Summary for each coverslip has not been implemented. |
 | 1.0.004 | Jan 15, 2020 | Implemented semantic versioning. Change x-spacing of dots in dot plots. Enhance filenames comparison. |
 | 1.0.003 | Oct 30, 2019 | Fixed bugs so post analysis, multiple runs can be combined. |
