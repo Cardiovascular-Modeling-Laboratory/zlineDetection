@@ -1,6 +1,10 @@
-# zlineDetection
+# ZlineDetection
 
 Quantify z-line architecture in images of striated muscles. 
+
+## Reference This Work
+Morris, TA. (2019). Striated myocyte structural integrity: Automated analysis of sarcomeric z-discs. Manuscript submitted 
+     for publication.
 
 ## Getting Started
 
@@ -24,8 +28,6 @@ To check the version of MATLAB and which Toolboxes you have installed, type the 
 ver
 ```
 
-## Reference This Work
-
 ## Versioning
 
 | Version  | Date | Update Description |
@@ -39,7 +41,7 @@ ver
 
 ZlineDetection uses semantic versioning where the version number follows the convention <Major>.<Minor>.<Patch>.
 Major Release: new features break backwards compatibility/current features
-Minor Release: features don’t break any existing features and are compatible with old versions.
+Minor Release: features donâ€™t break any existing features and are compatible with old versions.
 Patch Release: bug/patch fixes
 
 
