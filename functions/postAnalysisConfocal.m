@@ -253,13 +253,55 @@ FieldofViewName = cell(nim,1);
 CoverslipNumber = zeros(nim,1);
 % Initialize Slice Number
 SliceNumber = zeros(nim,1);
-
+ImageNumber = zeros(nim,1);
 % Iteration counter
 it = 1;
 % Loop through the FOVs
 for k = 1:total_confocalFOV
+    % Get the coverslip name and number
+    csname = settings.cond_names{cond(k)};
+    csnum = cond(k);
+    % Get the FOV name 
+    fovname = name_CS{k,1};
+    % Store the FOV slice names 
+    slicenames = zline_images{k,1};
+    fovpath = zline_path{k,1};
     for s = 1:nslice
+        % Fill in acquired information 
+        CoverslipName{it,1} = csname;
+        FieldofViewName{it,1} = fovname;
+        CoverslipNumber(it,1) = csnum;
+        % Image name and path
+        ImageSliceName{it,1} = slicenames{1,s};
+        ImageSlicePath{it,1} = fovpath{1};
+        % Save the iteration number
+        ImageNumber(it,1) = it;
+        % Store the slice number
+        SliceNumber(it,1) = s;
         % Increase iteration
         it = it +1;
     end
 end 
+
+%Save in a table 
+table_all = table(ImageNumber, ImageSliceName,ImageSlicePath,...
+    CoverslipName,CoverslipNumber, FieldofViewName, SliceNumber);
+
+%% Load and compare the data
+
+
+
+%     %Save in a table 
+%     T = table(ConditionValue,ConditionName,CoverslipName,...
+%         DateAnalyzed_YYYYMMDD,OOPzline,OOPactin,...
+%         DirectorZline, DirectorActin,... 
+%         ZlineFraction,NonZlineFraction, TotalZline, ...
+%         TotalActin, MedianCZL, MeanCZL, ...
+%         TotalCZL, SkewnessCZL, KurtosisCZL, ...
+%         GridSize, ActinThreshold, CoverslipPath); 
+%     
+%     %Write the sheet to memory 
+%     filename = strcat(settings.SUMMARY_name{1}, '.xlsx'); 
+%     writetable(T,fullfile(settings.SUMMARY_path,filename),...
+%         'Sheet',1,'Range','A1'); 
+%     
