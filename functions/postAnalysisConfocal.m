@@ -289,6 +289,118 @@ table_all = table(ImageNumber, ImageSliceName,ImageSlicePath,...
 
 %% Load and compare the data
 
+clear CoverslipName SliceNumber
+
+% Number of coverslips and slices
+nt = nslice*total_confocalCS;
+% Store the coverslip name, path, and slice number
+CoverslipName = cell(nt,1);
+CoverslipPath= cell(nt,1);
+SliceNumber = zeros(nt,1);
+
+% For each slice of each coverslip, report the following:
+%OOPzline 
+OOPzline = zeros(nt,1);
+%OOPactin 
+OOPactin = zeros(nt,1);
+%DirectorZline 
+DirectorZline = zeros(nt,1);
+%DirectorActin 
+DirectorActin = zeros(nt,1);
+%ZlineFraction 
+ZlineFraction = zeros(nt,1);
+%TotalZline 
+TotalZlinePixels = zeros(nt,1);
+%TotalActin 
+TotalActinPixels = zeros(nt,1);
+%MedianCZL 
+MedianCZL = zeros(nt,1);
+
+% Start a counter
+it = 1; 
+% Loop through each coverslip
+for c = 1:total_confocalCS
+    % Get the coverslip name and number
+    csname = settings.cond_names{cond(c)};
+    csnum = cond(c);
+    cspath = 'to do';
+    
+    % Loop through all of the slices
+    for s = 1:nslice
+        % Store coverslip name and path 
+        CoverslipName{it,1} = csname;
+        CoverslipPath{it,1} = cspath;
+       
+        % Store the slice numbers
+        tempslice = SliceNumber;
+        tempslice(tempslice ~=s) = NaN;
+        % Get the image numbers
+        tempbin = tempslice;
+        tempbin(~isnan(tempbin))=0;
+        tempimnum = ImageNumber + tempbin;
+        tempimnum(isnan(tempimnum)) = [];
+        % Get the number of fov 
+        nfov = length(tempimnum);
+        % Initialize matrices to hold all of the slice information 
+        orientim_zline = cell(nfov,1);
+        orientim_actin = cell(nfov,1);
+        czls = cell(nfov,1);
+        npix_zline = zeros(nfov,1);
+        npix_alphaactinin = zeros(nfov,1);
+        npix_actin = zeros(nfov,1);
+        
+        % Counter 
+        it2 = 1; 
+        % Loop through all of the fields of view 
+        for n = 1:nfov
+            % Get the orientation analysis file name
+            temp_name = fullfile(ImageSlicePath{tempimnum(n),1},...
+                ImageSliceName{tempimnum(n),1});
+            % Load orientation analysis file
+            
+            % Store data
+            orientim_zline{it2,1} = NaN;
+            orientim_actin{it2,1} = NaN;
+            czls{it2,1} = NaN;
+            npix_zline(it2,1) = NaN;
+            npix_alphaactinin(it2,1) = NaN;
+            npix_actin(it2,1) = NaN; 
+        end
+        % Process Data
+        % Store Data
+        OOPzline(it,1) = NaN;
+        OOPactin(it,1) = NaN;
+        DirectorZline(it,1) = NaN;
+        DirectorActin(it,1) = NaN;
+        ZlineFraction(it,1) = NaN;
+        TotalZlinePixels(it,1) = NaN;
+        TotalActinPixels(it,1) = NaN;
+        MedianCZL(it,1) = NaN;
+
+    end 
+end
+
+
+% Save Table
+table_slice = table(CoverslipName, CoverslipPath, SliceNumber,...
+    OOPzline, OOPactin, DirectorZline, DirectorActin, ...
+    ZlineFraction, TotalZlinePixels, TotalActinPixels, MedianCZL);
+
+CoverslipName = cell(nt,1);
+CoverslipPath= cell(nt,1);
+SliceNumber = zeros(nt,1);
+
+% Z-line Orientation Vectors
+% Actin Orientation Vectors
+% 
+% 
+% Number of Z-line Pixels
+% Number of alpha-actin Pixels
+% 
+% Number of Z-line Pixels
+% Number of Actin Pixels
+% All cont z-line lengths
+
 
 
 %     %Save in a table 
