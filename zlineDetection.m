@@ -400,7 +400,7 @@ if strcmp('Yes',doRecParams)
     
     % If the user would like parameters, this function stores the
     % recommendations 
-    settings = recommendParameters(handles.pix2um); 
+    settings = recommendParameters(str2double(get(handles.pix2um,'String'))); 
 
     % Set all of the parameters 
     %>> Coherence Filter Parameters
