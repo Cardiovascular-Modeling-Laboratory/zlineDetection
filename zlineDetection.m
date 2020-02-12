@@ -396,9 +396,11 @@ doRecParams = questdlg('Recommend Settings will overwrite any analysis settings 
 
 % Only recommend parameters if the user would like.
 if strcmp('Yes',doRecParams)
+    % Get the pixel to micron conversion factor 
+    
     % If the user would like parameters, this function stores the
     % recommendations 
-    settings = recommendParameters(); 
+    settings = recommendParameters(handles.pix2um); 
 
     % Set all of the parameters 
     %>> Coherence Filter Parameters
