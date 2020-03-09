@@ -3,8 +3,7 @@
 Quantify z-line architecture in images of striated muscles. 
 
 ## Reference This Work
-Morris, TA. (2019). Striated myocyte structural integrity: Automated analysis of sarcomeric z-discs. Manuscript submitted 
-     for publication.
+Morris, Tessa Altair, et al. "Striated myocyte structural integrity: Automated analysis of sarcomeric z-discs." PLOS Computational Biology 16.3 (2020): e1007676.
 
 ## Getting Started
 
