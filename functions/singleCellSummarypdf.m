@@ -125,7 +125,7 @@ if didAnalysis
             summary_image, settings.dp_threshold, save_info ); 
         
         % Add title 
-        if contains(im_struct.im_name,'AR')
+        if doStringComparison(im_struct.im_name,'AR')
             ar_pos = strfind(im_struct.im_name,'AR'); 
             sd_pos = strfind(im_struct.im_name,'_'); 
             title_string = im_struct.im_name; 
