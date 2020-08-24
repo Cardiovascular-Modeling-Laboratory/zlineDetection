@@ -512,9 +512,15 @@ if settings.num_cs > 1 && settings.analysis && settings.multi_cond
         NumberCoverSlips = zeros(size(ConditionValue)); 
         for k = 1:length(ConditionName) 
             ConditionName{k,1} = settings.cond_names{ConditionValue(k,1),1}; 
-            NumberCoverSlips(k,1) = size(ConditionValue,1); 
+            % Calculate the number of coverslips for each condition by
+            % getting all of the condition labels and then removing all of
+            % the conditions that do not match the current condition 
+            cond_CS_all = MultiCS_Cond'; 
+            cond_CS_all(cond_CS_all ~= ConditionValue(k)) = []; 
+            NumberCoverSlips(k,1) = length(cond_CS_all); 
         end 
-
+    
+    
         %>>> Continuous z-line length 
         if settings.exploration || settings.tf_CZL
             MedianCZL_mean = MultiCond.CondValues_MeanMedians;
