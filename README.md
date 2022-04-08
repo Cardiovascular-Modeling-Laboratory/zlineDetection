@@ -14,6 +14,8 @@ zlineDetection
 ```
 3. See userGuide.pdf for more information. 
 
+Note: If you encounter the error saying "'CONCRT140.dll' required", it's because the run-time component is missing from the system. Install [Visual C++ Redistributable Packages](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) for Windows should resolve this issue. 
+
 ## System Requirements
 
 MATLAB Version >= 9.5 
