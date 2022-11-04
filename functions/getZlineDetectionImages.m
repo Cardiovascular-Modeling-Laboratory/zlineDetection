@@ -123,7 +123,12 @@ while k < settings.num_cs + 1
         potential_end = potential_end -1; 
     end 
     %Save the name of the directory 
-    name_CS{k,1} = pathparts{1,potential_end}; 
+    %name_CS{k,1} = pathparts{1,potential_end};     
+    if((pathparts{1,potential_end} == 'RenamedTifsForZlineDetect') | (pathparts{1,potential_end} == 'RenamedTifs')) %if the images were re-organized using an imageJ macro for MERLIN, step back two directories.
+        name_CS{k,1} = pathparts{1,potential_end-1};
+    else
+        name_CS{k,1} = pathparts{1,potential_end};
+    end
     
     %If the user is actin filtering, have them select the files 
     if settings.actin_filt
