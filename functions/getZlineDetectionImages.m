@@ -123,8 +123,8 @@ while k < settings.num_cs + 1
         potential_end = potential_end -1; 
     end 
     %Save the name of the directory 
-    %name_CS{k,1} = pathparts{1,potential_end};     
-    if((pathparts{1,potential_end} == 'RenamedTifsForZlineDetect') | (pathparts{1,potential_end} == 'RenamedTifs')) %if the images were re-organized using an imageJ macro for MERLIN, step back two directories.
+    %Save the name of the directory
+    if(strcmp(pathparts{1,potential_end},'RenamedTifsForZlineDetect') || strcmp(pathparts{1,potential_end},'RenamedTifs')) %If there was a directory made by the ImageJ macro to post-process MERLIN images, step back in a directory
         name_CS{k,1} = pathparts{1,potential_end-1};
     else
         name_CS{k,1} = pathparts{1,potential_end};
@@ -214,4 +214,3 @@ while k < settings.num_cs + 1
     end
 end
 end
-
