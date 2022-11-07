@@ -11,7 +11,9 @@ if nargin < 5
 end
 if ~doHold
     % Open a figure
-    figure; 
+    fig_handle=figure; 
+else
+    fig_handle = get(groot,'CurrentFigure');
 end
 
 if nargin < 6
@@ -49,9 +51,28 @@ plot_settings.linewidth = 0.25;
 
 % Plot the mean and standard deviation 
 makeDotPlot(data_vals, plot_settings, data_labels );
-    
+
+
+
+%Gather Statistics
+
+%Create a vector of condition names
+condName_temp = plot_settings.xticklabel; %load condition names
+%CondID_temp = data_labels; %load the condition IDs temproaraly
+Vec_CondID = data_labels;%cell2mat(CondID_temp); %make a vector out of the condition IDs
+condName_Matrix = repmat(condName_temp,[1,length(Vec_CondID)]); %create a matrix of condition names
+condName_Vector = condName_Matrix(Vec_CondID); %use the IDs to simply look up the condition name to creall a cell array
+
+[~,~,stats] = anova1(data_vals,condName_Vector,'off'); %Do one way anova
+[results,~,~,gnames] = multcompare(stats,'Display','off'); %Run multicompare
+
+colNam = {'GroupA','GroupB','LowerLimit','Difference','UpperLimit','PValue'}; %define table column names
+T = array2table(results,'VariableNames',colNam);
+T.('GroupA') = gnames(T.('GroupA'));
+T.('GroupB') = gnames(T.('GroupB'));
+
 % Get the current plot dimensions
-current_position = get(gca,'position'); 
+current_position = get(gca,'position');
 % Lower left corner x position
 llcx = current_position(1);
 % Lower left corner y position
@@ -60,8 +81,45 @@ llcy = current_position(2);
 axiswidth = 0.6;
 % Axis height
 axisheight = current_position(4);
-% Set the image dimensions 
-set(gca,'position',[llcx,llcy,axiswidth,axisheight])
+% Set the image dimensions
+set(gca,'position',[llcx,llcy,axiswidth,axisheight]) %original code
+
+%set one star and two star significance
+one_star_p = 0.05;
+two_star_p = 0.001;
+
+%Draw significance bars%%%%%%%%%%%
+if ~doHold %don't draw if this is a complex figure that is held over from previous
+    %How many pairwise comparisons need to have a significance bar
+    Num_bars=sum((results(:,6)<one_star_p));
+    
+    
+    xt = get(gca, 'XTick'); %get the location of the x-ticks
+    %yt = get(gca, 'YTick'); %in case y ticks are needed
+    yl_v = ylim;
+    yl=yl_v(2);    
+    axis([xlim    yl_v(1) (1+0.04*Num_bars)*yl]); %raise the top limit by 0.04 for each line
+    count_sig_line = 0; %initilize the sig_line count
+    hold on
+    %Number of pairwise comparisons
+    [n_pair,~] = size(results);
+    for st_i = 1:n_pair %cycle through the comparisons
+        if(results(st_i,6)<one_star_p)   
+            raise_factor_line = (1+0.01+0.04*count_sig_line); %the factor by which to raise the significance line
+            plot(xt([results(st_i,1) results(st_i,2)]), [1 1].*yl*raise_factor_line, '-k','LineWidth',2) %draw line
+            if(results(st_i,6)<two_star_p)
+                plot([mean(xt([results(st_i,1) results(st_i,2)]))-0.04,mean(xt([results(st_i,1) results(st_i,2)]))+0.04], [1 1].*yl*(raise_factor_line+0.015), '*k') %draw two stars
+            else
+                plot(mean(xt([results(st_i,1) results(st_i,2)])), yl*(raise_factor_line+0.015), '*k') %draw one star
+            end
+            count_sig_line = count_sig_line+1; %increase the significance line count by 1
+        end
+    end
+    hold off
+end
+
+
+
 
 % Save the figure as long as the user didn't request not to 
 if ~dontSave
@@ -69,10 +127,17 @@ if ~dontSave
     new_filename = appendFilename( plot_names.path, ...
         strcat(plot_names.savename,'.pdf')); 
     saveas(gcf, fullfile(plot_names.path, new_filename), 'pdf');
+    
+    
+    %Write the statistics table to memory as an xlsx file
+    stats_filename = 'OneWayAnova_forPlots.xlsx';   
+    writetable(T,fullfile(plot_names.path, stats_filename),'Sheet',plot_names.savename,'Range','A1');
 end 
 
 % Get the standard deviation values 
 std_condition = mean_condition - meanpmstd_condition(:,1); 
+
+
 
 % % Get the number of unique grid values 
 % unique_grids = unique(grid_sizes); 
