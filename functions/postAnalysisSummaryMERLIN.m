@@ -213,7 +213,7 @@ for k = 1:numcs
             potential_end = potential_end -1; 
         end 
         %Save the name of the directory 
-        if((pathparts{1,potential_end} == 'RenamedTifsForZlineDetect') | (pathparts{1,potential_end} == 'RenamedTifs'))
+        if((convertCharsToStrings(pathparts{1,potential_end}) == 'RenamedTifsForZlineDetect') | (convertCharsToStrings(pathparts{1,potential_end}) == 'RenamedTifs'))
             name_CS{k,1} = pathparts{1,potential_end-1};
         else
             name_CS{k,1} = pathparts{1,potential_end};
